@@ -9,13 +9,15 @@
 body {
   background-color: #fff;
   color: #333;
-
 }
 
 /* HEADER */
 .header {
   background-color: #008080;
   padding: 15px 0;
+  position: fixed; 
+  width: 100%;
+  z-index: 1000;
 }
 
 .header .container {
@@ -94,6 +96,7 @@ body {
   align-items: center;
   justify-content: space-between;
   gap: 50px;
+  margin-top: 90px;
 }
 
 .banner-texto {
@@ -144,6 +147,9 @@ body {
   margin-top: 50px;
 }
 
+
+/* monitoramento */
+
 .monitoramento {
   background: linear-gradient(180deg, #008080, #006060);
   color: #fff;
@@ -182,6 +188,9 @@ body {
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
+
+/* SERVIÇÕS */
+
 /* Reset básico */
 * {
   box-sizing: border-box;
@@ -202,9 +211,11 @@ body {
 }
 
 .servicos h1 {
-  font-size: 60px;
-  margin-bottom: 28px;
+  font-size: 55px;
+  margin-bottom: 20px;
   color: #008080;
+  margin-top: 25px;
+
 }
 
 .grid-servicos {
@@ -215,7 +226,7 @@ body {
 
 .card {
   background-color: #424242;
-  padding: 15px 10px;
+  padding: 10px 10px;
   border-radius: 12px;
   transition: transform 0.3s, box-shadow 0.3s;
 }
@@ -256,4 +267,179 @@ body {
   .card p {
     font-size: 15px;
   }
+}
+
+
+/* QUEM SOMOS */
+
+.somos {
+  padding: 40px 0;
+  background-color: #008080; /* mantém a identidade */
+  color: #fff;
+}
+
+.somos .section {
+  width: 85%;
+  margin: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 50px;
+  margin-bottom: -8px;
+}
+
+.somos .section:nth-child(even) {
+  flex-direction: row-reverse; /* inverte a ordem no diferencial */
+}
+
+.texto_quem_somos,
+.texto_diferencial {
+  max-width: 500px;
+}
+
+.texto_quem_somos h2,
+.texto_diferencial h2 {
+  font-size: 2rem;
+  margin-bottom: 20px;
+}
+
+.texto_quem_somos p,
+.texto_diferencial p {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 30px;
+}
+
+.section-img img {
+  width: 450px;
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+/* BOTÕES */
+.bnt_quem_somos {
+  display: inline-block;
+  padding: 10px 40px;
+  border-radius: 6px;
+  text-decoration: none;
+  font-weight: 500;
+  background-color: #fff;
+  color: #008080;
+  transition: 0.3s;
+}
+
+.bnt_quem_somos:hover {
+  background-color: #06afaf;
+  color: #fff;
+}
+
+@media (max-width: 768px) {
+  .servicos h1 {
+    font-size: 28px;
+  }
+
+  .card h3 {
+    font-size: 20px;
+  }
+
+  .card p {
+    font-size: 15px;
+  }
+}
+
+
+/* CONTATO */
+/* RESET */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Arial", sans-serif;
+}
+
+.contato {
+  background-color: #fff;
+  color: #008080;
+  text-align: center;
+  padding: 60px 20px 20px;
+  border-top: 2px solid #008080;
+}
+
+.contato-top h2 {
+  font-size: 2.2rem;
+  margin-bottom: 10px;
+}
+
+.contato-top p {
+  font-size: 1rem;
+  opacity: 0.8;
+  margin-bottom: 40px;
+}
+
+.contato-container {
+  display: flex;
+  justify-content: center;
+  gap: 80px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+
+.contato-col h3 {
+  font-size: 1.1rem;
+  margin-bottom: 15px;
+  font-weight: bold;
+}
+
+.contato-col ul {
+  list-style: none;
+}
+
+.contato-col ul li {
+  margin-bottom: 8px;
+}
+
+.contato-col ul li a {
+  text-decoration: none;
+  color: #333;
+  transition: 0.3s;
+}
+
+.contato-col ul li a:hover {
+  color: #008080;
+}
+
+.contato-col p {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.social {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.social img {
+  width: 22px;
+  height: 22px;
+  transition: 0.3s;
+}
+
+.social img:hover {
+  transform: scale(1.1);
+}
+
+.contato-bottom {
+  font-size: 0.9rem;
+  opacity: 0.8;
+}
+
+.contato-bottom a {
+  color: #008080;
+  text-decoration: none;
+  margin: 0 5px;
+}
+
+.contato-bottom a:hover {
+  text-decoration: underline;
 }
