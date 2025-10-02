@@ -1,0 +1,429 @@
+/* LOGIN */
+
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f0f2f5;
+    }
+
+    .container {
+      display: flex;
+      width: 900px;
+      height: 600px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    /* Lado esquerdo (login) */
+    .login-box {
+      flex: 1;
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #fff;
+    }
+
+    .login-box img {
+      width: 150px;
+      margin-bottom: 7px;
+      margin-top: -3%;
+    }
+
+    .login-box h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .login-box p {
+      font-size: 14px;
+      margin-bottom: 20px;
+    }
+
+    .login-box p a {
+      font-weight: 600;
+      text-decoration: none;
+      color: #1c418c;
+    }
+
+    .input-box {
+      position: relative;
+      margin-bottom: 20px;
+    }
+
+    .input-box input {
+      width: 100%;
+      padding: 14px 40px 14px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .input-box i {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox input {
+      margin-right: 8px;
+    }
+
+    .forgot-link {
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    .forgot-link a {
+      font-size: 13px;
+      color: #1c418c;
+      text-decoration: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #1c418c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background-color: #163374;
+      transition: 0.3s;
+    }
+
+    /* Lado direito (painel azul) */
+    .right-painel {
+      flex: 1;
+      background-color: #178589; 
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .right-painel img {
+      width: 100%;
+      margin-bottom: 30px;
+      border-radius: 12px;
+    }
+
+    .right-painel h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .right-painel p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e0e0e0;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+      }
+      .right-panel {
+        order: -1;
+        width: 100%;
+        padding: 30px;
+      }
+      .login-box {
+        width: 100%;
+        padding: 40px 20px;
+      }
+      .right-panel img {
+        width: 100%;
+      }
+    }
+
+#div_erros_login {
+  display: none
+}
+
+/* cadastro */
+
+  * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    body {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f0f2f5;
+    }
+
+    .container {
+      display: flex;
+      width: 900px;
+      height: 620px;
+      box-shadow: 0 0 30px rgba(0, 0, 0, 0.2);
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: #fff;
+    }
+
+    /* Lado esquerdo (Cadastro) */
+    .cadastro-box {
+      flex: 1;
+      padding: 60px 40px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background-color: #fff;
+    }
+
+    span{
+      font-size: 15px;
+    }
+
+    .cadastro-box img {
+      width: 150px;
+      margin-bottom: -4px;
+      margin-top: -4%;
+    }
+
+    .cadatro-box h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+    }
+
+    .cadastro-box p {
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .cadastro-box p a {
+      font-weight: 600;
+      text-decoration: none;
+      color: #1c418c;
+    }
+
+    .input-box-cadastro {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .input-box-cadastro input {
+      width: 100%;
+      padding: 8px 40px 14px 14px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .input-box-cadastro i {
+      position: absolute;
+      right: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: #888;
+      cursor: pointer;
+    }
+
+    .checkbox {
+      display: flex;
+      align-items: center;
+      font-size: 13px;
+      margin-bottom: 20px;
+    }
+
+    .checkbox input {
+      margin-right: 8px;
+    }
+
+    .forgot-link {
+      text-align: right;
+      margin-bottom: 30px;
+    }
+
+    .forgot-link a {
+      font-size: 13px;
+      color: #1c418c;
+      text-decoration: none;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 12px;
+      background-color: #1c418c;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .btn:hover {
+      background-color: #163374;
+      transition: 0.3s;
+    }
+
+    /* Lado direito (painel azul) */
+    .right-painel-esquerdo {
+      flex: 1;
+      background-color: #178589; 
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .right-panel-esquerdo img {
+      width: 100%;
+      margin-bottom: 30px;
+      border-radius: 12px;
+    }
+
+    .right-panel-esquerdo h2 {
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    .right-panel-esquerdo p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e0e0e0;
+    }
+
+    /* Responsividade */
+    @media (max-width: 768px) {
+      .container {
+        flex-direction: column;
+        width: 90%;
+        height: auto;
+      }
+      .right-panel {
+        order: -1;
+        width: 100%;
+        padding: 30px;
+      }
+      .login-box {
+        width: 100%;
+        padding: 40px 20px;
+      }
+      .right-panel img {
+        width: 100%;
+      }
+    }
+
+
+/* Painel lado esquerdo */
+.right-panel {
+      flex: 1;
+      background-color: #178589; 
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 40px;
+      text-align: center;
+    }
+
+    .right-panel img {
+      width: 120%;
+      margin-bottom: 30px;
+      border-radius: 12px;
+    }
+
+    .right-panel h2 {
+      font-size: 24px;
+      margin-bottom: 15px;
+    }
+
+    .right-panel p {
+      font-size: 15px;
+      line-height: 1.5;
+      color: #e0e0e0;
+    } */
+
+/* ALERTA */
+
+#alerta {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+}
+
+.mensagem-alarme {
+  background-color: white;
+  border-radius: 5px;
+  width: 300px;
+  height: 80px;
+  margin: 10px;
+  padding: 10px 0;
+  display: flex;
+  justify-content: space-evenly;
+  align-items: center;
+}
+
+.mensagem-alarme h3 {
+  font-size: 14px;
+  margin: 0;
+}
+
+.mensagem-alarme .informacao {
+  width: 66%;
+}
+
+.alarme-sino {
+  width: 48px;
+  height: 48px;
+  animation-name: bell;
+  animation-duration: 4s;
+  background-image: url('https://cdn-icons-png.flaticon.com/512/1157/1157000.png');
+  background-size: cover;
+  animation-iteration-count: infinite;
+}
+
+@keyframes bell {
+  0%   {transform: rotate(25deg)}
+  25%  {transform: rotate(-25deg)}
+  50%  {transform: rotate(25deg)}
+  75%  {transform: rotate(-25deg)}
+  100% {transform: rotate(25deg)}
+}
