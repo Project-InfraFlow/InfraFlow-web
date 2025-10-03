@@ -42,11 +42,9 @@ body {
 }
 
 .navbar {
-  height: 60px;
   list-style: none;
   display: flex;
-  gap: 25px;
-
+  gap: 30px;
 }
 
 .navbar li a {
@@ -295,6 +293,8 @@ body {
 .texto_quem_somos,
 .texto_diferencial {
   max-width: 500px;
+  margin-left: 20px;
+  margin-top: 20px;
 }
 
 .texto_quem_somos h2,
@@ -305,16 +305,18 @@ body {
 
 .texto_quem_somos p,
 .texto_diferencial p {
-  font-size: 1.1rem;
+  font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 30px;
 }
 
 .section-img img {
-  width: 450px;
+  width: 280px;
   max-width: 100%;
   border-radius: 6px;
+  margin-top: 10px;
 }
+
 
 /* BOTÕES */
 .bnt_quem_somos {
@@ -349,97 +351,133 @@ body {
 
 
 /* CONTATO */
-/* RESET */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-  font-family: "Arial", sans-serif;
-}
-
+/* FOOTER */
 .contato {
+  padding: 60px 20px;
   background-color: #fff;
   color: #008080;
+}
+
+.contato-top {
   text-align: center;
-  padding: 60px 20px 20px;
-  border-top: 2px solid #008080;
+  margin-bottom: 90px;
 }
 
 .contato-top h2 {
-  font-size: 2.2rem;
+  font-size: 3rem;
   margin-bottom: 10px;
+  font-weight: 600;
 }
 
 .contato-top p {
-  font-size: 1rem;
-  opacity: 0.8;
-  margin-bottom: 40px;
+  font-size: 1.5rem;
+  color: #3b8f90;
+  margin-top: 40px;
 }
 
-.contato-container {
+.contatato-container {
+  width: 60%;
+  margin: auto;
   display: flex;
-  justify-content: center;
-  gap: 80px;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
   flex-wrap: wrap;
-  margin-bottom: 40px;
+  margin-bottom: 80px;
+  margin-left: 23%;
 }
 
-.contato-col h3 {
-  font-size: 1.1rem;
+.contato-col,
+.contato-suporte {
+  flex: 1;
+  min-width: 200px;
+}
+
+.contato-col h3,
+.contato-suporte h3 {
+  font-size: 1rem;
   margin-bottom: 15px;
   font-weight: bold;
-}
-
-.contato-col ul {
-  list-style: none;
-}
-
-.contato-col ul li {
-  margin-bottom: 8px;
-}
-
-.contato-col ul li a {
-  text-decoration: none;
-  color: #333;
-  transition: 0.3s;
-}
-
-.contato-col ul li a:hover {
   color: #008080;
 }
 
-.contato-col p {
+.contato-col ul,
+.contato-suporte ul {
+  list-style: none;
+}
+
+.contato-col ul li,
+.contato-suporte ul li {
+  margin-bottom: 10px;
+}
+
+.contato-col ul li a,
+.contato-suporte ul li a {
+  text-decoration: none;
+  font-size: 0.95rem;
+  color: #1a2b6d;
+  transition: 0.3s;
+}
+
+.contato-col ul li a:hover,
+.contato-suporte ul li a:hover {
+  opacity: 0.8;
+}
+
+.contato-suporte p {
   margin-bottom: 15px;
-  color: #333;
+  color: #1a2b6d;
 }
 
 .social {
   display: flex;
   gap: 10px;
-  justify-content: center;
 }
 
-.social img {
-  width: 22px;
-  height: 22px;
+.social a img {
+  width: 60px;
+  height: 30px;
   transition: 0.3s;
 }
 
-.social img:hover {
-  transform: scale(1.1);
+.social a img:hover {
+  opacity: 0.7;
 }
 
 .contato-bottom {
+  border-top: 1px solid #dcdcdc;
+  text-align: center;
+  padding-top: 15px;
   font-size: 0.9rem;
-  opacity: 0.8;
+  color: #3b8f90;
 }
 
 .contato-bottom a {
-  color: #008080;
   text-decoration: none;
+  color: #3b8f90;
   margin: 0 5px;
+  transition: 0.3s;
 }
 
 .contato-bottom a:hover {
-  text-decoration: underline;
+  opacity: 0.7;
+}
+
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+  .contatato-container {
+    flex-direction: column;
+    gap: 30px;
+    text-align: center;
+  }
+
+  .contato-col,
+  .contato-suporte {
+    min-width: 100%;
+  }
+
+  .contato-col ul,
+  .contato-suporte ul {
+    padding: 0;
+  }
 }
