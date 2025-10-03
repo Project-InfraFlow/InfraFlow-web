@@ -21,12 +21,17 @@
 
             <div class="input-box">
                 <span>Token</span>
-                <input type="Token_input" placeholder="325535" required>
+                <input type="text" id="token_input" placeholder="325535" required>
+            </div>
+
+            <div class="input-box">
+                <span>Nome</span>
+                <input type="text" id="nome_input" placeholder="Fernanda Silva Carvalho" required>
             </div>
 
             <div class="input-box">
                 <span>E-mail</span>
-                <input type="email_input" placeholder="example@gmail.com" required>
+                <input type="email" id="email_input" placeholder="example@gmail.com" required>
             </div>
 
             <div class="input-box">
@@ -68,13 +73,25 @@
     function entrar() {
         aguardar();
 
+        var token_input = document.getElementById("token_input");
+        var nome_input  =  document.getElementById("nome_input");
+        var email_input = document.getElementById("email_input");
+        var senha_input = document.getElementById("senha_input");
+
         var tokenVar = token_input.value;
+        var nomeVar  = nome_input.value;
         var emailVar = email_input.value;
         var senhaVar = senha_input.value;
 
-        if (tokenVar == "" || emailVar == "" || senhaVar == "") {
+        if (tokenVar == "" || nomeVar == "" || emailVar == "" || senhaVar == "") {
             cardErro.style.display = "block"
             mensagem_erro.innerHTML = "(Mensagem de erro para todos os campos em branco)";
+            finalizarAguardar();
+            return false;
+
+        } else if (tokenVar.length < 6 || tokenVar != "1", "2", "3", "4", "5", "6", "7", "8", "9") {
+            cardErro.style.display = "block"
+            mensagem_erro.innerHTML = "(São apenas 6 digitos, de 1 a 9)";
             finalizarAguardar();
             return false;
         }
