@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8">
+  <title>Chat de Suporte</title>
+</head>
+<body>
+  <h2>Chat-InfraFlow</h2>
+  <div id="chat" style="border:1px solid #000; height:220px; overflow:auto; padding:6px;"></div>
+
+  <label for="papel">Papel:</label>
+  <select id="papel">
+    <option value="usuario">Usuário</option>
+    <option value="suporte">Suporte</option>
+  </select>
+  <br><br>
+
+  <textarea id="texto" rows="3" cols="45" placeholder="Digite sua mensagem"></textarea><br>
+  <button id="enviar">Enviar</button>
+
+  <script>
+    async function carregar() {
+      const r = await fetch("/mensagens");
+      const dados = await r.json();
+      const div = document.getElementById("chat");
+      div.innerHTML = "";
+      dados.forEach(m => {
+        const p = document.createElement("p");
+        p.innerHTML = `<b>${m.papel}:</b> ${m.texto} <i>(${m.criado_em})</i>`;
+        div.appendChild(p);
+      });
+      div.scrollTop = div.scrollHeight;
+    }
+
+    async function enviar() {
+      const papel = document.getElementById("papel").value;
+      const texto = document.getElementById("texto").value;
+      if (!texto.trim()) return;
+      await fetch("/mensagens", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ papel, texto })
+      });
+      document.getElementById("texto").value = "";
+      carregar();
+    }
+
+    document.getElementById("enviar").onclick = enviar;
+    setInterval(carregar, 2000);
+    carregar();
+  </script>
+</body>
+</html>
