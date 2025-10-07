@@ -248,8 +248,12 @@
         // Agora vá para o arquivo routes/usuario.js
         razaoServer: razaoVar,
         CNPJServer: CNPJVar,
+        emailEmpresaServer: emailEmpresaVar,
+        telefoneServer : telefoneVar, 
+        
         tecnicoServer: tecnicoVar,
-        emailServer: emailVar,
+        emailUserServer: emailUserVar,
+        tokenServer :  tokenVar, 
         senhaServer: senhaVar,
         idEmpresaVincularServer: idEmpresaVincular
       }),
@@ -282,24 +286,24 @@
   }
 
   // Listando empresas cadastradas 
-  function listar() {
-    fetch("/empresas/listar", {
-      method: "GET",
-    })
-      .then(function (resposta) {
-        resposta.json().then((empresas) => {
-          empresas.forEach((empresa) => {
-            listaEmpresasCadastradas.push(empresa);
+//   function listar() {
+//     fetch("/empresas/listar", {
+//       method: "GET",
+//     })
+//       .then(function (resposta) {
+//         resposta.json().then((empresas) => {
+//           empresas.forEach((empresa) => {
+//             listaEmpresasCadastradas.push(empresa);
 
-            console.log("listaEmpresasCadastradas")
-            console.log(listaEmpresasCadastradas[0].codigo_ativacao)
-          });
-        });
-      })
-      .catch(function (resposta) {
-        console.log(`#ERRO: ${resposta}`);
-      });
-  }
+//             console.log("listaEmpresasCadastradas")
+//             console.log(listaEmpresasCadastradas[0].codigo_ativacao)
+//           });
+//         });
+//       })
+//       .catch(function (resposta) {
+//         console.log(`#ERRO: ${resposta}`);
+//       });
+//   }
 
   function sumirMensagem() {
     cardErro.style.display = "none";
