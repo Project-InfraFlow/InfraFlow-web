@@ -2,135 +2,162 @@
 <html lang="pt-BR">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>InfraFlow | Login</title>
-
-    <link rel="stylesheet" href="./css/estilo.css">
-    <link rel="icon" href="./assets/icon/logo.png" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>InfraFlow | Login</title>
+  <link rel="stylesheet" href="./css/estilo.css" />
+  <link rel="icon" href="./assets/icon/logo.png" />
 </head>
 
 <body>
-    <div class="container">
-        <div class="login-box">
-            <a href="index.html">
-                <img src="./assets/logoInfraFlow.png" alt="Logo InfraFlow">
-            </a>
-            <h1>Entrar</h1>
+  <div class="container">
+    <div class="login-box">
+      <a href="index.html">
+        <img src="./assets/logoInfraFlow.png" alt="Logo InfraFlow" />
+      </a>
+      <h1>Entrar</h1>
 
-            <div class="input-box">
-                <span>Token</span>
-                <input type="text" id="token_input" placeholder="325535159" required>
-            </div>
+      <div class="input-box">
+        <span>E-mail</span>
+        <input type="email" id="email_input" placeholder="example@gmail.com" required />
+      </div>
 
-            <div class="input-box">
-                <span>Nome</span>
-                <input type="text" id="nome_input" placeholder="Fernanda Silva Carvalho" required>
-            </div>
+      <div class="input-box">
+        <span>Senha</span>
+        <input id="senha_input" type="password" placeholder="Sua senha" required />
+      </div>
 
-            <div class="input-box">
-                <span>E-mail</span>
-                <input type="email" id="email_input" placeholder="example@gmail.com" required>
-            </div>
+      <div class="input-box">
+        <span>Token</span>
+        <input type="text" id="token_input" placeholder="325535159" />
+      </div>
 
-            <div class="input-box">
-                <span>Senha</span>
-                <input id="senha_input" type="password" placeholder="Sua senha" required>
-            </div>
+      <div class="checkbox">
+        <input type="checkbox" id="remember" />
+        <label for="remember">Lembrar-me</label>
+      </div>
 
-            <div class="checkbox">
-                <input type="checkbox" id="remember">
-                <label for="remember">Lembrar-me</label>
-            </div>
+      <div class="forgot-link">
+        <a href="./recuperar-senha.html">Esqueceu a Senha?</a>
+      </div>
 
-            <div class="forgot-link">
-                <a href="#">Esqueceu a Senha?</a>
-            </div>
+      <button class="btn" id="btnEntrar">Entrar</button>
 
-            <button class="btn" onclick="entrar()">Entrar</button>
+      <br /><br />
+      <p>Ainda não possui uma conta? <a href="./cadastro.html">Cadastrar</a></p>
 
-            <br><br>
-            <p>Ainda não possui uma conta? <a href="./cadastro.html">Cadastrar</a></p>
+      <!-- Card de erro -->
+      <div id="cardErro" style="display:none; color:red; margin-top:10px;">
+        <span id="mensagem_erro"></span>
+      </div>
 
-            <!-- Card de erro -->
-            <div id="cardErro" style="display:none; color:red; margin-top:10px;">
-                <span id="mensagem_erro"></span>
-            </div>
-
-            <!-- Loader -->
-            <div id="div_aguardar" class="loading-div" style="display:none;">
-                <img src="./assets/circle-loading.gif" id="loading-gif">
-            </div>
-        </div>
-
-        <div class="right-painel">
-            <img src="./assets/notebook-login.png" alt="Painel">
-            <h2>Bem-vindo de volta!</h2>
-            <p>Analizar alta disponibilidade de componentes de um controlador pórtico garante que as empresas sempre
-                tomem a decisão certa...</p>
-        </div>
+      <!-- Loader -->
+      <div id="div_aguardar" class="loading-div" style="display:none;">
+        <img src="./assets/circle-loading.gif" id="loading-gif" />
+      </div>
     </div>
 
-    <script>
-        function entrar() {
-            var tokenVar = token_input.value;
-            var nomeVar = nome_input.value;
-            var emailVar = email_input.value;
-            var senhaVar = senha_input.value;
+    <div class="right-painel">
+      <img src="./assets/notebook-login.png" alt="Painel" />
+      <h2>Bem-vindo de volta!</h2>
+      <p>Analizar alta disponibilidade de componentes de um controlador pórtico
+        garante que as empresas sempre tomem a decisão certa...</p>
+    </div>
+  </div>
 
-            var cardErro = document.getElementById("cardErro");
-            var mensagem_erro = document.getElementById("mensagem_erro");
-            var div_aguardar = document.getElementById("div_aguardar");
+  <script>
+    const emailEl = document.getElementById('email_input');
+    const senhaEl = document.getElementById('senha_input');
+    const tokenEl = document.getElementById('token_input');
+    const rememberEl = document.getElementById('remember');
+    const btnEntrar = document.getElementById('btnEntrar');
+    const cardErro = document.getElementById('cardErro');
+    const mensagemErro = document.getElementById('mensagem_erro');
+    const divAguardar = document.getElementById('div_aguardar');
 
-            cardErro.style.display = "none";
-            div_aguardar.style.display = "block";
+    // Pré-carrega e-mail salvo (lembrar-me)
+    (function hydrateRemember() {
+      const saved = localStorage.getItem('login_email');
+      if (saved) {
+        emailEl.value = saved;
+        rememberEl.checked = true;
+      }
+    })();
 
-            if (tokenVar == "" || nomeVar == "" || emailVar == "" || senhaVar == "") {
-                cardErro.style.display = "block";
-                mensagem_erro.innerHTML = "Preencha todos os campos.";
-                div_aguardar.style.display = "none";
-                return false;
-            } else if (tokenVar.length != 9 || !/^[1-9]+$/.test(tokenVar)) {
-                cardErro.style.display = "block";
-                mensagem_erro.innerHTML = "O token deve ter exatamente 9 dígitos, apenas de 1 a 9.";
-                div_aguardar.style.display = "none";
-                return false;
-            }
+    function showError(msg) {
+      mensagemErro.textContent = msg || 'Falha no login.';
+      cardErro.style.display = 'block';
+    }
+    function clearError() {
+      mensagemErro.textContent = '';
+      cardErro.style.display = 'none';
+    }
+    function setLoading(on) {
+      divAguardar.style.display = on ? 'block' : 'none';
+    }
 
-            fetch("/usuarios/autenticar", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    emailServer: emailVar,
-                    senhaServer: senhaVar
-                })
-            }).then(function (resposta) {
-                if (resposta.ok) {
-                    resposta.json().then(json => {
-                        sessionStorage.EMAIL_USUARIO = json.email;
-                        sessionStorage.NOME_USUARIO = json.nome;
-                        sessionStorage.ID_USUARIO = json.id;
-                        sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
+    async function entrar() {
+      clearError();
 
-                        div_aguardar.style.display = "none";
-                        setTimeout(() => window.location = "./cadastro.html", 500);
-                    });
-                } else {
-                    resposta.text().then(texto => {
-                        cardErro.style.display = "block";
-                        mensagem_erro.innerHTML = texto;
-                        div_aguardar.style.display = "none";
-                    });
-                }
-            }).catch(function (erro) {
-                cardErro.style.display = "block";
-                mensagem_erro.innerHTML = "Erro na conexão com o servidor.";
-                div_aguardar.style.display = "none";
-            });
+      const email = (emailEl.value || '').trim();
+      const senha = (senhaEl.value || '');
+      const token = (tokenEl.value || '').trim(); // opcional no front
 
-            return false;
+      if (!email || !senha) {
+        showError('Preencha e-mail e senha.');
+        return;
+      }
+
+      setLoading(true);
+
+      try {
+        const resp = await fetch('/usuarios/autenticar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            emailServer: email,
+            senhaServer: senha
+          })
+        });
+
+        if (!resp.ok) {
+          const texto = await resp.text();
+          showError(texto || 'Credenciais inválidas.');
+          return;
         }
-    </script>
+
+        const json = await resp.json();
+
+        // Sessão padrão (mantém compatibilidade)
+        sessionStorage.EMAIL_USUARIO = json.email;
+        sessionStorage.NOME_USUARIO = json.nome;
+        sessionStorage.ID_USUARIO = json.id;
+        sessionStorage.AQUARIOS = JSON.stringify(json.aquarios || []);
+
+        // Guarda o token para uso posterior (não interfere no backend)
+        if (token) sessionStorage.TOKEN_EMPRESA = token;
+
+        // Lembrar-me
+        if (rememberEl.checked) {
+          localStorage.setItem('login_email', email);
+        } else {
+          localStorage.removeItem('login_email');
+        }
+
+        // Mesmo destino da tela original
+        window.location = './dashboard/cards.html';
+      } catch (e) {
+        showError('Erro na conexão com o servidor.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    btnEntrar.addEventListener('click', entrar);
+    // Enter para submeter
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') entrar();
+    });
+  </script>
 </body>
 </html>

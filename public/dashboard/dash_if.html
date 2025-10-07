@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InfraFlow - Sistema de Monitoramento</title>
+    <link rel="stylesheet" href="../css/dash_styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Login Screen -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-container">
+            <div class="login-header">
+                <div class="logo-container">
+                    <img src="../assets/logoInfraFlow.png" alt="InfraFlow Logo" class="logo-icon-img">
+                </div>
+                <p class="login-subtitle">Sistema de Monitoramento de Pedágio Free Flow</p>
+            </div>
+
+            <form class="login-form" id="loginForm">
+                <div class="form-group">
+                    <label for="username">Usuário</label>
+                    <div class="input-container">
+                        <i class="fas fa-user input-icon"></i>
+                        <input type="text" id="username" name="username" placeholder="Digite seu usuário" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="password">Senha</label>
+                    <div class="input-container">
+                        <i class="fas fa-lock input-icon"></i>
+                        <input type="password" id="password" name="password" placeholder="Digite sua senha" required>
+                        <button type="button" class="toggle-password" id="togglePassword">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="checkbox-container">
+                        <input type="checkbox" id="rememberMe">
+                        <span class="checkmark"></span>
+                        Lembrar de mim
+                    </label>
+                    <a href="#" class="forgot-password">Esqueceu a senha?</a>
+                </div>
+
+                <button type="submit" class="login-btn">
+                    <span class="btn-text">Entrar</span>
+                    <i class="fas fa-arrow-right btn-icon"></i>
+                </button>
+            </form>
+
+            <div class="login-footer">
+                <p>&copy; 2025 InfraFlow. Todos os direitos reservados.</p>
+            </div>
+        </div>
+
+        <div class="login-background">
+            <div class="bg-overlay"></div>
+            <div class="floating-elements">
+                <div class="floating-element" style="--delay: 0s; --duration: 20s;"></div>
+                <div class="floating-element" style="--delay: 5s; --duration: 25s;"></div>
+                <div class="floating-element" style="--delay: 10s; --duration: 30s;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="dashboard" class="dashboard hidden">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <span>InfraFlow</span>
+            </div>
+
+            <nav class="nav">
+                <button data-view="overview" class="nav-item active">
+                    <i class="fas fa-gauge"></i>
+                    <span>Visão Geral</span>
+                </button>
+                <button data-view="monitor" class="nav-item">
+                    <i class="fas fa-chart-line"></i>
+                    <span>Monitoramento</span>
+                </button>
+                <button data-view="cadastro" class="nav-item">
+                    <i class="fas fa-pen-to-square"></i>
+                    <span>Cadastro</span>
+                </button>
+                <button data-view="historico" class="nav-item">
+                    <i class="fas fa-clock-rotate-left"></i>
+                    <span>Histórico</span>
+                </button>
+            </nav>
+
+            <div class="divider"></div>
+
+            <div class="filters">
+                <div class="filters-title">
+                    <i class="fas fa-filter"></i>
+                    <span>Componentes</span>
+                </div>
+                <label class="filter-item">
+                    <input type="checkbox" class="flt-comp" value="cpu" checked>
+                    <span class="checkmark"></span>
+                    <i class="fas fa-microchip"></i>
+                    <span>CPU</span>
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" class="flt-comp" value="memoria" checked>
+                    <span class="checkmark"></span>
+                    <i class="fas fa-memory"></i>
+                    <span>Memória</span>
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" class="flt-comp" value="disco" checked>
+                    <span class="checkmark"></span>
+                    <i class="fas fa-hdd"></i>
+                    <span>Disco</span>
+                </label>
+                <label class="filter-item">
+                    <input type="checkbox" class="flt-comp" value="rede" checked>
+                    <span class="checkmark"></span>
+                    <i class="fas fa-network-wired"></i>
+                    <span>Rede</span>
+                </label>
+            </div>
+
+            <div class="user-section">
+                <div class="user-info">
+                    <i class="fas fa-user-circle"></i>
+                    <span>Admin</span>
+                </div>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i>
+                </button>
+            </div>
+        </aside>
+
+
+
+        <!-- Main Content -->
+        <main class="content">
+
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="topbar-left">
+                    <div class="machine-select">
+                        <i class="fas fa-server"></i>
+                        <select id="edgeSelector">
+                            <option value="INFRA-EDGE-01">INFRA-EDGE-01</option>
+                            <option value="INFRA-EDGE-02">INFRA-EDGE-02</option>
+                            <option value="INFRA-EDGE-03">INFRA-EDGE-03</option>
+                            <option value="INFRA-EDGE-04">INFRA-EDGE-04</option>
+                        </select>
+                    </div>
+                    <div class="os-info">
+                        <i class="fab fa-ubuntu"></i>
+                        <span>Ubuntu 22.04 LTS</span>
+                    </div>
+                </div>
+                <div class="topbar-right">
+                    <div class="status-indicator">
+                        <div class="status-dot"></div>
+                        <span>Online</span>
+                    </div>
+                    <div class="last-update">
+                        <span class="update-label">Última atualização:</span>
+                        <span class="update-time" id="lastUpdateTime">--:--:--</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Visão Geral -->
+            <section id="view-overview" class="view active">
+                <div class="view-header">
+                    <h1 class="view-title">
+                        <i class="fas fa-gauge"></i>
+                        Visão Geral
+                    </h1>
+                </div>
+
+                <!-- KPIs Grid -->
+                <div class="kpis-grid">
+                    <div class="kpi-card" id="kpiCpu">
+                        <div class="kpi-header">
+                            <div class="kpi-icon cpu">
+                                <i class="fas fa-microchip"></i>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">CPU</span>
+                                <span class="kpi-trend" id="cpuTrend">
+                                    <i class="fas fa-minus"></i>
+                                    0.0%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="kpiCpuValue">0%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar cpu" id="cpuProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" id="kpiMemoria">
+                        <div class="kpi-header">
+                            <div class="kpi-icon memoria">
+                                <i class="fas fa-memory"></i>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Memória</span>
+                                <span class="kpi-trend" id="memoriaTrend">
+                                    <i class="fas fa-minus"></i>
+                                    0.0%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="kpiMemoriaValue">0%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar memoria" id="memoriaProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" id="kpiDisco">
+                        <div class="kpi-header">
+                            <div class="kpi-icon disco">
+                                <i class="fas fa-hdd"></i>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Disco</span>
+                                <span class="kpi-trend" id="discoTrend">
+                                    <i class="fas fa-minus"></i>
+                                    0.0%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="kpiDiscoValue">0%</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar disco" id="discoProgress"></div>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card" id="kpiRede">
+                        <div class="kpi-header">
+                            <div class="kpi-icon rede">
+                                <i class="fas fa-network-wired"></i>
+                            </div>
+                            <div class="kpi-info">
+                                <span class="kpi-label">Rede</span>
+                                <span class="kpi-trend" id="redeTrend">
+                                    <i class="fas fa-minus"></i>
+                                    0.0%
+                                </span>
+                            </div>
+                        </div>
+                        <div class="kpi-value" id="kpiRedeValue">0 Mbps</div>
+                        <div class="kpi-progress">
+                            <div class="progress-bar rede" id="redeProgress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alertas -->
+                <div class="alerts-section">
+                    <h2 class="section-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Alertas e Anomalias
+                    </h2>
+                    <div class="alerts-grid" id="alertsGrid">
+                        <!-- Alertas serão inseridos aqui na sprint 3 -->
+                    </div>
+                </div>
+
+                <!-- Status do Sistema -->
+                <div class="system-status-section">
+                    <div class="status-card">
+                        <h3 class="status-title">
+                            <i class="fas fa-heartbeat"></i>
+                            Status do Sistema
+                        </h3>
+                        <div class="status-badge" id="systemStatus">Normal</div>
+                        <div class="status-description" id="statusDescription">
+                            Todos os componentes operando dentro dos parâmetros normais
+                        </div>
+                        <div class="status-metrics">
+                            <div class="metric">
+                                <span class="metric-label">Uptime:</span>
+                                <span class="metric-value" id="systemUptime">15d 8h 32m</span>
+                            </div>
+                            <div class="metric">
+                                <span class="metric-label">Alertas Ativos:</span>
+                                <span class="metric-value" id="alertCount">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monitoramento -->
+            <section id="view-monitor" class="view">
+                <div class="view-header">
+                    <h1 class="view-title">
+                        <i class="fas fa-chart-line"></i>
+                        Monitoramento em Tempo Real
+                    </h1>
+                </div>
+
+                <!-- Charts Grid -->
+                <div class="charts-grid">
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-pulse"></i>
+                                Linha do Tempo
+                            </h3>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="realTimeChart"></canvas>
+                        </div>
+                    </div>
+
+                    <div class="chart-container">
+                        <div class="chart-header">
+                            <h3 class="chart-title">
+                                <i class="fas fa-microchip"></i>
+                                CPU por Núcleo
+                            </h3>
+                            <div class="chart-controls">
+                                <label class="switch">
+                                    <input type="checkbox" id="showCpuCores">
+                                    <span class="slider"></span>
+                                </label>
+                                <span class="switch-label">Exibir núcleos</span>
+                            </div>
+                        </div>
+                        <div class="chart-content">
+                            <canvas id="cpuCoresChart"></canvas>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabela de Leituras -->
+                <div class="table-section">
+                    <div class="table-header">
+                        <h3 class="table-title">
+                            <i class="fas fa-table"></i>
+                            Últimas Leituras
+                        </h3>
+                        <div class="table-actions">
+                            <button id="exportMonitorCsv" class="btn btn-export">
+                                <i class="fas fa-download"></i>
+                                Exportar CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-clock"></i> Horário</th>
+                                    <th><i class="fas fa-microchip"></i> CPU (%)</th>
+                                    <th><i class="fas fa-memory"></i> Memória (%)</th>
+                                    <th><i class="fas fa-hdd"></i> Disco (%)</th>
+                                    <th><i class="fas fa-network-wired"></i> Rede (Mbps)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="monitorTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="table-pagination">
+                        <div class="pagination-info">
+                            <span id="monitorPaginationInfo">Mostrando 0 de 0 registros</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="monitorPrevPage" class="btn btn-pagination" disabled>
+                                <i class="fas fa-chevron-left"></i>
+                                Anterior
+                            </button>
+                            <span id="monitorPageInfo">Página 0 de 0</span>
+                            <button id="monitorNextPage" class="btn btn-pagination" disabled>
+                                Próxima
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Cadastro -->
+            <section id="view-cadastro" class="view">
+                <div class="view-header">
+                    <h1 class="view-title">
+                        <i class="fas fa-pen-to-square"></i>
+                        Cadastro
+                    </h1>
+                </div>
+
+                <div class="cadastro-tabs">
+                    <button class="tab-btn active" data-tab="empresa">
+                        <i class="fas fa-building"></i>
+                        Empresa
+                    </button>
+                    <button class="tab-btn" data-tab="usuario">
+                        <i class="fas fa-user"></i>
+                        Usuário
+                    </button>
+                    <button class="tab-btn" data-tab="maquina">
+                        <i class="fas fa-server"></i>
+                        Máquina
+                    </button>
+                    <button class="tab-btn" data-tab="componente">
+                        <i class="fas fa-cog"></i>
+                        Componente
+                    </button>
+                </div>
+
+                <div class="cadastro-content">
+                    <!-- Empresa -->
+                    <div id="tab-empresa" class="tab-content active">
+                        <form class="cadastro-form" id="empresaForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="empresaNome">Nome da Empresa</label>
+                                    <input type="text" id="empresaNome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="empresaCnpj">CNPJ</label>
+                                    <input type="text" id="empresaCnpj" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="empresaEmail">E-mail</label>
+                                    <input type="email" id="empresaEmail" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="empresaTelefone">Telefone</label>
+                                    <input type="tel" id="empresaTelefone">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Salvar
+                                </button>
+                                <button type="reset" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Usuário -->
+                    <div id="tab-usuario" class="tab-content">
+                        <form class="cadastro-form" id="usuarioForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="usuarioNome">Nome</label>
+                                    <input type="text" id="usuarioNome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usuarioEmail">E-mail</label>
+                                    <input type="email" id="usuarioEmail" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="usuarioTipo">Tipo</label>
+                                    <select id="usuarioTipo" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="admin">Administrador</option>
+                                        <option value="comum">Comum</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="usuarioSenha">Senha</label>
+                                    <input type="password" id="usuarioSenha" required>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Salvar
+                                </button>
+                                <button type="reset" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Máquina -->
+                    <div id="tab-maquina" class="tab-content">
+                        <form class="cadastro-form" id="maquinaForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="maquinaNome">Nome</label>
+                                    <input type="text" id="maquinaNome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="maquinaSo">Sistema Operacional</label>
+                                    <input type="text" id="maquinaSo" required>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="maquinaLocalizacao">Localização</label>
+                                    <input type="text" id="maquinaLocalizacao" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="maquinaKm">KM</label>
+                                    <input type="number" id="maquinaKm" step="0.1">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Salvar
+                                </button>
+                                <button type="reset" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+
+                    <!-- Componente -->
+                    <div id="tab-componente" class="tab-content">
+                        <form class="cadastro-form" id="componenteForm">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="componenteNome">Nome</label>
+                                    <input type="text" id="componenteNome" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="componenteTipo">Tipo</label>
+                                    <select id="componenteTipo" required>
+                                        <option value="">Selecione...</option>
+                                        <option value="cpu">CPU</option>
+                                        <option value="memoria">Memória</option>
+                                        <option value="disco">Disco</option>
+                                        <option value="rede">Rede</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label for="componenteUnidade">Unidade</label>
+                                    <input type="text" id="componenteUnidade" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="componenteLimite">Limite Crítico</label>
+                                    <input type="number" id="componenteLimite" step="0.1">
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i>
+                                    Salvar
+                                </button>
+                                <button type="reset" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i>
+                                    Cancelar
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Histórico -->
+            <section id="view-historico" class="view">
+                <div class="view-header">
+                    <h1 class="view-title">
+                        <i class="fas fa-clock-rotate-left"></i>
+                        Histórico
+                    </h1>
+                </div>
+
+                <!-- Filtros de Período -->
+                <div class="filters-section">
+                    <div class="filter-group">
+                        <label for="historicoPeriodo">Período</label>
+                        <select id="historicoPeriodo">
+                            <option value="5min">Últimos 5 minutos</option>
+                            <option value="1h" selected>Última 1 hora</option>
+                            <option value="24h">Últimas 24 horas</option>
+                            <option value="custom">Personalizado</option>
+                        </select>
+                    </div>
+                    <div class="filter-group custom-period" id="customPeriodInputs" style="display: none;">
+                        <div class="period-inputs">
+                            <div class="period-input">
+                                <label for="historicoInicio">Início</label>
+                                <input type="datetime-local" id="historicoInicio">
+                            </div>
+                            <div class="period-input">
+                                <label for="historicoFim">Fim</label>
+                                <input type="datetime-local" id="historicoFim">
+                            </div>
+                        </div>
+                    </div>
+                    <button id="aplicarFiltroHistorico" class="btn btn-primary">
+                        <i class="fas fa-filter"></i>
+                        Aplicar Filtro
+                    </button>
+                </div>
+
+                <!-- Gráfico de Médias -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <h3 class="chart-title">
+                            <i class="fas fa-chart-area"></i>
+                            Médias Agregadas
+                        </h3>
+                    </div>
+                    <div class="chart-content">
+                        <canvas id="historicalChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- Tabela de Ocorrências -->
+                <div class="table-section">
+                    <div class="table-header">
+                        <h3 class="table-title">
+                            <i class="fas fa-list"></i>
+                            Ocorrências
+                        </h3>
+                        <div class="table-actions">
+                            <button id="exportHistoricoCsv" class="btn btn-export">
+                                <i class="fas fa-download"></i>
+                                Exportar CSV
+                            </button>
+                        </div>
+                    </div>
+                    <div class="table-container">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th><i class="fas fa-clock"></i> Período</th>
+                                    <th><i class="fas fa-microchip"></i> CPU Média (%)</th>
+                                    <th><i class="fas fa-memory"></i> Memória Média (%)</th>
+                                    <th><i class="fas fa-hdd"></i> Disco Médio (%)</th>
+                                    <th><i class="fas fa-network-wired"></i> Rede Média (Mbps)</th>
+                                </tr>
+                            </thead>
+                            <tbody id="historicoTableBody">
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="../js/js_if.js"></script>
+</body>
+
+</html>
