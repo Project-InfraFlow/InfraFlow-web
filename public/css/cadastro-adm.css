@@ -107,11 +107,11 @@ body{
 
 .infos-gerais{
     width: 95%;
-    background-color: pink;
     height: 500px;
     margin: 1%;
     margin-left: 2.5%;
     margin-top: 3%;
+    display: flex;
 }
 
 .cadastro-empresas{
@@ -123,6 +123,15 @@ body{
     border-right: #2c6278 3px solid;
 }
 
+.lista-empresas {
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Poppins', sans-serif;
+
+
+}
 .titulo-cadastro{
     width: 100%;
     height: 8%;
@@ -240,4 +249,42 @@ label{
     font-family: "poppins", sans-serif;
     font-weight: 600;
     margin-top: 2%;
+}
+
+.barra-pesquisa{
+    width: 100%;
+    height: 8%;
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    font-size: larger;
+    font-weight: 600;
+    padding-left: 3%;
+    
+}
+
+.ipt-barra {
+    width: 80%;
+    height: 28px;
+    border: #3b829f 2px solid;
+    border-radius: 13px;
+    background-color: transparent;
+    padding-left: 2%;
+    outline: none;
+    margin-left: 2%;
+}
+.btn-search{
+    background-color: transparent;
+    border: none;
+}
+
+.btn-search i {
+    font-size: 25px;
+}
+
+.titulo-itens {
+    display: flex;
+    width: 100%;
+    height: 5%;
+    justify-content: space-around;
 }

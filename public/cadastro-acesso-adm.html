@@ -55,15 +55,15 @@
                 <div class="ipts-cadastro">
                     <div class="lado1">
                         <label for="">Razão social</label>
-                        <input type="text" class="ipt_infos">
+                        <input type="text" class="ipt_infos" id="razao_social">
                         <label for="">Telefone</label>
-                        <input type="text" placeholder="(11) 4004-5555" class="ipt_infos">
+                        <input type="text" placeholder="(11) 4004-5555" class="ipt_infos" id="telefone">
                     </div>
                     <div class="lado2">
                         <label for="">CNPJ</label>
-                        <input type="text" placeholder="45.646.498/0001-00" class="ipt_infos">
+                        <input type="text" placeholder="45.646.498/0001-00" class="ipt_infos" id="cnpj">
                         <label for="">E-mail</label>
-                        <input type="text" placeholder="InfraFlow@contato.com" class="ipt_infos">
+                        <input type="text" placeholder="InfraFlow@contato.com" class="ipt_infos" id="email_empresa">
                     </div>
                 </div>
 
@@ -75,10 +75,10 @@
                 <div class="ipts-cadastro1">
                     <div class="lado1">
                         <label for="">Responsável Técnico</label>
-                        <input type="text" class="ipt_infos">
+                        <input type="text" class="ipt_infos" id="resp_user">
 
                         <label for="">Permissões</label>
-                        <select name="" id="" class="ipt_infos">
+                        <select name="" id="tipo_permissao" class="ipt_infos">
                             <option value="0">Selecione uma opção</option>
                             <option value="1">Administrador</option>
                             <option value="2">Comum</option>
@@ -95,7 +95,7 @@
                     </div>
                     <div class="lado2">
                         <label for="">E-mail</label>
-                        <input type="text" placeholder="usuario@empresa.com.br" class="ipt_infos">
+                        <input type="text" placeholder="usuario@empresa.com.br" class="ipt_infos" id="email_user">
 
                         <label for="senha">Senha</label>
                         <div class="password-wrapper">
@@ -107,6 +107,33 @@
                             <button>Cadastrar nova empresa</button>
                         </div>
                     </div>
+                </div>
+
+                
+            </div>
+
+            <div class="lista-empresas">
+
+                 <div class="titulo-cadastro">
+                   <i class="bi bi-eye-fill"></i>
+                    <p>Visão geral empresas e responsáveis</p>
+                </div>
+
+                <div class="barra-pesquisa">
+                    <button class="btn-search"><i class="bi bi-search"></i></button>
+                    <input type="text" class="ipt-barra" placeholder="Encontrar empresa">
+                </div>
+
+                <div class="titulo-itens">
+                   <p class="item-pesquisa">ID</p>
+                   <p class="item-pesquisa">Nome</p>
+                   <p class="item-pesquisa">CNPJ</p>
+                   <p class="item-pesquisa">Resp.</p>
+                   <p class="item-pesquisa">Status</p>
+                </div>
+
+                <div class="empresas-listadas">
+
                 </div>
             </div>
         </div>
@@ -145,4 +172,136 @@
             toggle.classList.add('fa-eye');
         }
     });
+
+    //INICIANDO MEXER COM O BACK-END DE CADASTRO 
+
+    // Array para armazenar empresas cadastradas para validação de código de ativação 
+  let listaEmpresasCadastradas = [];
+
+  function cadastrar() {
+    // aguardar();
+
+    //Recupere o valor da nova input pelo nome do id
+    // Agora vá para o método fetch logo abaixo
+    var razaoVar = razao_social.value;
+    var CNPJVar = cnpj.value;
+    var emailEmpresaVar = email_empresa.value;
+    var telefoneVar = telefone.value; 
+
+    var tecnicoVar = resp_user.value;   
+    var emailUserVar = email_user.value;
+    var tokenVar = token.value; 
+    var senhaVar = senha.value;
+  
+    var idEmpresaVincular
+
+    // Verificando se há algum campo em branco
+    if (
+      razaoVar == "" ||
+      CNPJVar == "" ||
+      tecnicoVar == "" ||
+      senhaVar == "" || 
+      emailUserVar == "" || 
+      tokenVar == "" ||
+      senhaVar == "" 
+    ) {
+      cardErro.style.display = "block";
+      mensagem_erro.innerHTML =
+        "(Mensagem de erro para todos os campos em branco)";
+
+      finalizarAguardar();
+      return false;
+    } else if (emailEmpresaVar == "" && telefoneVar == ""){
+         cardErro.style.display = "block";
+      mensagem_erro.innerHTML =
+        "(Insira ao menos um meio de contato)";
+
+      finalizarAguardar();
+      return false;
+    }
+    
+    else {
+      setInterval(sumirMensagem, 5000);
+    }
+
+    // // Verificando se o código de ativação é de alguma empresa cadastrada
+    // for (let i = 0; i < listaEmpresasCadastradas.length; i++) {
+    //   if (listaEmpresasCadastradas[i].codigo_ativacao == codigoVar) {
+    //     idEmpresaVincular = listaEmpresasCadastradas[i].id
+    //     console.log("Código de ativação válido.");
+    //     break;
+    //   } else {
+    //     cardErro.style.display = "block";
+    //     mensagem_erro.innerHTML = "(Mensagem de erro para código inválido)";
+    //     finalizarAguardar();
+    //   }
+    // }
+
+    // Enviando o valor da nova input
+    fetch("/usuarios/cadastrar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        // crie um atributo que recebe o valor recuperado aqui
+        // Agora vá para o arquivo routes/usuario.js
+        razaoServer: razaoVar,
+        CNPJServer: CNPJVar,
+        tecnicoServer: tecnicoVar,
+        emailServer: emailVar,
+        senhaServer: senhaVar,
+        idEmpresaVincularServer: idEmpresaVincular
+      }),
+    })
+      .then(function (resposta) {
+        console.log("resposta: ", resposta);
+
+        if (resposta.ok) {
+          cardErro.style.display = "block";
+
+          mensagem_erro.innerHTML =
+            "Cadastro realizado com sucesso! Redirecionando para tela de Login...";
+
+          setTimeout(() => {
+            window.location = "login.html";
+          }, "2000");
+
+          limparFormulario();
+          finalizarAguardar();
+        } else {
+          throw "Houve um erro ao tentar realizar o cadastro!";
+        }
+      })
+      .catch(function (resposta) {
+        console.log(`#ERRO: ${resposta}`);
+        finalizarAguardar();
+      });
+
+    return false;
+  }
+
+  // Listando empresas cadastradas 
+  function listar() {
+    fetch("/empresas/listar", {
+      method: "GET",
+    })
+      .then(function (resposta) {
+        resposta.json().then((empresas) => {
+          empresas.forEach((empresa) => {
+            listaEmpresasCadastradas.push(empresa);
+
+            console.log("listaEmpresasCadastradas")
+            console.log(listaEmpresasCadastradas[0].codigo_ativacao)
+          });
+        });
+      })
+      .catch(function (resposta) {
+        console.log(`#ERRO: ${resposta}`);
+      });
+  }
+
+  function sumirMensagem() {
+    cardErro.style.display = "none";
+  }
 </script>
