@@ -119,6 +119,10 @@ CREATE TABLE IF NOT EXISTS alerta (
     CONSTRAINT fk_alerta_parametro FOREIGN KEY (fk_parametro_alerta) REFERENCES parametro_alerta(id_parametro_alerta)
 );
 
+INSERT INTO tipo_usuario VALUES 
+(default, "administrador", "acesso geral"),
+(default, "comum", "acesso restrito");
+
 -- ATUALIZADO 07/10, 20:55 NICOLLY
 
 -- =============================================================================================================================================
