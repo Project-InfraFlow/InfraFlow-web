@@ -50,40 +50,38 @@ function autenticar(req, res) {
 }
 
 function cadastrar(req, res) {
-    // Crie uma variável que vá recuperar os valores do arquivo cadastro.html
-    var nome = req.body.nomeServer;
-    var email = req.body.emailServer;
+    var razao = req.body.razaoServer;
+    var cnpj = req.body.CNPJServer;
+    var emailEmpresa = req.body.emailEmpresaServer;
+    var telefone = req.body.telefoneServer;
+    var tecnico = req.body.tecnicoServer; 
+    var emailUser = req.body.emailUserServer;
     var senha = req.body.senhaServer;
-    var fk_token_empresa = req.body.idEmpresaVincularServer;
+    var token = req.body.tokenServer; 
 
-    // Faça as validações dos valores
-    if (nome == undefined) {
-         res.status(400).send("Seu nome está undefined!");
-        } else if (email == undefined) {
-        res.status(400).send("Seu email está undefined!");
+    // Validações
+    if (razao == undefined) {
+        res.status(400).send("A razão social está undefined!");
+    } else if (cnpj == undefined) {
+        res.status(400).send("O CNPJ está undefined!");
     } else if (senha == undefined) {
-        res.status(400).send("Sua senha está undefined!");
-    } 
-    else if (fk_token_empresa == undefined) {
-         res.status(400).send("Sua empresa a vincular está undefined!");
-        } else {
-
-        // Passe os valores como parâmetro e vá para o arquivo usuarioModel.js
-        usuarioModel.cadastrar(nome, email, senha, fk_token_empresa)
-            .then(
-                function (resultado) {
-                    res.json(resultado);
-                }
-            ).catch(
-                function (erro) {
-                    console.log(erro);
-                    console.log(
-                        "\nHouve um erro ao realizar o cadastro! Erro: ",
-                        erro.sqlMessage
-                    );
-                    res.status(500).json(erro.sqlMessage);
-                }
-            );
+        res.status(400).send("A senha está undefined!");
+    } else if (emailUser == undefined) {
+        res.status(400).send("O e-mail do usuário está undefined!");
+    } else if ((emailEmpresa == undefined || emailEmpresa.trim() === "") && 
+               (telefone == undefined || telefone.trim() === "")) {
+        res.status(400).send("É necessário preencher pelo menos o e-mail ou o telefone da empresa!");
+    } else {
+       usuarioModel.cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser, senha, token)
+            .then(function (resultado) {
+                res.json(resultado)
+                
+            })
+            .catch(function (erro) {
+                console.log(erro);
+                console.log("\nHouve um erro ao realizar o cadastro! Erro: ", erro.sqlMessage);
+                res.status(500).json(erro.sqlMessage);
+            });
     }
 }
 

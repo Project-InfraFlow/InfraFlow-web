@@ -1,35 +1,45 @@
-var database = require("../database/config")
+var database = require("../database/config");
 
-function autenticar(email, senha) {
-    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function entrar(): ", email, senha)
-   var instrucaoSql = `
-    SELECT 
-        idUsuario     AS id_usuario,
-        nome, 
-        email, 
-        senha, 
-        tokenEmpresa  AS empresaId
-    FROM Usuario 
-    WHERE email = '${email}' AND senha = '${senha}';`;
-    console.log("Executando a instrução SQL: \n" + instrucaoSql);
-    return database.executar(instrucaoSql);
-}
+async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser, senha, token) {
+    console.log("Iniciando processo de cadastro completo...");
 
-// Coloque os mesmos parâmetros aqui. Vá para a var instrucaoSql
-function cadastrar(nome, email, senha, fk_token_empresa, fk_id_tipo_usuario = 1) {
-    console.log("ACESSEI O USUARIO MODEL \n \n\t\t >> Se aqui der erro de 'Error: connect ECONNREFUSED',\n \t\t >> verifique suas credenciais de acesso ao banco\n \t\t >> e se o servidor de seu BD está rodando corretamente. \n\n function cadastrar():",nome, email, senha, fk_token_empresa);
-    
-    // Insira exatamente a query do banco aqui, lembrando da nomenclatura exata nos valores
-    //  e na ordem de inserção dos dados.
-  var instrucaoSql = `
-        INSERT INTO Usuario (tokenEmpresa, nome, email, senha) 
-        VALUES (${fk_token_empresa}, '${nome}', '${email}', '${senha}');
-    `;
-    console.log("Executando a instrução SQL: \n" + instrucaoSql);
-    return database.executar(instrucaoSql);
+    try {
+        let insertContato = `
+            INSERT INTO tipo_contato (telefone, email)
+            VALUES ('${telefone}', '${emailEmpresa}');
+        `;
+        let resultadoContato = await database.executar(insertContato);
+        let idTipoContato = resultadoContato.insertId;
+
+        let insertEmpresa = `
+            INSERT INTO empresa (razao_social, cnpj, status, fk_tipo_contato)
+            VALUES ('${razao}', '${cnpj}', 1, ${idTipoContato});
+        `;
+        let resultadoEmpresa = await database.executar(insertEmpresa);
+        let idEmpresa = resultadoEmpresa.insertId;
+
+        let insertUsuario = `
+            INSERT INTO usuario (nome, email, senha, fk_id_tipo_usuario, fk_empresa)
+            VALUES ('${tecnico}', '${emailUser}', '${senha}', 2, ${idEmpresa});
+        `;
+        let resultadoUsuario = await database.executar(insertUsuario);
+        let idUsuario = resultadoUsuario.insertId;
+
+        let insertToken = `
+            INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_usuario)
+            VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idUsuario});
+        `;
+        await database.executar(insertToken);
+
+        console.log("Cadastro concluído com sucesso!");
+        return { mensagem: "Cadastro completo realizado com sucesso!", idUsuario: idUsuario };
+
+    } catch (erro) {
+        console.log("Erro ao cadastrar:", erro.sqlMessage || erro);
+        throw erro;
+    }
 }
 
 module.exports = {
-    autenticar,
     cadastrar
 };

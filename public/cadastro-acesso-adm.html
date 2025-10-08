@@ -5,7 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="stylesheet" href="../public/css/cadastro-adm.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link
@@ -15,6 +14,8 @@
 
     <link rel="icon" href="./assets/icon/logo.png">
     <link rel="preconnect" href="https://fonts.gstatic.com">
+
+    <link rel="stylesheet" href="./css/cadastro-adm.css">
 
     <title>Acesso Administrador | Cadastro de empresas</title>
 </head>
@@ -99,12 +100,12 @@
 
                         <label for="senha">Senha</label>
                         <div class="password-wrapper">
-                            <input type="password" id="senha" class="ipt_infos" placeholder="Digite sua senha">
+                            <input type="password" id="senha_senha" class="ipt_infos" placeholder="Digite sua senha">
                             <i class="fa fa-eye" id="toggleSenha"></i>
                         </div>
 
                         <div class="btn-cadastrar">
-                            <button>Cadastrar nova empresa</button>
+                            <button onclick="cadastrar()">Cadastrar nova empresa</button>
                         </div>
                     </div>
                 </div>
@@ -158,7 +159,7 @@
         document.getElementById("token").value = token;
     });
 
-    const senha = document.getElementById('senha');
+    const senha = document.getElementById('senha_senha');
     const toggle = document.getElementById('toggleSenha');
 
     toggle.addEventListener('click', () => {
@@ -191,9 +192,7 @@
     var tecnicoVar = resp_user.value;   
     var emailUserVar = email_user.value;
     var tokenVar = token.value; 
-    var senhaVar = senha.value;
-  
-    var idEmpresaVincular
+    var senhaVar = senha_senha.value;
 
     // Verificando se há algum campo em branco
     if (
@@ -255,14 +254,14 @@
         emailUserServer: emailUserVar,
         tokenServer :  tokenVar, 
         senhaServer: senhaVar,
-        idEmpresaVincularServer: idEmpresaVincular
       }),
     })
-      .then(function (resposta) {
-        console.log("resposta: ", resposta);
+      .then(async resposta => {
+        var migramos = await resposta.json()
+
+        console.log("testando..." + migramos)
 
         if (resposta.ok) {
-          cardErro.style.display = "block";
 
           mensagem_erro.innerHTML =
             "Cadastro realizado com sucesso! Redirecionando para tela de Login...";
@@ -271,15 +270,14 @@
             window.location = "login.html";
           }, "2000");
 
-          limparFormulario();
-          finalizarAguardar();
+         
         } else {
           throw "Houve um erro ao tentar realizar o cadastro!";
         }
       })
       .catch(function (resposta) {
         console.log(`#ERRO: ${resposta}`);
-        finalizarAguardar();
+      
       });
 
     return false;
