@@ -85,7 +85,19 @@ function cadastrar(req, res) {
     }
 }
 
+function listarEmpresas(req, res) {
+
+    usuarioModel.listarEmpresas()
+        .then(async resultado => {
+            if (resultado.length > 0) {
+                res.status(200).json(resultado)
+                console.log('retorno das empresas', resultado[0].listarEmpresas)
+            }
+        })
+}
+
 module.exports = {
     autenticar,
-    cadastrar
+    cadastrar, 
+    listarEmpresas
 }

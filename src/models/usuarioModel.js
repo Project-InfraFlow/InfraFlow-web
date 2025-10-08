@@ -40,6 +40,23 @@ async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser
     }
 }
 
+function listarEmpresas() {
+    var instrucaoSql = `
+      SELECT e.id_empresa, 
+        e.razao_social, 
+        e.cnpj,  
+        u.nome, 
+			CASE 
+			WHEN e.status = 1 THEN 'Ativo' 
+			ELSE 'Inativo' 
+			END AS status
+        FROM empresa as e
+        JOIN usuario as u 
+        ON e.id_empresa = u.fk_empresa;`
+    return database.executar(instrucaoSql);
+}
+
 module.exports = {
-    cadastrar
+    cadastrar, 
+    listarEmpresas
 };

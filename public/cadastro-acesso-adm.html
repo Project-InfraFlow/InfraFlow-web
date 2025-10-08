@@ -20,7 +20,7 @@
     <title>Acesso Administrador | Cadastro de empresas</title>
 </head>
 
-<body>
+<body onload="carregarPage()">
     <div class="geral">
         <nav class="navbar">
             <div class="nav-links">
@@ -110,13 +110,13 @@
                     </div>
                 </div>
 
-                
+
             </div>
 
             <div class="lista-empresas">
 
-                 <div class="titulo-cadastro">
-                   <i class="bi bi-eye-fill"></i>
+                <div class="titulo-cadastro">
+                    <i class="bi bi-eye-fill"></i>
                     <p>Visão geral empresas e responsáveis</p>
                 </div>
 
@@ -126,15 +126,15 @@
                 </div>
 
                 <div class="titulo-itens">
-                   <p class="item-pesquisa">ID</p>
-                   <p class="item-pesquisa">Nome</p>
-                   <p class="item-pesquisa">CNPJ</p>
-                   <p class="item-pesquisa">Resp.</p>
-                   <p class="item-pesquisa">Status</p>
+                    <p class="item-pesquisa">ID</p>
+                    <p class="item-pesquisa">Nome</p>
+                    <p class="item-pesquisa">CNPJ</p>
+                    <p class="item-pesquisa">Resp.</p>
+                    <p class="item-pesquisa">Status</p>
                 </div>
 
                 <div class="empresas-listadas">
-
+                    <div class="user-infos" id="txt_users"></div>
                 </div>
             </div>
         </div>
@@ -177,133 +177,137 @@
     //INICIANDO MEXER COM O BACK-END DE CADASTRO 
 
     // Array para armazenar empresas cadastradas para validação de código de ativação 
-  let listaEmpresasCadastradas = [];
+    let listaEmpresasCadastradas = [];
 
-  function cadastrar() {
-    // aguardar();
+    function cadastrar() {
+        // aguardar();
 
-    //Recupere o valor da nova input pelo nome do id
-    // Agora vá para o método fetch logo abaixo
-    var razaoVar = razao_social.value;
-    var CNPJVar = cnpj.value;
-    var emailEmpresaVar = email_empresa.value;
-    var telefoneVar = telefone.value; 
+        //Recupere o valor da nova input pelo nome do id
+        // Agora vá para o método fetch logo abaixo
+        var razaoVar = razao_social.value;
+        var CNPJVar = cnpj.value;
+        var emailEmpresaVar = email_empresa.value;
+        var telefoneVar = telefone.value;
 
-    var tecnicoVar = resp_user.value;   
-    var emailUserVar = email_user.value;
-    var tokenVar = token.value; 
-    var senhaVar = senha_senha.value;
+        var tecnicoVar = resp_user.value;
+        var emailUserVar = email_user.value;
+        var tokenVar = token.value;
+        var senhaVar = senha_senha.value;
 
-    // Verificando se há algum campo em branco
-    if (
-      razaoVar == "" ||
-      CNPJVar == "" ||
-      tecnicoVar == "" ||
-      senhaVar == "" || 
-      emailUserVar == "" || 
-      tokenVar == "" ||
-      senhaVar == "" 
-    ) {
-      cardErro.style.display = "block";
-      mensagem_erro.innerHTML =
-        "(Mensagem de erro para todos os campos em branco)";
+        // Verificando se há algum campo em branco
+        if (
+            razaoVar == "" ||
+            CNPJVar == "" ||
+            tecnicoVar == "" ||
+            senhaVar == "" ||
+            emailUserVar == "" ||
+            tokenVar == "" ||
+            senhaVar == ""
+        ) {
+            cardErro.style.display = "block";
+            mensagem_erro.innerHTML =
+                "(Mensagem de erro para todos os campos em branco)";
 
-      finalizarAguardar();
-      return false;
-    } else if (emailEmpresaVar == "" && telefoneVar == ""){
-         cardErro.style.display = "block";
-      mensagem_erro.innerHTML =
-        "(Insira ao menos um meio de contato)";
+            finalizarAguardar();
+            return false;
+        } else if (emailEmpresaVar == "" && telefoneVar == "") {
+            cardErro.style.display = "block";
+            alert("Insira ao menos um meio de contato da empresa (E-mail ou telefone)")
 
-      finalizarAguardar();
-      return false;
-    }
-    
-    else {
-      setInterval(sumirMensagem, 5000);
-    }
-
-    // // Verificando se o código de ativação é de alguma empresa cadastrada
-    // for (let i = 0; i < listaEmpresasCadastradas.length; i++) {
-    //   if (listaEmpresasCadastradas[i].codigo_ativacao == codigoVar) {
-    //     idEmpresaVincular = listaEmpresasCadastradas[i].id
-    //     console.log("Código de ativação válido.");
-    //     break;
-    //   } else {
-    //     cardErro.style.display = "block";
-    //     mensagem_erro.innerHTML = "(Mensagem de erro para código inválido)";
-    //     finalizarAguardar();
-    //   }
-    // }
-
-    // Enviando o valor da nova input
-    fetch("/usuarios/cadastrar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        // crie um atributo que recebe o valor recuperado aqui
-        // Agora vá para o arquivo routes/usuario.js
-        razaoServer: razaoVar,
-        CNPJServer: CNPJVar,
-        emailEmpresaServer: emailEmpresaVar,
-        telefoneServer : telefoneVar, 
-        
-        tecnicoServer: tecnicoVar,
-        emailUserServer: emailUserVar,
-        tokenServer :  tokenVar, 
-        senhaServer: senhaVar,
-      }),
-    })
-      .then(async resposta => {
-        var migramos = await resposta.json()
-
-        console.log("testando..." + migramos)
-
-        if (resposta.ok) {
-
-          mensagem_erro.innerHTML =
-            "Cadastro realizado com sucesso! Redirecionando para tela de Login...";
-
-          setTimeout(() => {
-            window.location = "login.html";
-          }, "2000");
-
-         
-        } else {
-          throw "Houve um erro ao tentar realizar o cadastro!";
+            finalizarAguardar();
+            return false;
         }
-      })
-      .catch(function (resposta) {
-        console.log(`#ERRO: ${resposta}`);
-      
-      });
 
-    return false;
-  }
+        else {
+            setInterval(sumirMensagem, 5000);
+        }
 
-  // Listando empresas cadastradas 
-//   function listar() {
-//     fetch("/empresas/listar", {
-//       method: "GET",
-//     })
-//       .then(function (resposta) {
-//         resposta.json().then((empresas) => {
-//           empresas.forEach((empresa) => {
-//             listaEmpresasCadastradas.push(empresa);
+       
+        fetch("/usuarios/cadastrar", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                // crie um atributo que recebe o valor recuperado aqui
+                // Agora vá para o arquivo routes/usuario.js
+                razaoServer: razaoVar,
+                CNPJServer: CNPJVar,
+                emailEmpresaServer: emailEmpresaVar,
+                telefoneServer: telefoneVar,
 
-//             console.log("listaEmpresasCadastradas")
-//             console.log(listaEmpresasCadastradas[0].codigo_ativacao)
-//           });
-//         });
-//       })
-//       .catch(function (resposta) {
-//         console.log(`#ERRO: ${resposta}`);
-//       });
-//   }
+                tecnicoServer: tecnicoVar,
+                emailUserServer: emailUserVar,
+                tokenServer: tokenVar,
+                senhaServer: senhaVar,
+            }),
+        })
+            .then(async resposta => {
+                var migramos = await resposta.json()
 
-  function sumirMensagem() {
-    cardErro.style.display = "none";
-  }
+                console.log("testando..." + migramos)
+
+                if (resposta.ok) {
+
+                    alert("Empresa cadastrada com sucesso!")
+
+                    razao_social.value = "";
+                    cnpj.value = "";
+                    email_empresa.value = "";
+                    telefone.value = "";
+
+                    resp_user.value = "";
+                    email_user.value = "";
+                    token.value = "";
+                    senha_senha.value = "";
+
+                    //   setTimeout(() => {
+                    //     window.location = "login.html";
+                    //   }, "2000");
+
+                } else {
+                    alert("Houve um erro ao tentar realizar o cadastro!");
+                }
+            })
+            .catch(function (resposta) {
+                console.log(`#ERRO: ${resposta}`);
+
+            });
+
+        return false;
+    }
+
+
+
+    function sumirMensagem() {
+        cardErro.style.display = "none";
+    }
+
+    function listarEmpresas() {
+    fetch('/usuarios/listarEmpresas', {
+        method: "GET"
+    }).then(async resposta => {
+        let empresasGerais = await resposta.json();
+
+        var divUserInfos = document.getElementById('txt_users');
+
+        for (let i = empresasGerais.length - 1; i >= 0; i--) {
+            var txt_users = `
+                <div class="linha-empresa">
+                    <p class="item-linha">${empresasGerais[i].id_empresa}</p>
+                    <p class="item-linha">${empresasGerais[i].razao_social}</p>
+                    <p class="item-linha">${empresasGerais[i].cnpj}</p>
+                    <p class="item-linha">${empresasGerais[i].nome}</p>
+                    <p class="item-linha">${empresasGerais[i].status}</p>
+                </div>
+            `;
+
+            divUserInfos.innerHTML += txt_users;
+        }
+    });
+}
+
+    function carregarPage() {
+        listarEmpresas()
+    }
 </script>

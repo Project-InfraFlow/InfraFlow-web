@@ -129,8 +129,8 @@ body{
     display: flex;
     flex-direction: column;
     font-family: 'Poppins', sans-serif;
-
-
+    justify-content: center;
+    
 }
 .titulo-cadastro{
     width: 100%;
@@ -287,4 +287,68 @@ label{
     width: 100%;
     height: 5%;
     justify-content: space-around;
+}
+
+.empresas-listadas{
+    width: 100%;
+    height: 80%;
+    align-self: center;
+    overflow-y: auto;
+    margin-top: 3%;
+}
+
+.titulo-itens {
+    display: flex;
+    color: black;
+    font-weight: bold;
+}
+
+.item-pesquisa {
+    flex: 1;
+    padding: 8px;
+}
+
+.linha-empresa {
+    display: flex;
+    border-bottom: 1px solid #ccc;
+}
+
+.item-linha {
+    flex: 1;
+    padding: 8px;
+    word-break: break-word;
+}
+
+
+.linha-empresa:nth-child(even) {
+    background-color: #ffffff; /* bisque */
+}
+
+.linha-empresa:nth-child(odd) {
+    background-color: #f4f4f4; /* wheat */
+}
+
+
+.titulo-itens p:nth-child(1),
+.linha-empresa p:nth-child(1) { flex: 0.4; text-align: center; }  /* ID */
+
+.titulo-itens p:nth-child(2),
+.linha-empresa p:nth-child(2) { flex: 1.6; }  /* Nome */
+
+.titulo-itens p:nth-child(3),
+.linha-empresa p:nth-child(3) { flex: 2; }    /* CNPJ */
+
+.titulo-itens p:nth-child(4),
+.linha-empresa p:nth-child(4) { flex: 1.5; }  /* Resp. */
+
+.titulo-itens p:nth-child(5),
+.linha-empresa p:nth-child(5) { flex: 0.6; text-align: center; }  /* Status */
+
+
+.titulo-itens .acoes,
+.linha-empresa .acoes {
+    flex: 0.4;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
