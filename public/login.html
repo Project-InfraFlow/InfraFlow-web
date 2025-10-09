@@ -1,163 +1,143 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html lang="pt-br">
 
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>InfraFlow | Login</title>
-  <link rel="stylesheet" href="./css/estilo.css" />
-  <link rel="icon" href="./assets/icon/logo.png" />
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Infraflow | Login</title>
+
+  <script src="./js/sessao.js"></script>
+
+  <link rel="stylesheet" href="./css/estilo.css">
+  <link rel="icon" href="./assets/icon/favicon2.ico">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
 </head>
 
 <body>
   <div class="container">
     <div class="login-box">
       <a href="index.html">
-        <img src="./assets/logoInfraFlow.png" alt="Logo InfraFlow" />
+        <img src="./assets/logoInfraFlow.png" alt="Logo">
       </a>
       <h1>Entrar</h1>
 
       <div class="input-box">
-        <span>E-mail</span>
-        <input type="email" id="email_input" placeholder="example@gmail.com" required />
+        <span>E-mail:</span>
+        <input id="email_input" type="text" placeholder="Login">
       </div>
 
       <div class="input-box">
-        <span>Senha</span>
-        <input id="senha_input" type="password" placeholder="Sua senha" required />
+        <span>Senha:</span>
+        <input id="senha_input" type="password" placeholder="******">
       </div>
 
       <div class="input-box">
         <span>Token</span>
-        <input type="text" id="token_input" placeholder="325535159" />
+        <input type="text" id="token_input" placeholder="325535159">
       </div>
 
-      <div class="checkbox">
-        <input type="checkbox" id="remember" />
-        <label for="remember">Lembrar-me</label>
-      </div>
+      <button type="button" class="btn" onclick="entrar()">Entrar</button>
 
       <div class="forgot-link">
-        <a href="./recuperar-senha.html">Esqueceu a Senha?</a>
+        <a href="esqueci-senha.html">Esqueci minha senha</a>
       </div>
 
-      <button class="btn" id="btnEntrar">Entrar</button>
-
-      <br /><br />
-      <p>Ainda não possui uma conta? <a href="./cadastro.html">Cadastrar</a></p>
-
-      <!-- Card de erro -->
-      <div id="cardErro" style="display:none; color:red; margin-top:10px;">
-        <span id="mensagem_erro"></span>
+      <div class="alerta_erro" style="margin-top:10px;">
+        <div class="card_erro" id="cardErro" style="display:none; color:red;">
+          <span id="mensagem_erro"></span>
+        </div>
       </div>
 
-      <!-- Loader -->
       <div id="div_aguardar" class="loading-div" style="display:none;">
-        <img src="./assets/circle-loading.gif" id="loading-gif" />
+        <img src="./assets/circle-loading.gif" id="loading-gif" alt="Carregando">
       </div>
+
+      <div id="div_erros_login"></div>
     </div>
 
     <div class="right-painel">
-      <img src="./assets/notebook-login.png" alt="Painel" />
+      <img src="./assets/notebook-login.png" alt="Painel">
       <h2>Bem-vindo de volta!</h2>
       <p>Analizar alta disponibilidade de componentes de um controlador pórtico
         garante que as empresas sempre tomem a decisão certa...</p>
     </div>
   </div>
 
-  <script>
-    const emailEl = document.getElementById('email_input');
-    const senhaEl = document.getElementById('senha_input');
-    const tokenEl = document.getElementById('token_input');
-    const rememberEl = document.getElementById('remember');
-    const btnEntrar = document.getElementById('btnEntrar');
-    const cardErro = document.getElementById('cardErro');
-    const mensagemErro = document.getElementById('mensagem_erro');
-    const divAguardar = document.getElementById('div_aguardar');
+</body>
 
-    // Pré-carrega e-mail salvo (lembrar-me)
-    (function hydrateRemember() {
-      const saved = localStorage.getItem('login_email');
-      if (saved) {
-        emailEl.value = saved;
-        rememberEl.checked = true;
-      }
-    })();
+</html>
 
-    function showError(msg) {
-      mensagemErro.textContent = msg || 'Falha no login.';
-      cardErro.style.display = 'block';
-    }
-    function clearError() {
-      mensagemErro.textContent = '';
-      cardErro.style.display = 'none';
-    }
-    function setLoading(on) {
-      divAguardar.style.display = on ? 'block' : 'none';
+<script>
+  function entrar() {
+    aguardar();
+
+    var emailVar = email_input.value;
+    var senhaVar = senha_input.value;
+    var tokenVar = (typeof token_input !== 'undefined' && token_input) ? token_input.value : "";
+
+    if (emailVar == "" || senhaVar == "") {
+      cardErro.style.display = "block";
+      mensagem_erro.innerHTML = "(Mensagem de erro para todos os campos em branco)";
+      finalizarAguardar();
+      return false;
+    } else {
+      setInterval(sumirMensagem, 5000);
     }
 
-    async function entrar() {
-      clearError();
+    console.log("FORM LOGIN: ", emailVar);
+    console.log("FORM SENHA: ", senhaVar);
 
-      const email = (emailEl.value || '').trim();
-      const senha = (senhaEl.value || '');
-      const token = (tokenEl.value || '').trim(); // opcional no front
+    fetch("/usuarios/autenticar", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        emailServer: emailVar,
+        senhaServer: senhaVar
+      })
+    }).then(function (resposta) {
+      console.log("ESTOU NO THEN DO entrar()!");
 
-      if (!email || !senha) {
-        showError('Preencha e-mail e senha.');
-        return;
-      }
+      if (resposta.ok) {
+        console.log(resposta);
 
-      setLoading(true);
+        resposta.json().then(json => {
+          console.log(json);
+          console.log(JSON.stringify(json));
+          sessionStorage.EMAIL_USUARIO = json.email;
+          sessionStorage.NOME_USUARIO = json.nome;
+          sessionStorage.ID_USUARIO = json.id;
+          sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
 
-      try {
-        const resp = await fetch('/usuarios/autenticar', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            emailServer: email,
-            senhaServer: senha
-          })
+          if (tokenVar) {
+            sessionStorage.TOKEN_EMPRESA = tokenVar;
+          }
+
+          setTimeout(function () {
+            window.location = "./dashboard/dashboard.html";
+          }, 1000);
         });
 
-        if (!resp.ok) {
-          const texto = await resp.text();
-          showError(texto || 'Credenciais inválidas.');
-          return;
-        }
-
-        const json = await resp.json();
-
-        // Sessão padrão (mantém compatibilidade)
-        sessionStorage.EMAIL_USUARIO = json.email;
-        sessionStorage.NOME_USUARIO = json.nome;
-        sessionStorage.ID_USUARIO = json.id;
-        sessionStorage.AQUARIOS = JSON.stringify(json.aquarios || []);
-
-        // Guarda o token para uso posterior (não interfere no backend)
-        if (token) sessionStorage.TOKEN_EMPRESA = token;
-
-        // Lembrar-me
-        if (rememberEl.checked) {
-          localStorage.setItem('login_email', email);
-        } else {
-          localStorage.removeItem('login_email');
-        }
-
-        // Mesmo destino da tela original
-        window.location = './dashboard/cards.html';
-      } catch (e) {
-        showError('Erro na conexão com o servidor.');
-      } finally {
-        setLoading(false);
+      } else {
+        console.log("Houve um erro ao tentar realizar o login!");
+        resposta.text().then(texto => {
+          console.error(texto);
+          finalizarAguardar(texto);
+        });
       }
-    }
 
-    btnEntrar.addEventListener('click', entrar);
-    // Enter para submeter
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') entrar();
+    }).catch(function (erro) {
+      console.log(erro);
+      finalizarAguardar("Erro de conexão.");
     });
-  </script>
-</body>
-</html>
+
+    return false;
+  }
+
+  function sumirMensagem() {
+    cardErro.style.display = "none";
+  }
+</script>
