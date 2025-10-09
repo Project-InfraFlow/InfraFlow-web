@@ -1,4 +1,3 @@
-# macOS (arquivos de sistema)
 .DS_Store
 .AppleDouble
 .LSOverride
@@ -9,7 +8,6 @@ Icon?
 .fseventsd
 .apdisk
 
-# Node.js
 node_modules/
 npm-debug.log*
 yarn-debug.log*
@@ -19,13 +17,10 @@ package-lock.json
 yarn.lock
 pnpm-lock.yaml
 
-# Variáveis de ambiente e segredos
-
 *.pem
 *.key
 tokens.json
 
-# Logs
 logs/
 *.log
 *.log.*
@@ -33,7 +28,6 @@ pids
 *.pid
 *.seed
 
-# Builds / cache
 dist/
 build/
 coverage/
@@ -44,14 +38,11 @@ out/
 .next/
 .vercel/
 
-# IDE / editor
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
-
-# O que você pediu explícito
 .github/
 .DS_Store
 DS_Store
