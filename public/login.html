@@ -60,7 +60,7 @@
     <div class="right-painel">
       <img src="./assets/notebook-login.png" alt="Painel">
       <h2>Bem-vindo de volta!</h2>
-      <p>Analizar alta disponibilidade de componentes de um controlador pórtico
+      <p>Analisar a alta disponibilidade de componentes de um controlador pórtico
         garante que as empresas sempre tomem a decisão certa...</p>
     </div>
   </div>
@@ -77,7 +77,7 @@
     var senhaVar = senha_input.value;
     var tokenVar = (typeof token_input !== 'undefined' && token_input) ? token_input.value : "";
 
-    if (emailVar == "" || senhaVar == "") {
+    if (emailVar == "" || senhaVar == "" ) {
       cardErro.style.display = "block";
       mensagem_erro.innerHTML = "(Mensagem de erro para todos os campos em branco)";
       finalizarAguardar();
