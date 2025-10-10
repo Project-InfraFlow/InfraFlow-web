@@ -1192,3 +1192,62 @@ style.textContent = `
     }
 `;
 document.head.appendChild(style);
+
+function criarBotaoSuporte() {
+  const linkBotao = document.createElement('a');
+
+  linkBotao.innerHTML = `
+    <img src="../assets/icon/iconeJira.png" alt="Ícone de Suporte" width="24" height="24" />
+    Suporte
+  `;
+  linkBotao.title = "Acessar o Help Desk do Jira"; 
+  linkBotao.href = "https://infraflow-sptech.atlassian.net/servicedesk/customer/portal/2"; 
+  linkBotao.target = "_blank"; 
+
+  linkBotao.style.cssText = `
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 9999;
+    margin: 0;
+    padding: 12px 24px; 
+    border-radius: 50px; 
+    border: none; 
+    text-decoration: none; 
+    background-color: #0052CC;
+    color: #fff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+    font-weight: 600;
+    font-size: 16px; 
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px; 
+    transition: background-color 0.3s, box-shadow 0.3s, transform 0.2s; 
+  `;
+  
+  linkBotao.onmouseover = () => {
+    linkBotao.style.backgroundColor = '#0065FF'; 
+    linkBotao.style.boxShadow = '0 6px 16px rgba(0, 0, 0, 0.3)';
+  };
+
+  linkBotao.onmouseout = () => {
+    linkBotao.style.backgroundColor = '#0052CC'; 
+    linkBotao.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.25)';
+    linkBotao.style.transform = 'scale(1)';
+  };
+  
+  // Efeito de "clique"
+  linkBotao.onmousedown = () => {
+    linkBotao.style.transform = 'scale(0.98)'; 
+  };
+  
+  linkBotao.onmouseup = () => {
+    linkBotao.style.transform = 'scale(1)';
+  };
+  
+  document.body.appendChild(linkBotao);
+}
+
+criarBotaoSuporte();
