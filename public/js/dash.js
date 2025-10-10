@@ -1,7 +1,7 @@
 // === CONFIGURAÇÃO GLOBAL ===
 const maquina = {
     nome: "INFRA-EDGE-01",
-    so: "Ubuntu 22.04 LTS"
+    so: "Ubuntu 22.04 LTS",
 };
 
 const thresholds = {

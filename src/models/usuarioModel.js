@@ -1,5 +1,14 @@
 var database = require("../database/config");
 
+async function autenticar(email, senha) {
+    var instrucaoSql = `
+        SELECT id_usuario, nome, email, senha
+        FROM usuario
+        WHERE email = '${email}' AND senha = '${senha}';
+    `;
+    return database.executar(instrucaoSql);
+}
+
 async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser, senha, token) {
     console.log("Iniciando processo de cadastro completo...");
 
@@ -57,6 +66,7 @@ function listarEmpresas() {
 }
 
 module.exports = {
+    autenticar,
     cadastrar, 
     listarEmpresas
 };

@@ -71,70 +71,78 @@
 
 <script>
   function entrar() {
-    aguardar();
+    try {
+      aguardar?.();
 
-    var emailVar = email_input.value;
-    var senhaVar = senha_input.value;
-    var tokenVar = (typeof token_input !== 'undefined' && token_input) ? token_input.value : "";
+      var emailVar = email_input.value?.trim();
+      var senhaVar = senha_input.value;
+      var tokenVar = (typeof token_input !== 'undefined' && token_input) ? token_input.value.trim() : "";
 
-    if (emailVar == "" || senhaVar == "" ) {
-      cardErro.style.display = "block";
-      mensagem_erro.innerHTML = "(Mensagem de erro para todos os campos em branco)";
-      finalizarAguardar();
-      return false;
-    } else {
-      setInterval(sumirMensagem, 5000);
-    }
-
-    console.log("FORM LOGIN: ", emailVar);
-    console.log("FORM SENHA: ", senhaVar);
-
-    fetch("/usuarios/autenticar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        emailServer: emailVar,
-        senhaServer: senhaVar
-      })
-    }).then(function (resposta) {
-      console.log("ESTOU NO THEN DO entrar()!");
-
-      if (resposta.ok) {
-        console.log(resposta);
-
-        resposta.json().then(json => {
-          console.log(json);
-          console.log(JSON.stringify(json));
-          sessionStorage.EMAIL_USUARIO = json.email;
-          sessionStorage.NOME_USUARIO = json.nome;
-          sessionStorage.ID_USUARIO = json.id;
-          sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
-
-          if (tokenVar) {
-            sessionStorage.TOKEN_EMPRESA = tokenVar;
-          }
-
-          setTimeout(function () {
-            window.location = "./dashboard/dashboard.html";
-          }, 1000);
-        });
-
+      if (!emailVar || !senhaVar) {
+        cardErro.style.display = "block";
+        mensagem_erro.innerHTML = "Preencha e-mail e senha.";
+        finalizarAguardar?.();
+        return false;
       } else {
-        console.log("Houve um erro ao tentar realizar o login!");
-        resposta.text().then(texto => {
-          console.error(texto);
-          finalizarAguardar(texto);
-        });
+        setInterval(sumirMensagem, 5000);
       }
 
-    }).catch(function (erro) {
-      console.log(erro);
-      finalizarAguardar("Erro de conexão.");
-    });
+      fetch("/usuarios/autenticar", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          email: emailVar,
+          senha: senhaVar,
+          emailServer: emailVar,
+          senhaServer: senhaVar
+        })
+      }).then(function (resposta) {
+        if (resposta.ok) {
+          return resposta.json();
+        } else {
+          return resposta.text().then(texto => {
+            throw new Error(texto || "Houve um erro ao tentar realizar o login!");
+          });
+        }
+      }).then(function (json) {
+        var payload = json.usuario ? json.usuario : json;
 
-    return false;
+        var id = payload.id ?? payload.id_usuario ?? payload.idUser ?? payload.id_usuario_usuario;
+        var nome = payload.nome ?? payload.name;
+        var email = payload.email ?? payload.user ?? emailVar;
+
+        sessionStorage.EMAIL_USUARIO = email;
+        sessionStorage.NOME_USUARIO = nome;
+        sessionStorage.ID_USUARIO = id;
+
+        if (json.aquarios) {
+          sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
+        }
+
+        if (tokenVar) {
+          sessionStorage.TOKEN_EMPRESA = tokenVar;
+        }
+
+        finalizarAguardar?.();
+
+        setTimeout(function () {
+          window.location = "./dashboard/dashboard.html";
+        }, 500);
+      }).catch(function (erro) {
+        finalizarAguardar?.();
+        cardErro.style.display = "block";
+        mensagem_erro.innerHTML = erro.message || "Erro de conexão.";
+      });
+
+      return false;
+    } catch (e) {
+      finalizarAguardar?.();
+      cardErro.style.display = "block";
+      mensagem_erro.innerHTML = "Falha inesperada no login.";
+      return false;
+    }
   }
 
   function sumirMensagem() {
