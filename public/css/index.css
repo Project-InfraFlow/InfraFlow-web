@@ -527,12 +527,12 @@ body {
     transform: scale(10);
   }
   .ag-courses-item_title {
-    min-height: 87px;
+    min-height: 67px;
     overflow: hidden;
     font-weight: 600;
-    font-size: 25px;
+    font-size: 20px;
     color: #FFF;
-  
+    text-align: start;
     z-index: 2;
     position: relative;
   }
@@ -541,11 +541,13 @@ body {
     color: #FFF;
     z-index: 3;
     position: relative;
+    text-align: start;
    
   }
   .ag-courses-item_date {
     font-weight: 500;
     color: #747474;
+    text-align: start;
   
     -webkit-transition: color .5s ease;
     -o-transition: color .5s ease;
