@@ -3,20 +3,19 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  font-family: "Poppins", sans-serif;
+  font-family: "Arial", sans-serif;
 }
 
 body {
   background-color: #fff;
   color: #333;
-  font-family: "Poppins", sans-serif;
 }
 
 /* HEADER */
 .header {
   background-color: #008080;
   padding: 15px 0;
-  position: fixed; 
+  position: fixed;
   width: 100%;
   z-index: 1000;
 }
@@ -64,16 +63,12 @@ body {
   gap: 15px;
 }
 
-
 .btn-outline {
   padding: 8px 18px;
   border-radius: 6px;
   text-decoration: none;
   font-weight: 500;
   transition: 0.3s;
-}
-
-.btn-outline {
   border: 1px solid #fff;
   color: #fff;
 }
@@ -82,6 +77,69 @@ body {
   background-color: #fff;
   color: #008080;
 }
+
+.menu {
+  display: none;
+}
+
+.menu img {
+  height: 40px;
+  margin-top: -10px;
+}
+
+.usuario-img {
+  display: none;
+}
+
+#menu-toggle {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .menu {
+    display: block;
+    cursor: pointer;
+    z-index: 1001;
+  }
+
+  .acoes {
+    display: none;
+  }
+
+  .usuario-img {
+    display: flex;
+  }
+
+  .navbar {
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+    top: 0;
+    right: -100%; /* escondido fora da tela */
+    width: 50%;
+    height: 100vh;
+    background-color: #008080;
+    text-align: left;
+    padding: 90px 40px;
+    gap: 25px;
+    transition: right 0.3s ease;
+  }
+
+  .logo span{
+    display: none;
+  }
+
+  .navbar li a {
+    display: block;
+    font-size: 1.1rem;
+  }
+
+  #menu-toggle:checked + .menu + .navbar {
+    right: 0;
+  }
+
+}
+
 
 /* BANNER */
 .banner {
@@ -141,11 +199,40 @@ body {
 }
 
 .banner-img img {
-  width: 600px;
+  width: 680px;
   border-radius: 6px;
   margin-top: 50px;
 }
 
+@media (max-width: 1024px) {
+  .banner .container {
+    flex-direction: column-reverse;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .banner-texto h1 {
+    font-size: 1.8rem;
+    text-align: center;
+  }
+
+  .banner-texto p {
+    font-size: 1rem;
+    text-align: center;
+  }
+
+  .banner-texto {
+    gap: 10px;
+  }
+
+  .bnt_comece .btn {
+    padding: 10px 30px;
+  }
+
+  .banner-img img {
+    max-width: 100%;
+  }
+}
 
 /* monitoramento */
 
