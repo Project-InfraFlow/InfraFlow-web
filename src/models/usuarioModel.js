@@ -1,11 +1,22 @@
 var database = require("../database/config");
 
-async function autenticar(email, senha) {
+async function autenticar(email, senha, token) {
     var instrucaoSql = `
-        SELECT id_usuario, nome, email, senha
-        FROM usuario
-        WHERE email = '${email}' AND senha = '${senha}';
-    `;
+       SELECT 
+    u.id_usuario,
+    u.nome,
+    u.email,
+    u.senha,
+    e.id_empresa,
+    e.razao_social,
+    t.token
+FROM usuario AS u
+JOIN empresa AS e 
+    ON u.fk_empresa = e.id_empresa
+JOIN token_acesso AS t 
+    ON t.fk_id_empresa = e.id_empresa 
+    WHERE u.email = '${email}' AND u.senha = '${senha}' AND t.token = '${token}';
+    `
     return database.executar(instrucaoSql);
 }
 
@@ -67,6 +78,6 @@ function listarEmpresas() {
 
 module.exports = {
     autenticar,
-    cadastrar, 
+    cadastrar,
     listarEmpresas
 };

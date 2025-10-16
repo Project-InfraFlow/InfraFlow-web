@@ -25,7 +25,7 @@
 
       <div class="input-box">
         <span>E-mail:</span>
-        <input id="email_input" type="text" placeholder="Login">
+        <input id="email_input" type="text" placeholder="Infraflow@contato.com">
       </div>
 
       <div class="input-box">
@@ -35,7 +35,7 @@
 
       <div class="input-box">
         <span>Token</span>
-        <input type="text" id="token_input" placeholder="325535159">
+        <input type="text" id="token_input" placeholder="E3J4V5">
       </div>
 
       <button type="button" class="btn" onclick="entrar()">Entrar</button>
@@ -76,15 +76,37 @@
 
       var emailVar = email_input.value?.trim();
       var senhaVar = senha_input.value;
-      var tokenVar = (typeof token_input !== 'undefined' && token_input) ? token_input.value.trim() : "";
+      var tokenVar = token_input.value;
 
-      if (!emailVar || !senhaVar) {
+      if (!emailVar || !senhaVar || !tokenVar) {
         cardErro.style.display = "block";
-        mensagem_erro.innerHTML = "Preencha e-mail e senha.";
+        mensagem_erro.innerHTML = "Preencha e-mail, senha e token.";
         finalizarAguardar?.();
         return false;
       } else {
         setInterval(sumirMensagem, 5000);
+      }
+
+      //e-mails autorizados como administradores
+      const admins = [
+        "nicollyter@infraflow.com",
+        "edsonfel@infraflow.com",
+        "juliagavi@infraflow.com",
+        "viniciusmelo@infraflow.com",
+        "lukasfar@infraflow.com"
+      ];
+
+      // verifica se o login é de adm
+      if (admins.includes(emailVar) && senhaVar === "Senha@123" && tokenVar === "N1J2V3") {
+        finalizarAguardar?.();
+
+        sessionStorage.EMAIL_USUARIO = emailVar;
+        sessionStorage.NOME_USUARIO = "Administrador";
+        sessionStorage.TOKEN_EMPRESA = tokenVar;
+
+        //página de acesso do admin
+        window.location = "./cadastro-acesso-adm.html";
+        return false;
       }
 
       fetch("/usuarios/autenticar", {
@@ -95,46 +117,52 @@
         body: JSON.stringify({
           email: emailVar,
           senha: senhaVar,
+          token: tokenVar,
+
           emailServer: emailVar,
-          senhaServer: senhaVar
+          senhaServer: senhaVar,
+          tokenServer: tokenVar,
         })
-      }).then(function (resposta) {
-        if (resposta.ok) {
-          return resposta.json();
-        } else {
-          return resposta.text().then(texto => {
-            throw new Error(texto || "Houve um erro ao tentar realizar o login!");
-          });
-        }
-      }).then(function (json) {
-        var payload = json.usuario ? json.usuario : json;
+      })
+        .then(function (resposta) {
+          if (resposta.ok) {
+            return resposta.json();
+          } else {
+            return resposta.text().then(texto => {
+              throw new Error(texto || "Houve um erro ao tentar realizar o login!");
+            });
+          }
+        })
+        .then(function (json) {
+          var payload = json.usuario ? json.usuario : json;
 
-        var id = payload.id ?? payload.id_usuario ?? payload.idUser ?? payload.id_usuario_usuario;
-        var nome = payload.nome ?? payload.name;
-        var email = payload.email ?? payload.user ?? emailVar;
+          var id = payload.id ?? payload.id_usuario ?? payload.idUser ?? payload.id_usuario_usuario;
+          var nome = payload.nome ?? payload.name;
+          var email = payload.email ?? payload.user ?? emailVar;
 
-        sessionStorage.EMAIL_USUARIO = email;
-        sessionStorage.NOME_USUARIO = nome;
-        sessionStorage.ID_USUARIO = id;
+          sessionStorage.EMAIL_USUARIO = email;
+          sessionStorage.NOME_USUARIO = nome;
+          sessionStorage.ID_USUARIO = id;
 
-        if (json.aquarios) {
-          sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
-        }
+          if (json.aquarios) {
+            sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
+          }
 
-        if (tokenVar) {
-          sessionStorage.TOKEN_EMPRESA = tokenVar;
-        }
+          if (tokenVar) {
+            sessionStorage.TOKEN_EMPRESA = tokenVar;
+          }
 
-        finalizarAguardar?.();
+          finalizarAguardar?.();
 
-        setTimeout(function () {
-          window.location = "./dashboard/dashboard.html";
-        }, 500);
-      }).catch(function (erro) {
-        finalizarAguardar?.();
-        cardErro.style.display = "block";
-        mensagem_erro.innerHTML = erro.message || "Erro de conexão.";
-      });
+          setTimeout(function () {
+            window.location = "./dashboard/dashboard.html";
+          }, 500);
+        })
+        .catch(function (erro) {
+          finalizarAguardar?.();
+          cardErro.style.display = "block";
+          mensagem_erro.innerHTML = erro.message || "Erro de conexão.";
+        });
 
       return false;
     } catch (e) {

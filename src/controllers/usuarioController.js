@@ -4,23 +4,27 @@ var aquarioModel = require("../models/aquarioModel");
 function autenticar(req, res) {
     var email = (req.body && (req.body.email || req.body.emailServer)) ? String(req.body.email || req.body.emailServer).trim() : undefined;
     var senha = (req.body && (req.body.senha || req.body.senhaServer)) ? req.body.senha || req.body.senhaServer : undefined;
+    var token = (req.body && (req.body.token || req.body.tokenServer)) ? req.body.token || req.body.tokenServer : undefined;
 
     if (email == undefined || email === "") {
         res.status(400).send("Seu email está undefined!");
     } else if (senha == undefined) {
         res.status(400).send("Sua senha está indefinida!");
+    } else if (token == undefined) {
+        res.status(400).send("Seu token está undefined!");
     } else {
-        usuarioModel.autenticar(email, senha)
+        usuarioModel.autenticar(email, senha, token)
             .then(function (resultadoAutenticar) {
                 if (Array.isArray(resultadoAutenticar) && resultadoAutenticar.length == 1) {
                     res.json({
                         id: resultadoAutenticar[0].id_usuario,
                         email: resultadoAutenticar[0].email,
                         nome: resultadoAutenticar[0].nome,
+                        token: resultadoAutenticar[0].token,
                         aquarios: []
                     });
                 } else if (Array.isArray(resultadoAutenticar) && resultadoAutenticar.length == 0) {
-                    res.status(403).send("Email e/ou senha inválido(s)");
+                    res.status(403).send("Email ou senha ou token inválido(s)");
                 } else {
                     res.status(403).send("Mais de um usuário com o mesmo login e senha!");
                 }
