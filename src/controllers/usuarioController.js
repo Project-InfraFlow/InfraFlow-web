@@ -76,8 +76,34 @@ function listarEmpresas(req, res) {
         })
 }
 
+function cadastrarUser(req, res) {
+    var nome = req.body.nomeServer;
+    var email = req.body.emailUserServer;
+    var tipo_user = req.body.tipoUserServer; 
+    var senha = req.body.senhaServer;
+    
+    if (nome == undefined) {
+        res.status(400).send("o nome está undefined!");
+    } else if (email == undefined) {
+        res.status(400).send("O email está undefined!");
+    } else if (tipo_user == undefined) {
+        res.status(400).send("o tipo_user está undefined!");
+    } else if (senha == undefined) {
+        res.status(400).send("A senha do usuário está undefined!");
+    }  else {
+       usuarioModel.cadastrar(nome, email, senha, tipo_user)
+            .then(function (resultado) {
+                res.json(resultado)
+            })
+            .catch(function (erro) {
+                res.status(500).json(erro.sqlMessage || "Erro interno ao cadastrar");
+            });
+    }
+}
+
 module.exports = {
     autenticar,
     cadastrar, 
-    listarEmpresas
+    listarEmpresas, 
+    cadastrarUser
 }

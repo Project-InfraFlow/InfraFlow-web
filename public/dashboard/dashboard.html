@@ -333,10 +333,7 @@
         </div>
 
         <div class="cadastro-tabs">
-          <button class="tab-btn active" data-tab="empresa">
-            <i class="fas fa-building"></i>
-            Empresa
-          </button>
+
           <button class="tab-btn" data-tab="usuario">
             <i class="fas fa-user"></i>
             Usuário
@@ -352,42 +349,9 @@
         </div>
 
         <div class="cadastro-content">
-          <div id="tab-empresa" class="tab-content active">
-            <form class="cadastro-form" id="empresaForm">
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="empresaNome">Nome da Empresa</label>
-                  <input type="text" id="empresaNome" required>
-                </div>
-                <div class="form-group">
-                  <label for="empresaCnpj">CNPJ</label>
-                  <input type="text" id="empresaCnpj" required>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="empresaEmail">E-mail</label>
-                  <input type="email" id="empresaEmail" required>
-                </div>
-                <div class="form-group">
-                  <label for="empresaTelefone">Telefone</label>
-                  <input type="tel" id="empresaTelefone">
-                </div>
-              </div>
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save"></i>
-                  Salvar
-                </button>
-                <button type="reset" class="btn btn-secondary">
-                  <i class="fas fa-times"></i>
-                  Cancelar
-                </button>
-              </div>
-            </form>
-          </div>
 
-          <div id="tab-usuario" class="tab-content">
+
+          <div id="tab-usuario" class="tab-content active">
             <form class="cadastro-form" id="usuarioForm">
               <div class="form-row">
                 <div class="form-group">
@@ -402,10 +366,10 @@
               <div class="form-row">
                 <div class="form-group">
                   <label for="usuarioTipo">Tipo</label>
-                  <select id="usuarioTipo" required>
-                    <option value="">Selecione...</option>
-                    <option value="admin">Administrador</option>
-                    <option value="comum">Comum</option>
+                  <select id="tipo_permissao" required>
+                    <option value="0">Selecione uma opção</option>
+                    <option value="1">Administrador</option>
+                    <option value="2">Comum</option>
                   </select>
                 </div>
                 <div class="form-group">
@@ -588,6 +552,94 @@
   <script src="../js/dash.js"></script>
 
   <script>
+     function validarEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+    // 🔐 Validação no estilo Microsoft
+    function validarSenhaMicrosoft(senha) {
+        // Pelo menos 8 caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 símbolo
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+        return regex.test(senha);
+    } 
+
+    function cadastrarUser() {
+
+      var nomeVar =  usuarioNome.value;
+      var emailUserVar = usuarioEmail; 
+      var tipoUserVar = tipo_permissao.value; 
+      var senhaUserVar = usuarioSenha.value;
+
+
+        // === Validações principais ===
+        if (!nomeVar || !emailUserVar || !tipoUserVar || !senhaUserVar) {
+        alert("Preencha todos os campos obrigatórios!");
+        return false;
+      }
+
+        if (!validarSenhaMicrosoft(senhaVar)) {
+            alert(
+                "A senha deve seguir o formato da Microsoft:\n\n" +
+                "• Mínimo de 8 caracteres\n" +
+                "• Pelo menos 1 letra maiúscula\n" +
+                "• Pelo menos 1 letra minúscula\n" +
+                "• Pelo menos 1 número\n" +
+                "• Pelo menos 1 caractere especial (!@#$%^&* etc.)"
+            );
+            return false;
+        }
+
+        else {
+            setInterval(sumirMensagem, 5000);
+        }
+
+
+        fetch("/usuarios/cadastrarUser", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                // crie um atributo que recebe o valor recuperado aqui
+                // Agora vá para o arquivo routes/usuario.js
+                nomeServer: nomeVar,
+                emailUserServer : emailUserVar, 
+                tipoUserServer : tipoUserVar, 
+                senhaUserServer : senhaUserVar
+            }),
+        })
+            .then(async resposta => {
+                var migramos = await resposta.json()
+
+                console.log("testando..." + migramos)
+
+                if (resposta.ok) {
+
+                    alert("Usuário cadastrada com sucesso!")
+
+                    usuarioNome.value = ""; 
+                    usuarioEmail.value = ""; 
+                    usuarioSenha.value = "";
+
+                    //   setTimeout(() => {
+                    //     window.location = "login.html";
+                    //   }, "2000");
+
+                } else {
+                    alert("Houve um erro ao tentar realizar o cadastro!");
+                }
+            })
+            .catch(function (resposta) {
+                console.log(`#ERRO: ${resposta}`);
+
+            });
+
+        return false;
+    }
+
+
+
     (function () {
       function initNav() {
         const navItems = Array.from(document.querySelectorAll('.nav-item'));

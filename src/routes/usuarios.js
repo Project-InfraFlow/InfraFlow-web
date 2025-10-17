@@ -16,5 +16,9 @@ router.get("/listarEmpresas", function (req, res) {
     usuarioController.listarEmpresas(req, res);
 });
 
+router.post("/cadastrarUser", function (req, res) {
+    usuarioController.cadastrarUser  (req, res);
+})
+
 
 module.exports = router;

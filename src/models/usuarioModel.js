@@ -76,8 +76,18 @@ function listarEmpresas() {
     return database.executar(instrucaoSql);
 }
 
+
+async function cadastrarUser(nome, email, senha, tipo_user) {
+    var instrucaoSql = `
+      INSERT INTO usuario (nome, email, senha, tipo_user) VALUES 
+      ('${nome}', '${email}', '${senha}', '${tipo_user}')`
+    return database.executar(instrucaoSql);
+
+}
+
 module.exports = {
     autenticar,
     cadastrar,
-    listarEmpresas
+    listarEmpresas, 
+    cadastrarUser
 };

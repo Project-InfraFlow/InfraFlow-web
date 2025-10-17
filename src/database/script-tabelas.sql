@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS empresa (
     id_empresa INT NOT NULL AUTO_INCREMENT,
     CONSTRAINT pk_empresa PRIMARY KEY (id_empresa),
     razao_social VARCHAR(45),
-    cnpj VARCHAR(14),
+    cnpj VARCHAR(18),
     status TINYINT, 
     fk_tipo_contato INT 
 );
