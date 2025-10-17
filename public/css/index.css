@@ -6,23 +6,37 @@
   font-family: "Arial", sans-serif;
 }
 
+html{
+    scroll-behavior: smooth;
+}
+
 body {
   background-color: #fff;
   color: #333;
+
 }
 
 /* HEADER */
 .header {
   background-color: #008080;
-  padding: 15px 0;
+  padding: 8px 0;
   position: fixed;
   width: 100%;
   z-index: 1000;
+  display: flex;
+  justify-content: center;
+  transition: box-shadow 0.3s ease; 
+  box-shadow: none;
+}
+
+.header.scrolled {
+  box-shadow: 2px 16px 43px -10px rgba(0,0,0,0.75);
+  -webkit-box-shadow: 2px 16px 43px -10px rgba(0,0,0,0.75);
+  -moz-box-shadow: 2px 16px 43px -10px rgba(0,0,0,0.75);
 }
 
 .header .container {
   width: 85%;
-  margin: auto;
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -30,15 +44,14 @@ body {
 
 .logo {
   display: flex;
+  justify-content: center;
   align-items: center;
-  gap: 10px;
-  color: #fff;
-  font-size: 1.2rem;
-  font-weight: bold;
 }
 
 .logo img {
-  height: 35px;
+  align-self: center;
+  height: 95%;
+  width: 200px;
 }
 
 .navbar {
@@ -48,10 +61,26 @@ body {
 }
 
 .navbar li a {
+  position: relative;
   text-decoration: none;
   color: #fff;
   font-weight: 500;
   transition: 0.3s;
+}
+
+.navbar li a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -4px;
+  width: 0;
+  height: 3px;
+  background-color: #5ce1e6;
+  transition: width 0.3s ease;
+}
+
+.navbar li a:hover::after {
+  width: 100%;
 }
 
 .navbar li a:hover {
@@ -163,8 +192,9 @@ body {
 .banner-texto h1 {
   font-size: 2.5rem;
   color: #008080;
-  margin-bottom: 80px;
+  margin-bottom: 60px;
 }
+
 
 .banner-texto h1 span {
   color: black;
@@ -174,6 +204,7 @@ body {
   text-align: center;
   margin-top: 20px;
   margin-top: 100px;
+  align-self: flex-start;
 }
 
 .bnt_comece .btn {
@@ -185,6 +216,7 @@ body {
   color: #fff;
   border: 1px solid #fff;
   transition: 0.3s;
+  align-self: self-start;
 }
 
 .bnt_comece .btn:hover {
@@ -201,8 +233,40 @@ body {
 .banner-img img {
   width: 680px;
   border-radius: 6px;
-  margin-top: 50px;
+  margin-top: 10px;
+  box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
 }
+.banner-img {
+  position: relative; /* permite posicionar os quadrados dentro */
+  display: inline-block;
+}
+
+/* Quadrado inferior esquerdo */
+.banner-img::before {
+  content: "";
+  position: absolute;
+  left: -50px;
+  bottom: -40px;
+  width: 200px;
+  height: 180px;
+  background-color: rgba(0, 200, 200, 0.4); /* azul claro */
+  border-radius: 6px;
+  z-index: -1; /* atrás da imagem */
+}
+
+/* Quadrado superior direito */
+.banner-img::after {
+  content: "";
+  position: absolute;
+  right: -40px;
+  top: -30px;
+  width: 200px;
+  height: 150px;
+  background-color: rgba(0, 128, 128, 0.6); /* verde-água */
+  border-radius: 6px;
+  z-index: 1;
+}
+
 
 @media (max-width: 1024px) {
   .banner .container {
@@ -548,6 +612,141 @@ body {
 
 .contato-bottom a:hover {
   opacity: 0.7;
+}
+
+/* FORMULÁRIO DE CONTATO */
+.contato-form {
+  width: 55%;
+  margin: auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 80px;
+  margin-left: 23%;
+  background-color: #006060;
+  padding: 3%;
+  border-radius: 8px;
+  justify-content: center;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 10px 36px 0px, rgba(0, 0, 0, 0.06) 0px 0px 0px 1px;
+}
+
+.firula, .form {
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-self: center;
+  justify-content: space-between;
+  padding-left: 3%;
+}
+
+.ipt_form {
+  border-radius: 5px;
+  border: none;
+  width: 90%;
+  height: 30px;
+  outline: none;
+  padding-left: 2%;
+}
+
+.label_ipt {
+  margin-top: 5%;
+  color: white;
+}
+
+.txt_area {
+  border-radius: 5px;
+  border: none;
+  height: 55px;
+  width: 90%;
+  outline: none;
+  padding-left: 2%;
+}
+
+.btn-msg {
+  margin-top: 10%;
+  padding: 1.5%;
+  border-radius: 8px;
+  border: none;
+  background-color: #008080;
+  color: white;
+  width: 40%;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+
+/* RESPONSIVIDADE FORM */
+
+
+/* Tablets (até 1024px) */
+@media (max-width: 1024px) {
+  .contato-form {
+    width: 80%;
+    margin-left: 10%;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .firula, .form {
+    width: 100%;
+    padding-left: 0;
+  }
+
+  .ipt_form, .txt_area {
+    width: 100%;
+  }
+
+  .btn-msg {
+    width: 60%;
+  }
+}
+
+@media (max-width: 768px) {
+  .contato-form {
+    width: 90%;
+    margin-left: 0;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .firula, .form {
+    width: 100%;
+    padding: 0;
+  }
+
+  .ipt_form, .txt_area {
+    width: 100%;
+    font-size: 0.95rem;
+  }
+
+  .btn-msg {
+    width: 80%;
+    padding: 3%;
+    font-size: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .contato-form {
+    padding: 5%;
+  }
+
+  .btn-msg {
+    width: 100%;
+    font-size: 1rem;
+    padding: 4%;
+  }
+
+  .label_ipt {
+    font-size: 0.9rem;
+  }
+
+  .ipt_form, .txt_area {
+    font-size: 0.9rem;
+  }
 }
 
 /* RESPONSIVIDADE */

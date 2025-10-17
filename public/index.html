@@ -16,6 +16,7 @@
   <link rel="stylesheet" href="./css/index.css">
   <link rel="icon" href="./assets/icon/logo.png">
   <link rel="preconnect" href="https://fonts.gstatic.com">
+  <script src="js/animacoes.js"></script>
 </head>
 
 <body>
@@ -23,10 +24,11 @@
   <div class="header">
     <div class="container">
       <div class="logo">
+
+
         <a href="index.html">
-          <img src="./assets/logo-inicio.png" alt="Logo InfraFlow">
+          <img src="./assets/Infra-parafundoverde.png" alt="Logo InfraFlow" class="logo-infra-new">
         </a>
-        <span>InfraFlow</span>
       </div>
 
       <div class="usuario-img">
@@ -34,7 +36,7 @@
           <img src="./assets/icon/person-fill.svg" alt="Login">
         </a>
       </div>
-      
+
       <input type="checkbox" id="menu-toggle">
 
       <label for="menu-toggle" class="menu">
@@ -64,17 +66,17 @@
     <div class="container">
       <div class="banner-texto">
         <h1>
-          Cuidando do seu pedágio <span>free flow</span> .
+          Cuidando do seu pedágio <span>free flow</span>.
         </h1>
         <p>
-          Mantenha o funcionamento do seu pedágio free flow contínuo.
+          Tecnologia que mantém seu pedágio livre, seguro e eficiente.
         </p>
         <div class="bnt_comece">
           <a href="cadastro.html" class="btn">Comece agora!</a>
         </div>
       </div>
       <div class="banner-img">
-        <img src="./assets/pedagio.png" alt="Pedágio Free Flow">
+        <img src="./assets/cidades-brasileiras-free-flow.jpg" alt="Pedágio Free Flow">
       </div>
     </div>
   </div>
@@ -303,7 +305,32 @@
   <footer class="contato" id="contato">
     <div class="contato-top">
       <h2>Seja o próximo!</h2>
-      <p>Em caso de dúvida, entre em contato.</p>
+      <p>Se interessou? A InfraFlow espera você, entre em contato conosco!</p>
+    </div>
+
+    <div class="contato-form">
+      <div class="firula">
+        <h3 style="color: white; text-align: center;">Entre em contato conosco pelo formulário!</h3>
+        <img src="./assets/Mention-rafiki.svg" alt="">
+
+      </div>
+
+      <div class="form">
+        <label for="nomecli" class="label_ipt">Nome</label>
+        <input type="text" id="nomecli" class="ipt_form">
+
+        <label for="emailcli" class="label_ipt">Email</label>
+        <input type="email" id="emailcli" class="ipt_form">
+
+        <label for="mensagem" class="label_ipt">Mensagem</label>
+        <textarea id="mensagem" class="txt_area"></textarea>
+
+        <div class="btn-enviar">
+          <button class="btn-msg" id="btnEnviar">Enviar mensagem</button>
+        </div>
+
+        <p id="msg-status" style="color:white; margin-top:10px;"></p>
+      </div>
     </div>
 
     <div class="contatato-container">
@@ -340,3 +367,25 @@
 </body>
 
 </html>
+
+<!-- Script EmailJS -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script>
+  (function () {
+    emailjs.init("slJCvurBY3QlUaWkq");
+  })();
+
+  document.querySelector(".btn-msg").addEventListener("click", function(e){
+  e.preventDefault();
+
+  const params = {
+    nome: document.getElementById("nomecli").value,
+    email: document.getElementById("emailcli").value,
+    mensagem: document.getElementById("mensagem").value
+  };
+
+  emailjs.send("service_27efhms", "template_2si46yr", params)
+    .then(() => alert("Mensagem enviada com sucesso!"))
+    .catch(err => console.error("Erro:", err));
+});
+</script>
