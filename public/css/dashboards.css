@@ -406,10 +406,10 @@ body {
     color: var(--primary-light);
 }
 
-.brand span {
-    font-size: 1.5rem;
-    font-weight: 700;
-    letter-spacing: -0.025em;
+.brand img {
+    width: 200px;
+    align-self: center;
+    padding-left: 5%;
 }
 
 .nav {
