@@ -17,7 +17,7 @@ router.get("/listarEmpresas", function (req, res) {
 });
 
 router.post("/cadastrarUser", function (req, res) {
-    usuarioController.cadastrarUser  (req, res);
+    usuarioController.cadastrarUser(req, res);
 })
 
 

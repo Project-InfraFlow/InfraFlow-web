@@ -1,5 +1,4 @@
 var usuarioModel = require("../models/usuarioModel");
-var aquarioModel = require("../models/aquarioModel");
 
 function autenticar(req, res) {
     var email = (req.body && (req.body.email || req.body.emailServer)) ? String(req.body.email || req.body.emailServer).trim() : undefined;
@@ -80,8 +79,8 @@ function cadastrarUser(req, res) {
     var nome = req.body.nomeServer;
     var email = req.body.emailUserServer;
     var tipo_user = req.body.tipoUserServer; 
-    var senha = req.body.senhaServer;
-    
+    var senha = req.body.senhaUserServer;
+    console.log(nome, email, tipo_user, senha)
     if (nome == undefined) {
         res.status(400).send("o nome está undefined!");
     } else if (email == undefined) {
@@ -91,9 +90,9 @@ function cadastrarUser(req, res) {
     } else if (senha == undefined) {
         res.status(400).send("A senha do usuário está undefined!");
     }  else {
-       usuarioModel.cadastrar(nome, email, senha, tipo_user)
+       usuarioModel.cadastrarUser(nome, email, senha, tipo_user)
             .then(function (resultado) {
-                res.json(resultado)
+                res.status(200).json(resultado)
             })
             .catch(function (erro) {
                 res.status(500).json(erro.sqlMessage || "Erro interno ao cadastrar");

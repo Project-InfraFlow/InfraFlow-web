@@ -77,10 +77,10 @@ function listarEmpresas() {
 }
 
 
-async function cadastrarUser(nome, email, senha, tipo_user) {
+function cadastrarUser(nome, email, senha, tipo_user) {
     var instrucaoSql = `
-      INSERT INTO usuario (nome, email, senha, tipo_user) VALUES 
-      ('${nome}', '${email}', '${senha}', '${tipo_user}')`
+      INSERT INTO usuario (nome, email, senha, fk_id_tipo_usuario, fk_empresa) VALUES 
+      ('${nome}', '${email}', '${senha}', ${tipo_user}, 1);`
     return database.executar(instrucaoSql);
 
 }
