@@ -46,8 +46,8 @@ async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser
         let idUsuario = resultadoUsuario.insertId;
 
         let insertToken = `
-            INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_usuario)
-            VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idUsuario});
+            INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_empresa)
+            VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idEmpresa});
         `;
         await database.executar(insertToken);
 

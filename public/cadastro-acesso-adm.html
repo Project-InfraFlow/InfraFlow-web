@@ -1,22 +1,16 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pt-br">
 
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Orbitron:wght@400..900&family=Permanent+Marker&family=Pixelify+Sans:wght@400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Special+Gothic+Expanded+One&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-
+    <link rel="stylesheet"
+        href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="icon" href="./assets/icon/logo.png">
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-
     <link rel="stylesheet" href="./css/cadastro-adm.css">
-
+    <script src="https://unpkg.com/imask"></script> <!-- ✅ Biblioteca de máscaras -->
     <title>Acesso Administrador | Cadastro de empresas</title>
 </head>
 
@@ -25,8 +19,7 @@
         <nav class="navbar">
             <div class="nav-links">
                 <div class="nav-right">
-                    <p class="titulo">Infra</p>
-                    <p style="color: #0a5b60;"><b>Flowㅤ</b></p>
+                    <img src="./assets/Infra-parafundoverde.png" alt="">
                     <p>|ㅤCadastro de empresas</p>
                 </div>
                 <div class="nav-left">
@@ -36,7 +29,6 @@
                             <p>Usuário</p>
                         </div>
                     </div>
-
                     <div class="btn-logout">
                         <button>Sair</button>
                     </div>
@@ -47,7 +39,6 @@
         <div class="infos-gerais">
 
             <div class="cadastro-empresas">
-
                 <div class="titulo-cadastro">
                     <i class="bi bi-building-fill-add"></i>
                     <p>Cadastrar nova empresa</p>
@@ -56,15 +47,18 @@
                 <div class="ipts-cadastro">
                     <div class="lado1">
                         <label for="">Razão social</label>
-                        <input type="text" class="ipt_infos" id="razao_social">
+                        <input type="text" class="ipt_infos" id="razao_social" maxlength="80">
+
                         <label for="">Telefone</label>
-                        <input type="text" placeholder="(11) 4004-5555" class="ipt_infos" id="telefone">
+                        <input type="text" placeholder="(11) 91234-5678" class="ipt_infos" id="telefone" maxlength="15">
                     </div>
                     <div class="lado2">
                         <label for="">CNPJ</label>
-                        <input type="text" placeholder="45.646.498/0001-00" class="ipt_infos" id="cnpj">
+                        <input type="text" placeholder="45.646.498/0001-00" class="ipt_infos" id="cnpj" maxlength="18">
+
                         <label for="">E-mail</label>
-                        <input type="text" placeholder="InfraFlow@contato.com" class="ipt_infos" id="email_empresa">
+                        <input type="email" placeholder="InfraFlow@contato.com" class="ipt_infos" id="email_empresa"
+                            maxlength="100">
                     </div>
                 </div>
 
@@ -76,10 +70,10 @@
                 <div class="ipts-cadastro1">
                     <div class="lado1">
                         <label for="">Responsável Técnico</label>
-                        <input type="text" class="ipt_infos" id="resp_user">
+                        <input type="text" class="ipt_infos" id="resp_user" maxlength="60">
 
                         <label for="">Permissões</label>
-                        <select name="" id="tipo_permissao" class="ipt_infos">
+                        <select id="tipo_permissao" class="ipt_infos">
                             <option value="0">Selecione uma opção</option>
                             <option value="1">Administrador</option>
                             <option value="2">Comum</option>
@@ -92,15 +86,17 @@
                                 <i class="fa fa-sync-alt"></i>
                             </button>
                         </div>
-
                     </div>
+
                     <div class="lado2">
                         <label for="">E-mail</label>
-                        <input type="text" placeholder="usuario@empresa.com.br" class="ipt_infos" id="email_user">
+                        <input type="email" placeholder="usuario@empresa.com.br" class="ipt_infos" id="email_user"
+                            maxlength="100">
 
                         <label for="senha">Senha</label>
                         <div class="password-wrapper">
-                            <input type="password" id="senha_senha" class="ipt_infos" placeholder="Digite sua senha">
+                            <input type="password" id="senha_senha" class="ipt_infos" placeholder="Digite sua senha"
+                                maxlength="20">
                             <i class="fa fa-eye" id="toggleSenha"></i>
                         </div>
 
@@ -109,12 +105,9 @@
                         </div>
                     </div>
                 </div>
-
-
             </div>
 
             <div class="lista-empresas">
-
                 <div class="titulo-cadastro">
                     <i class="bi bi-eye-fill"></i>
                     <p>Visão geral empresas e responsáveis</p>
@@ -138,11 +131,14 @@
                 </div>
             </div>
         </div>
+
+       
 </body>
 
 </html>
 
 <script>
+    // ======== TOKEN ==========
     document.getElementById("generateToken").addEventListener("click", () => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let token = "";
@@ -159,155 +155,116 @@
         document.getElementById("token").value = token;
     });
 
+    // ======== MOSTRAR/OCULTAR SENHA ==========
     const senha = document.getElementById('senha_senha');
     const toggle = document.getElementById('toggleSenha');
 
     toggle.addEventListener('click', () => {
         if (senha.type === 'password') {
             senha.type = 'text';
-            toggle.classList.remove('fa-eye');
-            toggle.classList.add('fa-eye-slash');
+            toggle.classList.replace('fa-eye', 'fa-eye-slash');
         } else {
             senha.type = 'password';
-            toggle.classList.remove('fa-eye-slash');
-            toggle.classList.add('fa-eye');
+            toggle.classList.replace('fa-eye-slash', 'fa-eye');
         }
     });
 
-    //INICIANDO MEXER COM O BACK-END DE CADASTRO 
+    // ======== MÁSCARAS ==========
+    const cnpjMask = IMask(document.getElementById('cnpj'), {
+        mask: '00.000.000/0000-00'
+    });
 
-    // Array para armazenar empresas cadastradas para validação de código de ativação 
-    let listaEmpresasCadastradas = [];
+    const telefoneMask = IMask(document.getElementById('telefone'), {
+        mask: [
+            { mask: '(00) 0000-0000' },
+            { mask: '(00) 00000-0000' }
+        ]
+    });
+
+    // ======== VALIDAÇÕES ==========
+    function validarEmail(email) {
+        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return regex.test(email);
+    }
+
+   
+    function validarSenhaMicrosoft(senha) {
+        // Pelo menos 8 caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 símbolo
+        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+        return regex.test(senha);
+    }
 
     function cadastrar() {
-        // aguardar();
-
-        //Recupere o valor da nova input pelo nome do id
-        // Agora vá para o método fetch logo abaixo
         var razaoVar = razao_social.value;
         var CNPJVar = cnpj.value;
         var emailEmpresaVar = email_empresa.value;
         var telefoneVar = telefone.value;
-
         var tecnicoVar = resp_user.value;
         var emailUserVar = email_user.value;
         var tokenVar = token.value;
         var senhaVar = senha_senha.value;
 
-        // Verificando se há algum campo em branco
-        if (
-            razaoVar == "" ||
-            CNPJVar == "" ||
-            tecnicoVar == "" ||
-            senhaVar == "" ||
-            emailUserVar == "" ||
-            tokenVar == "" ||
-            senhaVar == ""
-        ) {
-            cardErro.style.display = "block";
-            mensagem_erro.innerHTML =
-                "(Mensagem de erro para todos os campos em branco)";
-
-            finalizarAguardar();
-            return false;
-        } else if (emailEmpresaVar == "" && telefoneVar == "") {
-            cardErro.style.display = "block";
-            alert("Insira ao menos um meio de contato da empresa (E-mail ou telefone)")
-
-            finalizarAguardar();
+        // === Validações principais ===
+        if (!razaoVar || !CNPJVar || !tecnicoVar || !senhaVar || !tokenVar) {
+            alert("Preencha todos os campos obrigatórios!");
             return false;
         }
 
-        else {
-            setInterval(sumirMensagem, 5000);
+        if (!emailEmpresaVar && !telefoneVar) {
+            alert("Insira ao menos um meio de contato da empresa (E-mail ou telefone)");
+            return false;
         }
 
-       
-        fetch("/usuarios/cadastrar", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                // crie um atributo que recebe o valor recuperado aqui
-                // Agora vá para o arquivo routes/usuario.js
-                razaoServer: razaoVar,
-                CNPJServer: CNPJVar,
-                emailEmpresaServer: emailEmpresaVar,
-                telefoneServer: telefoneVar,
+        if (emailEmpresaVar && !validarEmail(emailEmpresaVar)) {
+            alert("E-mail da empresa inválido!");
+            return false;
+        }
 
-                tecnicoServer: tecnicoVar,
-                emailUserServer: emailUserVar,
-                tokenServer: tokenVar,
-                senhaServer: senhaVar,
-            }),
-        })
-            .then(async resposta => {
-                var migramos = await resposta.json()
+        if (emailUserVar && !validarEmail(emailUserVar)) {
+            alert("E-mail do responsável inválido!");
+            return false;
+        }
 
-                console.log("testando..." + migramos)
+        // === Nova validação de senha ===
+        if (!validarSenhaMicrosoft(senhaVar)) {
+            alert(
+                "A senha deve seguir o formato da Microsoft:\n\n" +
+                "• Mínimo de 8 caracteres\n" +
+                "• Pelo menos 1 letra maiúscula\n" +
+                "• Pelo menos 1 letra minúscula\n" +
+                "• Pelo menos 1 número\n" +
+                "• Pelo menos 1 caractere especial (!@#$%^&* etc.)"
+            );
+            return false;
+        }
 
-                if (resposta.ok) {
-
-                    alert("Empresa cadastrada com sucesso!")
-
-                    razao_social.value = "";
-                    cnpj.value = "";
-                    email_empresa.value = "";
-                    telefone.value = "";
-
-                    resp_user.value = "";
-                    email_user.value = "";
-                    token.value = "";
-                    senha_senha.value = "";
-
-                    //   setTimeout(() => {
-                    //     window.location = "login.html";
-                    //   }, "2000");
-
-                } else {
-                    alert("Houve um erro ao tentar realizar o cadastro!");
-                }
-            })
-            .catch(function (resposta) {
-                console.log(`#ERRO: ${resposta}`);
-
-            });
-
-        return false;
+        // Se tudo passou:
+        alert("✅ Empresa cadastrada com sucesso!");
     }
 
-
-
-    function sumirMensagem() {
-        cardErro.style.display = "none";
-    }
-
+    // ======== LISTAR EMPRESAS ==========
     function listarEmpresas() {
-    fetch('/usuarios/listarEmpresas', {
-        method: "GET"
-    }).then(async resposta => {
-        let empresasGerais = await resposta.json();
+        fetch('/usuarios/listarEmpresas', { method: "GET" })
+            .then(async resposta => {
+                let empresasGerais = await resposta.json();
+                var divUserInfos = document.getElementById('txt_users');
+                divUserInfos.innerHTML = "";
 
-        var divUserInfos = document.getElementById('txt_users');
-
-        for (let i = empresasGerais.length - 1; i >= 0; i--) {
-            var txt_users = `
-                <div class="linha-empresa">
-                    <p class="item-linha">${empresasGerais[i].id_empresa}</p>
-                    <p class="item-linha">${empresasGerais[i].razao_social}</p>
-                    <p class="item-linha">${empresasGerais[i].cnpj}</p>
-                    <p class="item-linha">${empresasGerais[i].nome}</p>
-                    <p class="item-linha">${empresasGerais[i].status}</p>
-                </div>
-            `;
-
-            divUserInfos.innerHTML += txt_users;
-        }
-    });
-}
+                for (let i = empresasGerais.length - 1; i >= 0; i--) {
+                    divUserInfos.innerHTML += `
+                        <div class="linha-empresa">
+                            <p class="item-linha">${empresasGerais[i].id_empresa}</p>
+                            <p class="item-linha">${empresasGerais[i].razao_social}</p>
+                            <p class="item-linha">${empresasGerais[i].cnpj}</p>
+                            <p class="item-linha">${empresasGerais[i].nome}</p>
+                            <p class="item-linha">${empresasGerais[i].status}</p>
+                        </div>`;
+                }
+            });
+    }
 
     function carregarPage() {
-        listarEmpresas()
+        listarEmpresas();
     }
 </script>
+
