@@ -63,7 +63,7 @@
 
     .input-box input {
        width: 100%;
-      padding: 8px 40px 14px 14px;
+      padding: 3%;
       border-radius: 8px;
       border: 1px solid #ccc;
       font-size: 14px;
@@ -90,8 +90,16 @@
       margin-right: 8px;
     }
 
+    .box-green{
+      width: 40px;
+      height: 3px;
+      background-color: #178589;
+      margin-top: -5%;
+      margin-bottom: 5%;
+    }
+
     .forgot-link {
-      text-align: right;
+      text-align: left;
       margin-bottom: 30px;
     }
 
