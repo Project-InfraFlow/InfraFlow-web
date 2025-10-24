@@ -15,12 +15,22 @@ function autenticar(req, res) {
         usuarioModel.autenticar(email, senha, token)
             .then(function (resultadoAutenticar) {
                 if (Array.isArray(resultadoAutenticar) && resultadoAutenticar.length == 1) {
+                    const r = resultadoAutenticar[0];
+                    // Resposta mantendo compatibilidade e entregando os IDs exigidos
                     res.json({
-                        id: resultadoAutenticar[0].id_usuario,
-                        email: resultadoAutenticar[0].email,
-                        nome: resultadoAutenticar[0].nome,
-                        token: resultadoAutenticar[0].token,
-                        aquarios: []
+                        id: r.id_usuario,                  // compatibilidade
+                        id_usuario: r.id_usuario,          // para sessionStorage.ID_USUARIO
+                        fk_empresa: r.id_empresa,          // para sessionStorage.ID_EMPRESA
+                        email: r.email,
+                        nome: r.nome,
+                        empresa: {
+                            id_empresa: r.id_empresa,
+                            razao_social: r.razao_social
+                        },
+                        token: {
+                            valor: r.token
+                        },
+                        aquarios: [] // mantém seu shape antigo
                     });
                 } else if (Array.isArray(resultadoAutenticar) && resultadoAutenticar.length == 0) {
                     res.status(403).send("Email ou senha ou token inválido(s)");
@@ -56,9 +66,9 @@ function cadastrar(req, res) {
                (telefone == undefined || String(telefone).trim() === "")) {
         res.status(400).send("É necessário preencher pelo menos o e-mail ou o telefone da empresa!");
     } else {
-       usuarioModel.cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser, senha, token)
+        usuarioModel.cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser, senha, token)
             .then(function (resultado) {
-                res.json(resultado)
+                res.json(resultado);
             })
             .catch(function (erro) {
                 res.status(500).json(erro.sqlMessage || "Erro interno ao cadastrar");
@@ -70,9 +80,14 @@ function listarEmpresas(req, res) {
     usuarioModel.listarEmpresas()
         .then(async resultado => {
             if (resultado.length > 0) {
-                res.status(200).json(resultado)
+                res.status(200).json(resultado);
+            } else {
+                res.status(204).send();
             }
         })
+        .catch(function (erro) {
+            res.status(500).json(erro.sqlMessage || "Erro ao listar empresas");
+        });
 }
 
 function cadastrarUser(req, res) {
@@ -80,7 +95,7 @@ function cadastrarUser(req, res) {
     var email = req.body.emailUserServer;
     var tipo_user = req.body.tipoUserServer; 
     var senha = req.body.senhaUserServer;
-    console.log(nome, email, tipo_user, senha)
+
     if (nome == undefined) {
         res.status(400).send("o nome está undefined!");
     } else if (email == undefined) {
@@ -90,9 +105,9 @@ function cadastrarUser(req, res) {
     } else if (senha == undefined) {
         res.status(400).send("A senha do usuário está undefined!");
     }  else {
-       usuarioModel.cadastrarUser(nome, email, senha, tipo_user)
+        usuarioModel.cadastrarUser(nome, email, senha, tipo_user)
             .then(function (resultado) {
-                res.status(200).json(resultado)
+                res.status(200).json(resultado);
             })
             .catch(function (erro) {
                 res.status(500).json(erro.sqlMessage || "Erro interno ao cadastrar");
@@ -105,4 +120,4 @@ module.exports = {
     cadastrar, 
     listarEmpresas, 
     cadastrarUser
-}
+};

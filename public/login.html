@@ -5,9 +5,6 @@
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Orbitron:wght@400..900&family=Permanent+Marker&family=Pixelify+Sans:wght@400..700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&family=Special+Gothic+Expanded+One&display=swap"
-    rel="stylesheet">
 
   <title>Infraflow | Login</title>
 
@@ -21,12 +18,14 @@
 <body>
   <div class="container">
     <div class="login-box">
-      
+      <a href="index.html">
+        <img src="./assets/logoInfraFlow.png" alt="Logo">
+      </a>
       <h1>Entrar</h1>
 
       <div class="input-box">
         <span>E-mail:</span>
-        <input id="email_input" type="text" placeholder="Infraflow@contato.com">
+        <input id="email_input" type="text" placeholder="Login">
       </div>
 
       <div class="input-box">
@@ -36,7 +35,7 @@
 
       <div class="input-box">
         <span>Token</span>
-        <input type="text" id="token_input" placeholder="E3J4V5">
+        <input type="text" id="token_input" placeholder="325535159">
       </div>
 
       <button type="button" class="btn" onclick="entrar()">Entrar</button>
@@ -77,18 +76,18 @@
 
       var emailVar = email_input.value?.trim();
       var senhaVar = senha_input.value;
-      var tokenVar = token_input.value;
+      var tokenVar = (typeof token_input !== 'undefined' && token_input) ? token_input.value.trim() : "";
 
-      if (!emailVar || !senhaVar || !tokenVar) {
+      if (!emailVar || !senhaVar) {
         cardErro.style.display = "block";
-        mensagem_erro.innerHTML = "Preencha e-mail, senha e token.";
+        mensagem_erro.innerHTML = "Preencha e-mail e senha.";
         finalizarAguardar?.();
         return false;
       } else {
         setInterval(sumirMensagem, 5000);
       }
 
-      //e-mails autorizados como administradores
+      // ===== BYPASS ADMIN (opcional para demo) =====
       const admins = [
         "nicollyter@infraflow.com",
         "edsonfel@infraflow.com",
@@ -96,68 +95,61 @@
         "viniciusmelo@infraflow.com",
         "lukasfar@infraflow.com"
       ];
-
-      // verifica se o login é de adm
       if (admins.includes(emailVar) && senhaVar === "Senha@123" && tokenVar === "N1J2V3") {
         finalizarAguardar?.();
-
         sessionStorage.EMAIL_USUARIO = emailVar;
         sessionStorage.NOME_USUARIO = "Administrador";
-        sessionStorage.TOKEN_EMPRESA = tokenVar;
-
-        //página de acesso do admin
+        sessionStorage.ID_USUARIO = "1";      // demo
+        sessionStorage.ID_EMPRESA = "1";      // demo
+        sessionStorage.TOKEN_EMPRESA = tokenVar || "";
+        localStorage.setItem("TOKEN_EMPRESA", tokenVar || "");
         window.location = "./cadastro-acesso-adm.html";
         return false;
       }
+      // ===== /BYPASS ADMIN =====
 
+      // Fluxo normal: envia também o token
       fetch("/usuarios/autenticar", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           email: emailVar,
           senha: senhaVar,
-          token: tokenVar,
-
-          emailServer: emailVar,
-          senhaServer: senhaVar,
-          tokenServer: tokenVar,
+          token: tokenVar   // <=== importante
         })
       })
         .then(function (resposta) {
-          if (resposta.ok) {
-            return resposta.json();
-          } else {
-            return resposta.text().then(texto => {
-              throw new Error(texto || "Houve um erro ao tentar realizar o login!");
-            });
+          if (!resposta.ok) {
+            return resposta.text().then(function (t) { throw new Error(t || "Erro ao autenticar"); });
           }
+          return resposta.json();
         })
         .then(function (json) {
-          var payload = json.usuario ? json.usuario : json;
+          // contrato esperado do backend:
+          // {
+          //   id_usuario, fk_empresa, nome, email,
+          //   empresa: { id_empresa, razao_social },
+          //   token: { valor, ativo, data_expiracao }
+          // }
 
-          var id = payload.id ?? payload.id_usuario ?? payload.idUser ?? payload.id_usuario_usuario;
-          var nome = payload.nome ?? payload.name;
-          var email = payload.email ?? payload.user ?? emailVar;
+          var idUsuario = json.id_usuario ?? json.usuario?.id_usuario;
+          var idEmpresa = json.fk_empresa ?? json.usuario?.fk_empresa ?? json.empresa?.id_empresa;
+          var nomeUser = json.nome ?? json.usuario?.nome ?? "Usuário";
+          var emailUser = json.email ?? json.usuario?.email ?? emailVar;
+          var tokenValor = (json.token && json.token.valor) ? json.token.valor : (tokenVar || "");
 
-          sessionStorage.EMAIL_USUARIO = email;
-          sessionStorage.NOME_USUARIO = nome;
-          sessionStorage.ID_USUARIO = id;
-
-          if (json.aquarios) {
-            sessionStorage.AQUARIOS = JSON.stringify(json.aquarios);
+          if (!idUsuario || !idEmpresa) {
+            throw new Error("Falha ao obter IDs do usuário/empresa.");
           }
 
-          if (tokenVar) {
-            sessionStorage.TOKEN_EMPRESA = tokenVar;
-          }
+          sessionStorage.ID_USUARIO = String(idUsuario);
+          sessionStorage.ID_EMPRESA = String(idEmpresa);
+          sessionStorage.NOME_USUARIO = nomeUser;
+          sessionStorage.EMAIL_USUARIO = emailUser;
+          sessionStorage.TOKEN_EMPRESA = tokenValor;
 
           finalizarAguardar?.();
-
-          setTimeout(function () {
-            window.location = "./dashboard/dashboard.html";
-          }, 500);
+          setTimeout(function () { window.location = "./dashboard/dashboard.html"; }, 400);
         })
         .catch(function (erro) {
           finalizarAguardar?.();
@@ -174,7 +166,5 @@
     }
   }
 
-  function sumirMensagem() {
-    cardErro.style.display = "none";
-  }
+  function sumirMensagem() { cardErro.style.display = "none"; }
 </script>
