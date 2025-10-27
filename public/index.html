@@ -17,6 +17,7 @@
   <link rel="icon" href="./assets/icon/logo.png">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <script src="js/animacoes.js"></script>
+
 </head>
 
 <body>
@@ -24,16 +25,9 @@
   <div class="header">
     <div class="container">
       <div class="logo">
-
-
+        
         <a href="index.html">
           <img src="./assets/Infra-parafundoverde.png" alt="Logo InfraFlow" class="logo-infra-new">
-        </a>
-      </div>
-
-      <div class="usuario-img">
-        <a href="login.html">
-          <img src="./assets/icon/person-fill.svg" alt="Login">
         </a>
       </div>
 
@@ -49,14 +43,14 @@
         <li><a href="#servicos">Serviços</a></li>
         <li><a href="#quem_somos">Quem Somos</a></li>
         <li><a href="#contato">Contato</a></li>
+        <a href="login.html" class="btn-outline">Login</a>
+
       </ul>
 
       <div class="acoes">
         <a href="login.html" class="btn-outline">Login</a>
         <a href="#contato" class="btn-outline">Fale Conosco</a>
       </div>
-
-
 
     </div>
   </div>
@@ -375,17 +369,25 @@
     emailjs.init("slJCvurBY3QlUaWkq");
   })();
 
-  document.querySelector(".btn-msg").addEventListener("click", function(e){
-  e.preventDefault();
+  document.querySelector(".btn-msg").addEventListener("click", function (e) {
+    e.preventDefault();
 
-  const params = {
-    nome: document.getElementById("nomecli").value,
-    email: document.getElementById("emailcli").value,
-    mensagem: document.getElementById("mensagem").value
-  };
+    const params = {
+      nome: document.getElementById("nomecli").value,
+      email: document.getElementById("emailcli").value,
+      mensagem: document.getElementById("mensagem").value
+    };
 
-  emailjs.send("service_27efhms", "template_2si46yr", params)
-    .then(() => alert("Mensagem enviada com sucesso!"))
-    .catch(err => console.error("Erro:", err));
-});
+    emailjs.send("service_27efhms", "template_2si46yr", params)
+      .then(() => alert("Mensagem enviada com sucesso!"))
+      .catch(err => console.error("Erro:", err));
+  });
+
+  // Fecha o menu 
+  document.querySelectorAll('.navbar a').forEach(link => {
+    link.addEventListener('click', () => {
+      document.getElementById('menu-toggle').checked = false;
+    });
+  });
+
 </script>
