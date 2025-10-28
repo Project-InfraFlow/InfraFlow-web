@@ -16,14 +16,11 @@
   <!-- Dashboard -->
   <div id="dashboard" class="dashboard">
     <aside class="sidebar">
-      <div class="brand">
-        <img src="../assets/Infra-parafundoverde.png" alt="">
-      </div>
 
       <nav class="nav">
         <button data-view="overview" class="nav-item active">
           <i class="fas fa-gauge"></i>
-          <span>Visão Geral</span>
+          <span>Painel</span>
         </button>
         <button data-view="monitor" class="nav-item">
           <i class="fas fa-chart-line"></i>
@@ -41,7 +38,7 @@
 
       <div class="divider"></div>
 
-      <div class="filters">
+      <!-- <div class="filters">
         <div class="filters-title">
           <i class="fas fa-filter"></i>
           <span>Componentes</span>
@@ -70,7 +67,7 @@
           <i class="fas fa-network-wired"></i>
           <span>Rede</span>
         </label>
-      </div>
+      </div> -->
 
       <div class="user-section">
         <div class="user-info">
@@ -87,14 +84,22 @@
     <main class="content">
       <!-- Topbar -->
       <header class="topbar">
+
+        <div class="brand">
+        <img src="../assets/Infra-parafundobranco.png" alt="">
+      </div>
         <div class="topbar-left">
           <div class="machine-select">
             <i class="fas fa-server"></i>
+            <label for="edgeSelector" style="display:block; font-size:14px; margin-bottom:4px; color: gray;">
+              Selecione um pórtico FreeFlow:
+            </label>
             <select id="edgeSelector">
-              <option value="INFRA-EDGE-01">INFRA-EDGE-01</option>
-              <option value="INFRA-EDGE-02">INFRA-EDGE-02</option>
-              <option value="INFRA-EDGE-03">INFRA-EDGE-03</option>
-              <option value="INFRA-EDGE-04">INFRA-EDGE-04</option>
+              <option value="INFRA-EDGE-01-Itápolis (SP-333)">INFRA-EDGE-01-Itápolis (SP-333)</option>
+              <option value="INFRA-EDGE-02-Jaboticabal (SP-333)">INFRA-EDGE-02-Jaboticabal (SP-333)</option>
+              <option value="INFRA-EDGE-03-São José dos Campos (SP-099)">INFRA-EDGE-03-São José dos Campos (SP-099)
+              </option>
+              <option value="INFRA-EDGE-04-Itaguaí (Km 414)">INFRA-EDGE-04-Itaguaí (Km 414)</option>
             </select>
           </div>
           <div class="os-info">
@@ -119,7 +124,7 @@
         <div class="view-header">
           <h1 class="view-title">
             <i class="fas fa-gauge"></i>
-            Visão Geral
+            Pórtico <span id="monitor-selecionado"></span>
           </h1>
         </div>
 
@@ -202,80 +207,114 @@
           </div>
         </div>
 
-        <div class="alerts-section">
+        
+        <div class="charts-grid">
+  <div class="chart-container full-bleed">
+    <div class="chart-header">
+      <h3 class="chart-title">
+        <i class="fas fa-pulse"></i>
+        Atividade ao Vivo
+      </h3>
+    </div>
+    <div class="chart-content">
+      <canvas id="realTimeChart"></canvas>
+    </div>
+  </div>
+</div>
+
+
+        <!-- <div class="alerts-section">
           <h2 class="section-title">
             <i class="fas fa-exclamation-triangle"></i>
             Alertas
           </h2>
           <div class="alerts-grid" id="alertsGrid">
             <!-- Alertas serão inseridos aqui assim que eu conseguir conectar o slack rs -->
-          </div>
-        </div>
+          <!-- </div>
+        </div> --> 
+<!-- Bloco combinado: Status + Legenda lado a lado -->
+<div class="status-and-legend">
+  <div class="status-card">
+    <h3 class="status-title">
+      <i class="fas fa-heartbeat"></i>
+      Status do Sistema
+    </h3>
+    <div class="status-badge" id="systemStatus">Normal</div>
+    <div class="status-description" id="statusDescription">
+      Todos os componentes operando dentro dos parâmetros normais
+    </div>
+    <div class="status-metrics">
+      <div class="metric">
+        <span class="metric-label">Uptime:</span>
+        <span class="metric-value" id="systemUptime">15d 8h 32m</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Alertas Ativos:</span>
+        <span class="metric-value" id="alertCount">0</span>
+      </div>
+    </div>
+  </div>
 
-        <div class="system-status-section">
-          <div class="status-card">
-            <h3 class="status-title">
-              <i class="fas fa-heartbeat"></i>
-              Status do Sistema
-            </h3>
-            <div class="status-badge" id="systemStatus">Normal</div>
-            <div class="status-description" id="statusDescription">
-              Todos os componentes operando dentro dos parâmetros normais
-            </div>
-            <div class="status-metrics">
-              <div class="metric">
-                <span class="metric-label">Uptime:</span>
-                <span class="metric-value" id="systemUptime">15d 8h 32m</span>
-              </div>
-              <div class="metric">
-                <span class="metric-label">Alertas Ativos:</span>
-                <span class="metric-value" id="alertCount">0</span>
-              </div>
-            </div>
-          </div>
-        </div>
+  <div class="legend-card">
+    <h3 class="legend-title">
+      <i class="fas fa-info-circle"></i>
+      Legenda (Níveis de Monitoramento)
+    </h3>
+
+    <div class="legend-table-wrap">
+      <table class="legend-table">
+        <thead>
+          <tr>
+            <th>Componente</th>
+            <th>Utilização saudável</th>
+            <th>Alta utilização <small>(monitorar)*</small></th>
+            <th>Saturação <small>(crítico)</small></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>CPU (%)</td>
+            <td>20% – 70%</td>
+            <td><span class="pill warn">70% – 85%</span></td>
+            <td><span class="pill crit">&gt; 85%</span></td>
+          </tr>
+          <tr>
+            <td>Memória RAM (%)</td>
+            <td>40% – 75%</td>
+            <td><span class="pill warn">75% – 85%</span></td>
+            <td><span class="pill crit">&gt; 85%</span></td>
+          </tr>
+          <tr>
+            <td>Disco (%)</td>
+            <td>≤ 60%</td>
+            <td><span class="pill warn">80% – 90%</span></td>
+            <td><span class="pill crit">&gt; 90%</span></td>
+          </tr>
+          <tr>
+            <td>Rede (%)</td>
+            <td>30% – 70%</td>
+            <td><span class="pill warn">70% – 85%</span></td>
+            <td><span class="pill crit">&gt; 85%</span></td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="legend-note">
+        * a partir de “Alta utilização” os alertas são ativados.
+      </div>
+    </div>
+  </div>
+</div>
+
       </section>
 
       <section id="view-monitor" class="view">
         <div class="view-header">
           <h1 class="view-title">
             <i class="fas fa-chart-line"></i>
-            Monitoramento em Tempo Real
+            Monitoramento (Histórico de Registros)
           </h1>
         </div>
 
-        <div class="charts-grid">
-          <div class="chart-container">
-            <div class="chart-header">
-              <h3 class="chart-title">
-                <i class="fas fa-pulse"></i>
-                Linha do Tempo
-              </h3>
-            </div>
-            <div class="chart-content">
-              <canvas id="realTimeChart"></canvas>
-            </div>
-          </div>
-
-          <div class="chart-container">
-            <div class="chart-header">
-              <h3 class="chart-title">
-                <i class="fas fa-microchip"></i>
-                CPU por Núcleo
-              </h3>
-              <div class="chart-controls">
-                <label class="switch">
-                  <input type="checkbox" id="showCpuCores">
-                  <span class="slider"></span>
-                </label>
-                <span class="switch-label">Exibir núcleos</span>
-              </div>
-            </div>
-            <div class="chart-content">
-              <canvas id="cpuCoresChart"></canvas>
-            </div>
-          </div>
-        </div>
 
         <div class="table-section">
           <div class="table-header">
@@ -472,7 +511,7 @@
         <div class="view-header">
           <h1 class="view-title">
             <i class="fas fa-clock-rotate-left"></i>
-            Histórico
+            Histórico de Alertas
           </h1>
         </div>
 
@@ -552,86 +591,86 @@
   <script src="../js/dash.js"></script>
 
   <script>
-     function validarEmail(email) {
-        const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return regex.test(email);
+    function validarEmail(email) {
+      const regex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return regex.test(email);
     }
 
     // 🔐 Validação no estilo Microsoft
     function validarSenhaMicrosoft(senha) {
-        // Pelo menos 8 caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 símbolo
-        const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
-        return regex.test(senha);
-    } 
+      // Pelo menos 8 caracteres, 1 maiúscula, 1 minúscula, 1 número e 1 símbolo
+      const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
+      return regex.test(senha);
+    }
 
     function cadastrarUser() {
 
-      var nomeVar =  usuarioNome.value;
-      var emailUserVar = usuarioEmail.value; 
-      var tipoUserVar = tipo_permissao.value; 
+      var nomeVar = usuarioNome.value;
+      var emailUserVar = usuarioEmail.value;
+      var tipoUserVar = tipo_permissao.value;
       var senhaUserVar = usuarioSenha.value;
 
 
-        // === Validações principais ===
-        if (!nomeVar || !emailUserVar || !tipoUserVar || !senhaUserVar) {
+      // === Validações principais ===
+      if (!nomeVar || !emailUserVar || !tipoUserVar || !senhaUserVar) {
         alert("Preencha todos os campos obrigatórios!");
         return false;
       }
 
-        if (!validarSenhaMicrosoft(senhaUserVar)) {
-            alert(
-                "A senha deve seguir o formato da Microsoft:\n\n" +
-                "• Mínimo de 8 caracteres\n" +
-                "• Pelo menos 1 letra maiúscula\n" +
-                "• Pelo menos 1 letra minúscula\n" +
-                "• Pelo menos 1 número\n" +
-                "• Pelo menos 1 caractere especial (!@#$%^&* etc.)"
-            );
-            return false;
-        }
-
-
-        fetch("/usuarios/cadastrarUser", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-                // crie um atributo que recebe o valor recuperado aqui
-                // Agora vá para o arquivo routes/usuario.js
-                nomeServer: nomeVar,
-                emailUserServer : emailUserVar, 
-                tipoUserServer : tipoUserVar, 
-                senhaUserServer : senhaUserVar
-            }),
-        })
-            .then(async resposta => {
-                var migramos = await resposta.json()
-
-                console.log("testando..." + migramos)
-
-                if (resposta.ok) {
-
-                    alert("Usuário cadastrada com sucesso!")
-
-                    usuarioNome.value = ""; 
-                    usuarioEmail.value = ""; 
-                    usuarioSenha.value = "";
-
-                    //   setTimeout(() => {
-                    //     window.location = "login.html";
-                    //   }, "2000");
-
-                } else {
-                    alert("Houve um erro ao tentar realizar o cadastro!");
-                }
-            })
-            .catch(function (resposta) {
-                console.log(`#ERRO: ${resposta}`);
-
-            });
-
+      if (!validarSenhaMicrosoft(senhaUserVar)) {
+        alert(
+          "A senha deve seguir o formato da Microsoft:\n\n" +
+          "• Mínimo de 8 caracteres\n" +
+          "• Pelo menos 1 letra maiúscula\n" +
+          "• Pelo menos 1 letra minúscula\n" +
+          "• Pelo menos 1 número\n" +
+          "• Pelo menos 1 caractere especial (!@#$%^&* etc.)"
+        );
         return false;
+      }
+
+
+      fetch("/usuarios/cadastrarUser", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          // crie um atributo que recebe o valor recuperado aqui
+          // Agora vá para o arquivo routes/usuario.js
+          nomeServer: nomeVar,
+          emailUserServer: emailUserVar,
+          tipoUserServer: tipoUserVar,
+          senhaUserServer: senhaUserVar
+        }),
+      })
+        .then(async resposta => {
+          var migramos = await resposta.json()
+
+          console.log("testando..." + migramos)
+
+          if (resposta.ok) {
+
+            alert("Usuário cadastrada com sucesso!")
+
+            usuarioNome.value = "";
+            usuarioEmail.value = "";
+            usuarioSenha.value = "";
+
+            //   setTimeout(() => {
+            //     window.location = "login.html";
+            //   }, "2000");
+
+          } else {
+            alert("Houve um erro ao tentar realizar o cadastro!");
+          }
+        })
+        .catch(function (resposta) {
+          console.log(`#ERRO: ${resposta}`);
+
+        });
+
+      return false;
     }
 
 
