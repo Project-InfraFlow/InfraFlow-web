@@ -32,12 +32,12 @@
                     <div class="identify-user">
                         <div class="btn-user">
                             <i class="bi bi-person-circle" style="color: white;"></i>
-                            <p>Usuário</p>
+                            <p id="nome_user"></p>
                         </div>
                     </div>
 
                     <div class="btn-logout">
-                        <button>Sair</button>
+                        <button onclick="logout()">Sair</button>
                     </div>
                 </div>
             </div>
@@ -142,6 +142,17 @@
 </html>
 
 <script>
+    let nome_user = sessionStorage.NOME_USUARIO
+
+   let nome = document.getElementById("nome_user") 
+
+   nome.innerText = nome_user
+
+   function logout() {
+    sessionStorage.clear()
+    window.location = "./login.html";
+   }
+
     document.getElementById("generateToken").addEventListener("click", () => {
         const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
         let token = "";
