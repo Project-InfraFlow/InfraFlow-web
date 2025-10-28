@@ -115,9 +115,21 @@ function cadastrarUser(req, res) {
     }
 }
 
+function pesquisarUser(req, res) {
+    let param_pesq = req.params.pesquisa
+
+    usuarioModel.pesquisarUser(param_pesq)
+    .then(resultado => {
+        if (resultado.length > 0) {
+            res.status(200).json(resultado)
+        }
+    })
+}
+
 module.exports = {
     autenticar,
     cadastrar, 
     listarEmpresas, 
-    cadastrarUser
+    cadastrarUser, 
+    pesquisarUser
 };

@@ -20,5 +20,9 @@ router.post("/cadastrarUser", function (req, res) {
     usuarioController.cadastrarUser(req, res);
 })
 
+router.get("/pesquisarUser/:pesquisa", function (req, res) {
+     usuarioController.pesquisarUser(req, res); 
+})
+
 
 module.exports = router;

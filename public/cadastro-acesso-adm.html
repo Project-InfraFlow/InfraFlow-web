@@ -121,7 +121,7 @@
 
                 <div class="barra-pesquisa">
                     <button class="btn-search"><i class="bi bi-search"></i></button>
-                    <input type="text" class="ipt-barra" placeholder="Encontrar empresa">
+                    <input type="text" class="ipt-barra" placeholder="Encontrar empresa" id="ipt_pesquisa" onkeydown="pesquisarUser()">
                 </div>
 
                 <div class="titulo-itens">
@@ -240,7 +240,7 @@
 
             finalizarAguardar();
             return false;
-        } 
+        }
 
         if (!validarSenhaMicrosoft(senhaVar)) {
             alert(
@@ -341,6 +341,35 @@
                 divUserInfos.innerHTML += txt_users;
             }
         });
+    }
+
+    function pesquisarUser() {
+        let parametroBusca = ipt_pesquisa.value;
+
+        fetch(`/usuarios/pesquisarUser/${parametroBusca}`, {
+            method: "GET"
+        })
+            .then(async resposta => {
+                var users_encontrados = await resposta.json();
+                var divUserInfos = document.getElementById('txt_users');
+                let htmlUsers = ''; // acumula aqui
+
+                 var divUserInfos = document.getElementById('txt_users');
+
+            for (let i = empresasGerais.length - 1; i >= 0; i--) {
+                var txt_users = `
+                <div class="linha-empresa">
+                    <p class="item-linha">${empresasGerais[i].id_empresa}</p>
+                    <p class="item-linha">${empresasGerais[i].razao_social}</p>
+                    <p class="item-linha">${empresasGerais[i].cnpj}</p>
+                    <p class="item-linha">${empresasGerais[i].nome}</p>
+                    <p class="item-linha">${empresasGerais[i].status}</p>
+                </div>
+            `;
+
+                divUserInfos.innerHTML += txt_users;
+            }
+            });
     }
 
     function carregarPage() {
