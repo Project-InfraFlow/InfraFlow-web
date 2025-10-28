@@ -4,6 +4,7 @@ const maquina = {
     so: "Ubuntu 22.04 LTS",
 };
 
+// O QUE É THRESHOLDS????
 const thresholds = {
     cpu: 80,
     memoria: 80,
