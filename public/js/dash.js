@@ -12,6 +12,16 @@ const thresholds = {
     rede: 150
 };
 
+const MAX_REDE_Mbps = 200;
+const normalidade = {
+    cpu: 70,
+    memoria: 75,
+    disco: 60,
+    rede: 70
+};
+const flatLine = (n, val) => Array.from({ length: n }, () => val);
+const toRedePct = (mbps) => Math.max(0, Math.min(100, (mbps / MAX_REDE_Mbps) * 100));
+
 let estadoApp = {
     tempoRealAtivo: true,
     paginaAtual: 1,
@@ -288,18 +298,19 @@ class GerenciadorInterface {
         if (dadosTempoReal.length === 0) return;
 
         const ultimoDado = dadosTempoReal[dadosTempoReal.length - 1];
+        const redePct = toRedePct(ultimoDado.rede);
 
         // Atualizar valores
         document.getElementById('kpiCpuValue').textContent = `${ultimoDado.cpu.toFixed(1)}%`;
         document.getElementById('kpiMemoriaValue').textContent = `${ultimoDado.memoria.toFixed(1)}%`;
         document.getElementById('kpiDiscoValue').textContent = `${ultimoDado.disco.toFixed(1)}%`;
-        document.getElementById('kpiRedeValue').textContent = `${ultimoDado.rede.toFixed(1)} Mbps`;
+        document.getElementById('kpiRedeValue').textContent = `${redePct.toFixed(1)}%`;
 
         // Atualizar progresso
         document.getElementById('cpuProgress').style.width = `${ultimoDado.cpu}%`;
         document.getElementById('memoriaProgress').style.width = `${ultimoDado.memoria}%`;
         document.getElementById('discoProgress').style.width = `${ultimoDado.disco}%`;
-        document.getElementById('redeProgress').style.width = `${(ultimoDado.rede / 200) * 100}%`;
+        document.getElementById('redeProgress').style.width = `${redePct}%`;
 
         // Atualizar tendências
         estadoApp.ultimosValoresTrend.cpu.push(ultimoDado.cpu);
@@ -526,6 +537,7 @@ function inicializarDados() {
 
     console.log('Dados inicializados:', dadosTempoReal.length, 'pontos em tempo real');
 }
+
 function inicializarGraficos() {
     console.log('Inicializando gráficos...');
     const ctx1 = document.getElementById('realTimeChart')?.getContext('2d');
@@ -534,6 +546,7 @@ function inicializarGraficos() {
         console.log('Contextos de canvas não encontrados');
         return;
     }
+
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -544,11 +557,10 @@ function inicializarGraficos() {
                 labels: {
                     usePointStyle: true,
                     padding: 15,
-                    font: {
-                        family: 'Inter',
-                        size: 12
-                    },
-                    color: '#0f172a'
+                    font: { family: 'Inter', size: 12 },
+                    color: '#0f172a',
+                    // esconde itens "(limite)" na legenda para não poluir
+                    filter: (item) => !/\(limite\)/i.test(item.text)
                 },
                 onClick: (evt, legendItem, legend) => {
                     const index = legendItem.datasetIndex;
@@ -566,164 +578,123 @@ function inicializarGraficos() {
                 borderWidth: 1,
                 cornerRadius: 8,
                 displayColors: true,
-                font: {
-                    family: 'Inter'
-                }
+                font: { family: 'Inter' }
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
                 max: 100,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
-                },
-                ticks: {
-                    font: {
-                        family: 'Inter',
-                        size: 11
-                    },
-                    color: '#64748b'
-                }
+                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' }
             },
             x: {
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
-                },
-                ticks: {
-                    font: {
-                        family: 'Inter',
-                        size: 11
-                    },
-                    color: '#64748b'
-                }
+                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' }
             }
         },
-        animation: {
-            duration: 750,
-            easing: 'easeInOutQuart'
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        }
+        animation: { duration: 750, easing: 'easeInOutQuart' },
+        interaction: { intersect: false, mode: 'index' }
     };
+
+    // ===== Gráfico Tempo Real
     graficos.tempoReal = new Chart(ctx1, {
         type: 'line',
         data: {
             labels: [],
             datasets: [
-                {
+                { // 0 - CPU
                     label: 'CPU (%)',
                     data: [],
                     borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(59,130,246,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.cpu
                 },
-                {
+                { // 1 - Memória
                     label: 'Memória (%)',
                     data: [],
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(16,185,129,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.memoria
                 },
-                {
+                { // 2 - Disco
                     label: 'Disco (%)',
                     data: [],
                     borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(245,158,11,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.disco
                 },
-                {
+                { // 3 - Rede (agora em %)
                     label: 'Rede (%)',
                     data: [],
                     borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(139,92,246,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.rede
-                }
+                },
+
+                // Linhas fixas (limites)
+                { label: 'CPU (limite)', data: [], borderColor: '#3b82f6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Memória (limite)', data: [], borderColor: '#10b981', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Disco (limite)', data: [], borderColor: '#f59e0b', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Rede (limite)', data: [], borderColor: '#8b5cf6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 }
             ]
         },
         options: commonOptions
     });
+
+    // ===== Gráfico Histórico
     graficos.historico = new Chart(ctx2, {
         type: 'line',
         data: {
             labels: [],
             datasets: [
-                {
+                { // 0
                     label: 'CPU Média (%)',
                     data: [],
                     borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(59,130,246,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.cpu
                 },
-                {
+                { // 1
                     label: 'Memória Média (%)',
                     data: [],
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(16,185,129,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.memoria
                 },
-                {
+                { // 2
                     label: 'Disco Médio (%)',
                     data: [],
                     borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(245,158,11,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.disco
                 },
-                {
+                { // 3 (rede em %)
                     label: 'Rede Média (%)',
                     data: [],
                     borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(139,92,246,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.rede
-                }
+                },
+
+                // Linhas fixas (limites)
+                { label: 'CPU (limite)', data: [], borderColor: '#3b82f6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Memória (limite)', data: [], borderColor: '#10b981', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Disco (limite)', data: [], borderColor: '#f59e0b', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Rede (limite)', data: [], borderColor: '#8b5cf6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 }
             ]
         },
         options: commonOptions
     });
 }
-
 
 
 function atualizarGraficoTempoReal() {
@@ -732,20 +703,33 @@ function atualizarGraficoTempoReal() {
     const maxPontos = 50;
     const dadosLimitados = dadosTempoReal.slice(-maxPontos);
 
+    // labels
     graficos.tempoReal.data.labels = dadosLimitados.map(d =>
         new Date(d.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     );
 
+    // séries principais
     graficos.tempoReal.data.datasets[0].data = dadosLimitados.map(d => d.cpu);
     graficos.tempoReal.data.datasets[1].data = dadosLimitados.map(d => d.memoria);
     graficos.tempoReal.data.datasets[2].data = dadosLimitados.map(d => d.disco);
-    graficos.tempoReal.data.datasets[3].data = dadosLimitados.map(d => (d.rede / 200) * 100); 
+    graficos.tempoReal.data.datasets[3].data = dadosLimitados.map(d => toRedePct(d.rede)); // REDE EM %
 
-    // Aplicar filtros
+    // linhas de normalidade
+    const len = graficos.tempoReal.data.labels.length;
+    graficos.tempoReal.data.datasets[4].data = flatLine(len, normalidade.cpu);
+    graficos.tempoReal.data.datasets[5].data = flatLine(len, normalidade.memoria);
+    graficos.tempoReal.data.datasets[6].data = flatLine(len, normalidade.disco);
+    graficos.tempoReal.data.datasets[7].data = flatLine(len, normalidade.rede);
+
+    // filtros (sincroniza visibilidade)
     graficos.tempoReal.data.datasets[0].hidden = !estadoApp.filtros.cpu;
     graficos.tempoReal.data.datasets[1].hidden = !estadoApp.filtros.memoria;
     graficos.tempoReal.data.datasets[2].hidden = !estadoApp.filtros.disco;
     graficos.tempoReal.data.datasets[3].hidden = !estadoApp.filtros.rede;
+    graficos.tempoReal.data.datasets[4].hidden = !estadoApp.filtros.cpu;
+    graficos.tempoReal.data.datasets[5].hidden = !estadoApp.filtros.memoria;
+    graficos.tempoReal.data.datasets[6].hidden = !estadoApp.filtros.disco;
+    graficos.tempoReal.data.datasets[7].hidden = !estadoApp.filtros.rede;
 
     graficos.tempoReal.update('none');
 }
@@ -761,77 +745,46 @@ function atualizarGraficoHistorico() {
 
     for (let i = 0; i < dados.length; i += intervalo) {
         const grupo = dados.slice(i, i + intervalo);
-        if (grupo.length === 0) continue;
+        if (!grupo.length) continue;
 
         const media = {
             timestamp: grupo[Math.floor(grupo.length / 2)].timestamp,
             cpu: grupo.reduce((acc, d) => acc + d.cpu, 0) / grupo.length,
             memoria: grupo.reduce((acc, d) => acc + d.memoria, 0) / grupo.length,
             disco: grupo.reduce((acc, d) => acc + d.disco, 0) / grupo.length,
-            rede: grupo.reduce((acc, d) => acc + d.rede, 0) / grupo.length
+            redePct: grupo.reduce((acc, d) => acc + toRedePct(d.rede), 0) / grupo.length // REDE EM %
         };
         dadosAgregados.push(media);
     }
 
     graficos.historico.data.labels = dadosAgregados.map(d =>
         new Date(d.timestamp).toLocaleString('pt-BR', {
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
         })
     );
 
     graficos.historico.data.datasets[0].data = dadosAgregados.map(d => d.cpu);
     graficos.historico.data.datasets[1].data = dadosAgregados.map(d => d.memoria);
     graficos.historico.data.datasets[2].data = dadosAgregados.map(d => d.disco);
-    graficos.historico.data.datasets[3].data = dadosAgregados.map(d => (d.rede / 200) * 100);
+    graficos.historico.data.datasets[3].data = dadosAgregados.map(d => d.redePct); // % aqui
+
+    const lenH = graficos.historico.data.labels.length;
+    graficos.historico.data.datasets[4].data = flatLine(lenH, normalidade.cpu);
+    graficos.historico.data.datasets[5].data = flatLine(lenH, normalidade.memoria);
+    graficos.historico.data.datasets[6].data = flatLine(lenH, normalidade.disco);
+    graficos.historico.data.datasets[7].data = flatLine(lenH, normalidade.rede);
 
     graficos.historico.data.datasets[0].hidden = !estadoApp.filtros.cpu;
     graficos.historico.data.datasets[1].hidden = !estadoApp.filtros.memoria;
     graficos.historico.data.datasets[2].hidden = !estadoApp.filtros.disco;
     graficos.historico.data.datasets[3].hidden = !estadoApp.filtros.rede;
+    graficos.historico.data.datasets[4].hidden = !estadoApp.filtros.cpu;
+    graficos.historico.data.datasets[5].hidden = !estadoApp.filtros.memoria;
+    graficos.historico.data.datasets[6].hidden = !estadoApp.filtros.disco;
+    graficos.historico.data.datasets[7].hidden = !estadoApp.filtros.rede;
 
     graficos.historico.update();
 }
-
-// function atualizarGraficoCpuNucleos() {
-//     if (!graficos.cpuNucleos) return;
-
-//     const checkbox = document.getElementById('showCpuCores');
-//     if (!checkbox || !checkbox.checked) {
-//         graficos.cpuNucleos.data.datasets = [];
-//         graficos.cpuNucleos.update();
-//         return;
-//     }
-
-//     const maxPontos = 30;
-//     const dadosLimitados = dadosTempoReal.slice(-maxPontos);
-
-//     if (dadosLimitados.length === 0) return;
-
-//     graficos.cpuNucleos.data.labels = dadosLimitados.map(d =>
-//         new Date(d.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-//     );
-
-//     const cores = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6'];
-//     graficos.cpuNucleos.data.datasets = [];
-
-//     for (let i = 0; i < 8; i++) {
-//         graficos.cpuNucleos.data.datasets.push({
-//             label: `Núcleo ${i + 1}`,
-//             data: dadosLimitados.map(d => d.nucleos[i] || 0),
-//             borderColor: cores[i],
-//             backgroundColor: cores[i] + '20',
-//             tension: 0.4,
-//             pointRadius: 2,
-//             borderWidth: 2
-//         });
-//     }
-
-//     graficos.cpuNucleos.options.plugins.legend.display = true;
-//     graficos.cpuNucleos.update();
-// }
 
 // === TABELAS ===
 function atualizarTabelaMonitoramento() {
