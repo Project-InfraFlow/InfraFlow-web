@@ -294,42 +294,65 @@ class GerenciadorInterface {
         });
     }
 
+
     atualizarKPIs() {
         if (dadosTempoReal.length === 0) return;
 
         const ultimoDado = dadosTempoReal[dadosTempoReal.length - 1];
         const redePct = toRedePct(ultimoDado.rede);
 
-        // Atualizar valores
-        document.getElementById('kpiCpuValue').textContent = `${ultimoDado.cpu.toFixed(1)}%`;
-        document.getElementById('kpiMemoriaValue').textContent = `${ultimoDado.memoria.toFixed(1)}%`;
-        document.getElementById('kpiDiscoValue').textContent = `${ultimoDado.disco.toFixed(1)}%`;
-        document.getElementById('kpiRedeValue').textContent = `${redePct.toFixed(1)}%`;
+        const comps = [
+            { key: 'cpu', valor: ultimoDado.cpu, maxSaudavel: 70, maxCritico: 85, cardId: 'kpiCpu', valueId: 'kpiCpuValue', progressId: 'cpuProgress' },
+            { key: 'memoria', valor: ultimoDado.memoria, maxSaudavel: 75, maxCritico: 85, cardId: 'kpiMemoria', valueId: 'kpiMemoriaValue', progressId: 'memoriaProgress' },
+            { key: 'disco', valor: ultimoDado.disco, maxSaudavel: 60, maxCritico: 90, cardId: 'kpiDisco', valueId: 'kpiDiscoValue', progressId: 'discoProgress' },
+            { key: 'rede', valor: redePct, maxSaudavel: 70, maxCritico: 85, cardId: 'kpiRede', valueId: 'kpiRedeValue', progressId: 'redeProgress' }
+        ];
 
-        // Atualizar progresso
-        document.getElementById('cpuProgress').style.width = `${ultimoDado.cpu}%`;
-        document.getElementById('memoriaProgress').style.width = `${ultimoDado.memoria}%`;
-        document.getElementById('discoProgress').style.width = `${ultimoDado.disco}%`;
-        document.getElementById('redeProgress').style.width = `${redePct}%`;
+        comps.forEach(c => {
+            const v = Math.max(0, Math.min(100, c.valor));
+            const valEl = document.getElementById(c.valueId);
+            const progEl = document.getElementById(c.progressId);
+            const card = document.getElementById(c.cardId);
 
-        // Atualizar tendências
+            if (valEl) valEl.textContent = `${v.toFixed(1)}%`;
+            if (progEl) progEl.style.width = `${v}%`;
+
+            let estado = 'Saudável';
+            let cor = '#22c55e';
+            if (v > c.maxSaudavel && v <= c.maxCritico) { estado = 'Alta Utilização'; cor = '#facc15'; }
+            else if (v > c.maxCritico) { estado = 'Saturação'; cor = '#ef4444'; }
+
+            if (card) {
+                let stateEl = card.querySelector('.kpi-state');
+                if (!stateEl) {
+                    stateEl = document.createElement('span');
+                    stateEl.className = 'kpi-state';
+                    stateEl.style.display = 'inline-flex';
+                    stateEl.style.alignItems = 'center';
+                    stateEl.style.gap = '6px';
+                    stateEl.style.fontWeight = '700';
+                    stateEl.style.fontSize = '12px';
+                    stateEl.style.marginLeft = '8px';
+                    const labelHost = card.querySelector('.kpi-label') || card.querySelector('.kpi-header') || card;
+                    labelHost.appendChild(stateEl);
+                }
+                stateEl.innerHTML = `<i class="fas fa-circle" style="font-size:8px;color:${cor}"></i><span>${estado}</span>`;
+
+                const label = card.querySelector('.kpi-label');
+                if (label) label.style.color = cor;
+
+                const progressBar = card.querySelector('.progress-bar');
+                if (progressBar) progressBar.style.backgroundColor = cor;
+            }
+        });
+
         estadoApp.ultimosValoresTrend.cpu.push(ultimoDado.cpu);
         estadoApp.ultimosValoresTrend.memoria.push(ultimoDado.memoria);
         estadoApp.ultimosValoresTrend.disco.push(ultimoDado.disco);
         estadoApp.ultimosValoresTrend.rede.push(ultimoDado.rede);
 
-        // Manter apenas últimos 10 valores para cálculo de tendência
-        Object.keys(estadoApp.ultimosValoresTrend).forEach(key => {
-            if (estadoApp.ultimosValoresTrend[key].length > 10) {
-                estadoApp.ultimosValoresTrend[key].shift();
-            }
-        });
-
-        // Atualizar status dos cards
-        const status = this.calcularStatusSistema();
-        ['kpiCpu', 'kpiMemoria', 'kpiDisco', 'kpiRede'].forEach(id => {
-            const card = document.getElementById(id);
-            card.className = `kpi-card ${status}`;
+        Object.keys(estadoApp.ultimosValoresTrend).forEach(k => {
+            if (estadoApp.ultimosValoresTrend[k].length > 10) estadoApp.ultimosValoresTrend[k].shift();
         });
 
         this.atualizarTendencias();
