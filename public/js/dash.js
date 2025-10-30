@@ -160,6 +160,8 @@ function iniciarMockTempoReal() {
         const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
         const ponto = mockGen.proximoPonto(edge);
 
+        ponto.portico = edge;
+
         dadosTempoReal.push(ponto);
         estadoApp.dadosCompletos.push(ponto);
 
@@ -187,6 +189,11 @@ function pararMockTempoReal() {
         clearInterval(timerMock);
         console.log('Mock tempo real parado');
     }
+}
+
+// === HELPER: nome do pórtico ativo ===
+function getPorticoAtivo() {
+  return document.getElementById('edgeSelector')?.value || maquina?.nome || 'Pórtico';
 }
 
 // === FONTE REAL (DB) — DEIXAR COMENTADA AGORA, SCRINT 3 LIBERAMOS ===
@@ -532,12 +539,14 @@ function inicializarDados() {
         const ponto = mockGen.proximoPonto('INFRA-EDGE-01');
         ponto.timestamp = timestamp;
         ponto.ts = timestamp.toISOString().slice(0, 19).replace('T', ' ');
+        ponto.portico = 'INFRA-EDGE-01-Itápolis (SP-333)';
         dadosHistoricos.push(ponto);
     }
     estadoApp.dadosCompletos = [...dadosHistoricos];
 
     for (let i = 0; i < 10; i++) {
         const ponto = mockGen.proximoPonto('INFRA-EDGE-01');
+        ponto.portico = 'INFRA-EDGE-01-Itápolis (SP-333)';
         dadosTempoReal.push(ponto);
     }
 
@@ -794,73 +803,85 @@ function atualizarGraficoHistorico() {
 
 // === TABELAS ===
 function atualizarTabelaMonitoramento() {
-    const tbody = document.getElementById('monitorTableBody');
-    if (!tbody) return;
+  const tbody = document.getElementById('monitorTableBody');
+  if (!tbody) return;
 
-    const dados = dadosTempoReal.slice().reverse().slice(0, estadoApp.intervaloPaginacao);
-    tbody.innerHTML = '';
+  const dados = dadosTempoReal.slice().reverse().slice(0, estadoApp.intervaloPaginacao);
+  tbody.innerHTML = '';
 
-    dados.forEach(dado => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${new Date(dado.timestamp).toLocaleString('pt-BR')}</td>
-            <td>${dado.cpu.toFixed(1)}%</td>
-            <td>${dado.memoria.toFixed(1)}%</td>
-            <td>${dado.disco.toFixed(1)}%</td>
-            <td>${dado.rede.toFixed(1)} Mbps</td>
-        `;
-        tbody.appendChild(tr);
-    });
+  const porticoAtual = getPorticoAtivo();
 
-    const totalItens = dadosTempoReal.length;
-    document.getElementById('monitorPaginationInfo').textContent =
-        `Mostrando ${Math.min(estadoApp.intervaloPaginacao, totalItens)} de ${totalItens} registros`;
+  dados.forEach(dado => {
+      const tr = document.createElement('tr');
+      // se o ponto já trouxer .portico, prioriza; senão usa o ativo
+      const portico = dado.portico || porticoAtual;
+
+      tr.innerHTML = `
+          <td>${portico}</td>
+          <td>${new Date(dado.timestamp).toLocaleString('pt-BR')}</td>
+          <td>${dado.cpu.toFixed(1)}%</td>
+          <td>${dado.memoria.toFixed(1)}%</td>
+          <td>${dado.disco.toFixed(1)}%</td>
+          <td>${dado.rede.toFixed(1)} Mbps</td>
+      `;
+      tbody.appendChild(tr);
+  });
+
+  const totalItens = dadosTempoReal.length;
+  document.getElementById('monitorPaginationInfo').textContent =
+      `Mostrando ${Math.min(estadoApp.intervaloPaginacao, totalItens)} de ${totalItens} registros`;
 }
+
 
 function atualizarTabelaHistorico() {
-    const tbody = document.getElementById('historicoTableBody');
-    if (!tbody) return;
+  const tbody = document.getElementById('historicoTableBody');
+  if (!tbody) return;
 
-    const dadosAgregados = [];
-    const agora = new Date();
+  const dadosAgregados = [];
+  const agora = new Date();
+  const porticoAtual = getPorticoAtivo();
 
-    for (let i = 10; i >= 0; i--) {
-        const inicio = new Date(agora.getTime() - (i + 1) * 60 * 60 * 1000);
-        const fim = new Date(agora.getTime() - i * 60 * 60 * 1000);
-        const ponto = mockGen.proximoPonto(document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01');
+  for (let i = 10; i >= 0; i--) {
+      const inicio = new Date(agora.getTime() - (i + 1) * 60 * 60 * 1000);
+      const fim = new Date(agora.getTime() - i * 60 * 60 * 1000);
+      const edge = porticoAtual;
+      const ponto = mockGen.proximoPonto(edge);
 
-        const periodoTexto = `${inicio.toLocaleDateString('pt-BR')} ${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
-        const key = `${inicio.toISOString()}_${fim.toISOString()}`;
+      const periodoTexto = `${inicio.toLocaleDateString('pt-BR')} ${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+      const key = `${inicio.toISOString()}_${fim.toISOString()}`;
 
-        dadosAgregados.push({
-            key,
-            periodo: periodoTexto,
-            cpu: ponto.cpu,
-            memoria: ponto.memoria,
-            disco: ponto.disco,
-            rede: ponto.rede
-        });
-    }
+      dadosAgregados.push({
+          key, 
+          periodo: periodoTexto,
+          portico: edge,
+          cpu: ponto.cpu,
+          memoria: ponto.memoria,
+          disco: ponto.disco,
+          rede: ponto.rede
+      });
+  }
 
-    tbody.innerHTML = '';
-    dadosAgregados.forEach(dado => {
-        const acaoSalva = historicoAcoes[dado.key] || '';
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-            <td>${dado.periodo}</td>
-            <td>${dado.cpu.toFixed(1)}%</td>
-            <td>${dado.memoria.toFixed(1)}%</td>
-            <td>${dado.disco.toFixed(1)}%</td>
-            <td>${dado.rede.toFixed(1)} Mbps</td>
-            <td data-key="${dado.key}">
-              ${acaoSalva
-                ? `<span class="acao-text">${acaoSalva}</span>`
-                : `<button class="btn btn-primary historico-acao-btn" data-key="${dado.key}"><i class="fas fa-pen"></i> Registrar</button>`}
-            </td>
-        `;
-        tbody.appendChild(tr);
-    });
+  tbody.innerHTML = '';
+  dadosAgregados.forEach(dado => {
+      const acaoSalva = historicoAcoes[dado.key] || '';
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+          <td>${dado.portico}</td>
+          <td>${dado.periodo}</td>
+          <td>${dado.cpu.toFixed(1)}%</td>
+          <td>${dado.memoria.toFixed(1)}%</td>
+          <td>${dado.disco.toFixed(1)}%</td>
+          <td>${dado.rede.toFixed(1)} Mbps</td>
+          <td data-key="${dado.key}">
+            ${acaoSalva
+              ? `<span class="acao-text">${acaoSalva}</span>`
+              : `<button class="btn btn-primary historico-acao-btn" data-key="${dado.key}"><i class="fas fa-pen"></i> Registrar</button>`}
+          </td>
+      `;
+      tbody.appendChild(tr);
+  });
 }
+
 
 // === EXPORTAÇÃO CSV ===
 function exportarCSV(dados, nomeArquivo) {

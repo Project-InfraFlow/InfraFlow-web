@@ -446,7 +446,7 @@
                   <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
                   <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
                 </div>
-               
+
               </div>
             </div>
 
@@ -505,10 +505,10 @@
                   <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
                   <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
                 </div>
-               
+
               </div>
+            </div>
           </div>
-        </div>
       </section>
 
       <section id="view-historico" class="view">
@@ -518,6 +518,8 @@
             Histórico de Alertas
           </h1>
         </div>
+
+
 
         <div class="filters-section">
           <div class="filter-group">
@@ -546,6 +548,25 @@
             Aplicar Filtro
           </button>
         </div>
+
+        <div class="kpis-historico">
+          <div class="kpi-card">
+            <h4>Alertas no Período</h4>
+            <p>36</p>
+          </div>
+          <div class="kpi-card">
+            <h4>Horário de Pico de Utilização</h4>
+            <p>17h às 18h • Maior carga simultânea registrada</p>
+            <small style="display:block;font-size:12px;color:#64748b;margin-top:4px">
+              CPU média 82% • Rede 96 Mbps - Tráfego intenso em 2 pórticos
+            </small>
+          </div>
+          <div class="kpi-card">
+            <h4>Pórticos Afetados</h4>
+            <p>2 de 4</p>
+          </div>
+        </div>
+
 
         <div class="chart-container">
           <div class="chart-header">
@@ -576,6 +597,7 @@
             <table class="data-table">
               <thead>
                 <tr>
+                  <th><i class="fas fa-server"></i> Pórtico</th>
                   <th><i class="fas fa-clock"></i> Período</th>
                   <th><i class="fas fa-microchip"></i> CPU Média (%)</th>
                   <th><i class="fas fa-memory"></i> Memória Média (%)</th>
