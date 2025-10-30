@@ -383,10 +383,6 @@
             <i class="fas fa-server"></i>
             Máquina
           </button>
-          <button class="tab-btn" data-tab="componente">
-            <i class="fas fa-cog"></i>
-            Componente
-          </button>
         </div>
 
         <div class="cadastro-content">
@@ -431,6 +427,13 @@
             </form>
 
             <div class="listar-users">
+
+
+              <div class="titulo">
+                <i class="bi bi-person-fill-add controlador"></i>
+                <h1>Usuários Cadastrados</h1>
+              </div>
+
               <div class="barra-infos">
                 <p>ID</p>
                 <p>Nome</p>
@@ -438,10 +441,55 @@
                 <p>Acesso</p>
                 <p>Ações</p>
               </div>
+
               <div class="infos-user">
                 <p>1</p>
                 <p>Vinicius Melo</p>
-                <p>ViniciusMelo@gmail.com</p>
+                <p>viniciusmelo@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-user">
+                <p>2</p>
+                <p>Rafael Brandão</p>
+                <p>rafaelbrandão@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-user">
+                <p>3</p>
+                <p>Mariana Silva</p>
+                <p>marianasilva@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-user">
+                <p>4</p>
+                <p>Marcelo Noronha</p>
+                <p>marcelonoronha@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-user">
+                <p>5</p>
+                <p>Vivian Silva</p>
+                <p>viviansilva@ecorodovias.com</p>
                 <p>Comum</p>
                 <div class="acoes">
                   <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
@@ -453,167 +501,218 @@
 
           </div>
 
-          <div id="tab-maquina" class="tab-content">
-            <form class="cadastro-form" id="maquinaForm">
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="maquinaNome">Nome</label>
-                  <input type="text" id="maquinaNome" required>
-                </div>
-                <div class="form-group">
-                  <label for="maquinaSo">Sistema Operacional</label>
-                  <input type="text" id="maquinaSo" required>
-                </div>
-              </div>
-              <div class="form-row">
-                <div class="form-group">
-                  <label for="maquinaLocalizacao">Localização</label>
-                  <input type="text" id="maquinaLocalizacao" required>
-                </div>
-                <div class="form-group">
-                  <label for="maquinaKm">KM</label>
-                  <input type="number" id="maquinaKm" step="0.1">
-                </div>
-              </div>
-              <div class="form-actions">
-                <button type="submit" class="btn btn-primary">
-                  <i class="fas fa-save"></i>
-                  Salvar
-                </button>
-                <button type="reset" class="btn btn-secondary">
-                  <i class="fas fa-times"></i>
-                  Cancelar
-                </button>
-              </div>
-            </form>
+        <div id="tab-maquina" class="tab-content">
 
-            <div class="listar-users">
-              <div class="barra-infos">
-                <p>ID</p>
-                <p>Nome</p>
-                <p>Sistema Op.</p>
-                <p>Localização</p>
-                <p>KM</p>
-                <p>Ações</p>
-              </div>
-              <div class="infos-user">
-                <p>1</p>
-                <p>INFRA-EDGE-01-Itápolis</p>
-                <p>Ubuntu 22.04</p>
-                <p>SP-333</p>
-                <p>91</p>
-                <div class="acoes">
-                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
-                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
-                </div>
+  <!-- Formulário de cadastro -->
+  <form class="cadastro-form" id="maquinaForm">
+    <div class="form-row">
+      <div class="form-group">
+        <label for="maquinaNome">Nome</label>
+        <input type="text" id="maquinaNome" required>
+      </div>
+      <div class="form-group">
+        <label for="maquinaSo">Sistema Operacional</label>
+        <input type="text" id="maquinaSo" required>
+      </div>
+    </div>
 
-              </div>
-            </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="maquinaLocalizacao">Localização</label>
+        <input type="text" id="maquinaLocalizacao" required>
+      </div>
+      <div class="form-group">
+        <label for="maquinaKm">KM</label>
+        <input type="number" id="maquinaKm" step="0.1">
+      </div>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn btn-primary">
+        <i class="fas fa-save"></i>
+        Salvar
+      </button>
+      <button type="reset" class="btn btn-secondary">
+        <i class="fas fa-times"></i>
+        Cancelar
+      </button>
+    </div>
+  </form>
+
+  <!-- Listagem de máquinas -->
+  <div class="listar-maquinas">
+
+    <div class="titulo">
+      <i class="bi bi-hdd-stack controlador"></i>
+      <h1>Pórticos Cadastrados</h1>
+    </div>
+
+    <div class="barra-infos-maq">
+      <p>ID</p>
+      <p>Nome</p>
+      <p>Sistema Op.</p>
+      <p>Localização</p>
+      <p>KM</p>
+      <p>Ações</p>
+    </div>
+
+    <!-- Registros -->
+    <div class="infos-maquina">
+      <p>1</p>
+      <p>INFRA-EDGE-01-Itápolis</p>
+      <p>Ubuntu 22.04</p>
+      <p>SP-333</p>
+      <p>101</p>
+      <div class="acoes">
+        <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+        <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+      </div>
+    </div>
+
+    <div class="infos-maquina">
+      <p>2</p>
+      <p>INFRA-EDGE-02-Jaboticabal</p>
+      <p>Ubuntu 22.04</p>
+      <p>SP-099</p>
+      <p>15</p>
+      <div class="acoes">
+        <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+        <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+      </div>
+    </div>
+
+    <div class="infos-maquina">
+      <p>3</p>
+      <p>INFRA-EDGE-03-São José dos Santos</p>
+      <p>Ubuntu 22.04</p>
+      <p>KM-414</p>
+      <p>414</p>
+      <div class="acoes">
+        <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+        <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+      </div>
+    </div>
+
+    <div class="infos-maquina">
+      <p>4</p>
+      <p>INFRA-EDGE-04-Itaguaí</p>
+      <p>Ubuntu 22.04</p>
+      <p>SP-050</p>
+      <p>221</p>
+      <div class="acoes">
+        <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+        <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+  </div>
+  </section>
+
+  <section id="view-historico" class="view">
+    <div class="view-header">
+      <h1 class="view-title">
+        <i class="fas fa-clock-rotate-left"></i>
+        Histórico de Alertas
+      </h1>
+    </div>
+
+
+
+    <div class="filters-section">
+      <div class="filter-group">
+        <label for="historicoPeriodo">Período</label>
+        <select id="historicoPeriodo">
+          <option value="5min">Últimos 5 minutos</option>
+          <option value="1h" selected>Última 1 hora</option>
+          <option value="24h">Últimas 24 horas</option>
+          <option value="custom">Personalizado</option>
+        </select>
+      </div>
+      <div class="filter-group custom-period" id="customPeriodInputs" style="display: none;">
+        <div class="period-inputs">
+          <div class="period-input">
+            <label for="historicoInicio">Início</label>
+            <input type="datetime-local" id="historicoInicio">
           </div>
-      </section>
-
-      <section id="view-historico" class="view">
-        <div class="view-header">
-          <h1 class="view-title">
-            <i class="fas fa-clock-rotate-left"></i>
-            Histórico de Alertas
-          </h1>
+          <div class="period-input">
+            <label for="historicoFim">Fim</label>
+            <input type="datetime-local" id="historicoFim">
+          </div>
         </div>
+      </div>
+      <button id="aplicarFiltroHistorico" class="btn btn-primary">
+        <i class="fas fa-filter"></i>
+        Aplicar Filtro
+      </button>
+    </div>
+
+    <div class="kpis-historico">
+      <div class="kpi-card">
+        <h4>Alertas no Período</h4>
+        <p>36</p>
+      </div>
+      <div class="kpi-card">
+        <h4>Horário de Pico de Utilização</h4>
+        <p>17h às 18h • Maior carga simultânea registrada</p>
+        <small style="display:block;font-size:12px;color:#64748b;margin-top:4px">
+          CPU média 82% • Rede 96 Mbps - Tráfego intenso em 2 pórticos
+        </small>
+      </div>
+      <div class="kpi-card">
+        <h4>Pórticos Afetados</h4>
+        <p>2 de 4</p>
+      </div>
+    </div>
 
 
+    <div class="chart-container">
+      <div class="chart-header">
+        <h3 class="chart-title">
+          <i class="fas fa-chart-area"></i>
+          Alertas
+        </h3>
+      </div>
+      <div class="chart-content">
+        <canvas id="historicalChart"></canvas>
+      </div>
+    </div>
 
-        <div class="filters-section">
-          <div class="filter-group">
-            <label for="historicoPeriodo">Período</label>
-            <select id="historicoPeriodo">
-              <option value="5min">Últimos 5 minutos</option>
-              <option value="1h" selected>Última 1 hora</option>
-              <option value="24h">Últimas 24 horas</option>
-              <option value="custom">Personalizado</option>
-            </select>
-          </div>
-          <div class="filter-group custom-period" id="customPeriodInputs" style="display: none;">
-            <div class="period-inputs">
-              <div class="period-input">
-                <label for="historicoInicio">Início</label>
-                <input type="datetime-local" id="historicoInicio">
-              </div>
-              <div class="period-input">
-                <label for="historicoFim">Fim</label>
-                <input type="datetime-local" id="historicoFim">
-              </div>
-            </div>
-          </div>
-          <button id="aplicarFiltroHistorico" class="btn btn-primary">
-            <i class="fas fa-filter"></i>
-            Aplicar Filtro
+    <div class="table-section">
+      <div class="table-header">
+        <h3 class="table-title">
+          <i class="fas fa-list"></i>
+          Ocorrências
+        </h3>
+        <div class="table-actions">
+          <button id="exportHistoricoCsv" class="btn btn-export">
+            <i class="fas fa-download"></i>
+            Exportar CSV
           </button>
         </div>
-
-        <div class="kpis-historico">
-          <div class="kpi-card">
-            <h4>Alertas no Período</h4>
-            <p>36</p>
-          </div>
-          <div class="kpi-card">
-            <h4>Horário de Pico de Utilização</h4>
-            <p>17h às 18h • Maior carga simultânea registrada</p>
-            <small style="display:block;font-size:12px;color:#64748b;margin-top:4px">
-              CPU média 82% • Rede 96 Mbps - Tráfego intenso em 2 pórticos
-            </small>
-          </div>
-          <div class="kpi-card">
-            <h4>Pórticos Afetados</h4>
-            <p>2 de 4</p>
-          </div>
-        </div>
-
-
-        <div class="chart-container">
-          <div class="chart-header">
-            <h3 class="chart-title">
-              <i class="fas fa-chart-area"></i>
-              Alertas
-            </h3>
-          </div>
-          <div class="chart-content">
-            <canvas id="historicalChart"></canvas>
-          </div>
-        </div>
-
-        <div class="table-section">
-          <div class="table-header">
-            <h3 class="table-title">
-              <i class="fas fa-list"></i>
-              Ocorrências
-            </h3>
-            <div class="table-actions">
-              <button id="exportHistoricoCsv" class="btn btn-export">
-                <i class="fas fa-download"></i>
-                Exportar CSV
-              </button>
-            </div>
-          </div>
-          <div class="table-container">
-            <table class="data-table">
-              <thead>
-                <tr>
-                  <th><i class="fas fa-server"></i> Pórtico</th>
-                  <th><i class="fas fa-clock"></i> Período</th>
-                  <th><i class="fas fa-microchip"></i> CPU Média (%)</th>
-                  <th><i class="fas fa-memory"></i> Memória Média (%)</th>
-                  <th><i class="fas fa-hdd"></i> Disco Médio (%)</th>
-                  <th><i class="fas fa-network-wired"></i> Rede Média (Mbps)</th>
-                  <th><i class="fas fa-clipboard-check"></i> Ação/Laudo</th>
-                </tr>
-              </thead>
-              <tbody id="historicoTableBody">
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </section>
-    </main>
+      </div>
+      <div class="table-container">
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th><i class="fas fa-server"></i> Pórtico</th>
+              <th><i class="fas fa-clock"></i> Período</th>
+              <th><i class="fas fa-microchip"></i> CPU Média (%)</th>
+              <th><i class="fas fa-memory"></i> Memória Média (%)</th>
+              <th><i class="fas fa-hdd"></i> Disco Médio (%)</th>
+              <th><i class="fas fa-network-wired"></i> Rede Média (Mbps)</th>
+              <th><i class="fas fa-clipboard-check"></i> Ação/Laudo</th>
+            </tr>
+          </thead>
+          <tbody id="historicoTableBody">
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+  </main>
   </div>
 
   <script src="../js/dash.js"></script>

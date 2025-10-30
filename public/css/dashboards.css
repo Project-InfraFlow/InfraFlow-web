@@ -1845,160 +1845,275 @@ input:checked+.slider:before {
 }
 
 .status-metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
 }
 
 .status-metrics .metric {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
 }
 
 .status-metrics .metric-label {
-  font-size: 14px;
-  color: #475569;
+    font-size: 14px;
+    color: #475569;
 }
 
 .status-metrics .metric-value {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
 }
 
 #systemUptime,
 #alertCount {
-  font-size: 22px;
-  font-weight: 800;
+    font-size: 22px;
+    font-weight: 800;
 }
 
-.a-card.CRITICO{ border-left: 4px solid #e11d48; }
-.a-card.ATENCAO{ border-left: 4px solid #f59e0b; }
+.a-card.CRITICO {
+    border-left: 4px solid #e11d48;
+}
+
+.a-card.ATENCAO {
+    border-left: 4px solid #f59e0b;
+}
 
 .status-metrics {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 12px;
-  margin-top: 12px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 12px;
 }
 
 .status-metrics .metric {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
 }
 
 .status-metrics .metric-label {
-  font-size: 14px;
-  color: #475569;
+    font-size: 14px;
+    color: #475569;
 }
 
 .status-metrics .metric-value {
-  font-size: 22px;
-  font-weight: 800;
-  color: #0f172a;
+    font-size: 22px;
+    font-weight: 800;
+    color: #0f172a;
 }
 
 #systemUptime,
 #alertCount {
-  font-size: 22px;
-  font-weight: 800;
+    font-size: 22px;
+    font-weight: 800;
 }
 
-.a-card.CRITICO{ border-left: 4px solid #e11d48; }
-.a-card.ATENCAO{ border-left: 4px solid #f59e0b; }
+.a-card.CRITICO {
+    border-left: 4px solid #e11d48;
+}
 
+.a-card.ATENCAO {
+    border-left: 4px solid #f59e0b;
+}
+
+/* ====== CONTAINER PRINCIPAL ====== */
 .listar-users {
     width: 100%;
-    height: auto;
-    background-color: #008080;
+    background-color: #ffffff;
     margin-top: 3%;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
     display: flex;
-    align-items: center;
     flex-direction: column;
 }
 
-.barra-infos,
-.infos-user {
-    width: 95%;
-    display: grid;
-    grid-template-columns: 10% 25% 35% 15% 15%;
-    /* ID | Nome | Email | Acesso | Botões */
-    align-items: center;
-    text-align: center;
-    padding: 6px 0;
-}
-
-
+/* ====== CABEÇALHO ====== */
 .barra-infos {
-    background-color: #3b82f6;
+    background-color: #006060;
+    /* Azul suave */
     color: #fff;
     font-weight: 600;
-    border-bottom: 3px solid rgb(183, 183, 183);
+    display: grid;
+    grid-template-columns: 8% 25% 35% 15% 17%;
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 3px solid #e5e7eb;
 }
 
-
+/* ====== LINHAS ====== */
 .infos-user {
-    background-color: #e63bf6;
-    color: #000;
-    border-bottom: 3px solid rgb(183, 183, 183);
-
+    display: grid;
+    grid-template-columns: 8% 25% 35% 15% 17%;
+    align-items: center;
+    text-align: center;
+    padding: 12px 0;
+    color: #374151;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease, transform 0.1s ease;
 }
 
+.infos-user:nth-child(even) {
+    background-color: #f3f4f6;
+}
 
-.infos-user .acoes {
+.infos-user:hover {
+    background-color: #e0f2fe;
+    transform: scale(1.005);
+}
+
+/* ====== AÇÕES ====== */
+.acoes {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 10px;
+    gap: 8px;
 }
 
-
- .acoes button {
-    background-color: #10b981;
+.acoes button {
+    background-color: #0d9488;
     border: none;
-    height: 30px;
-    width: 30px;
+    border-radius: 6px;
+    height: 32px;
+    width: 32px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.acoes button:hover {
+    background-color: #115e59;
 }
 
 .acoes button i {
-    font-size: 20px;
+    color: #fff;
+    font-size: 16px;
 }
 
 .kpis-historico {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  margin: 20px 0;
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+    margin: 20px 0;
 }
 
 .kpis-historico .kpi-card {
-  flex: 1;
-  background: #fff;
-  border: 1px solid #e5e7eb;
-  border-radius: 10px;
-  padding: 20px;
-  text-align: center;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
-  transition: all 0.2s ease-in-out;
+    flex: 1;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.05);
+    transition: all 0.2s ease-in-out;
 }
 
 .kpis-historico .kpi-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.08);
 }
 
 .kpis-historico .kpi-card h4 {
-  font-size: 16px;
-  font-weight: 600;
-  color: #374151;
-  margin-bottom: 10px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 10px;
 }
 
 .kpis-historico .kpi-card p {
-  font-size: 22px;
-  font-weight: 700;
-  color: #004e96;
+    font-size: 22px;
+    font-weight: 700;
+    color: #004e96;
+}
+
+/* ====== CONTAINER PRINCIPAL ====== */
+.listar-maquinas {
+    width: 100%;
+    background-color: #ffffff;
+    margin-top: 3%;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* ====== CABEÇALHO ====== */
+.barra-infos-maq {
+    background-color: #006060; /* azul suave */
+    color: #fff;
+    font-weight: 600;
+    display: grid;
+    grid-template-columns: 8% 25% 20% 20% 10% 12%;
+    text-align: center;
+    padding: 10px 0;
+    border-bottom: 3px solid #e5e7eb;
+}
+
+/* ====== LINHAS DE DADOS ====== */
+.infos-maquina {
+    display: grid;
+    grid-template-columns: 8% 25% 20% 20% 10% 12%;
+    align-items: center;
+    text-align: center;
+    padding: 12px 0;
+    color: #374151;
+    background-color: #f9fafb;
+    border-bottom: 1px solid #e5e7eb;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+}
+
+.infos-maquina:nth-child(even) {
+    background-color: #f3f4f6;
+}
+
+.infos-maquina:hover {
+    background-color: #e0f2fe;
+    transform: scale(1.005);
+}
+
+/* ====== AÇÕES ====== */
+.acoes {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+}
+
+.acoes button {
+    background-color: #0d9488;
+    border: none;
+    border-radius: 6px;
+    height: 32px;
+    width: 32px;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.acoes button:hover {
+    background-color: #115e59;
+}
+
+.acoes button i {
+    color: #fff;
+    font-size: 16px;
+}
+.titulo {
+    width: 95%;
+    height: 45px;
+    display: flex;
+    margin-bottom: 3%;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    padding-top: 1.5%;
+}
+
+.controlador {
+    font-size: 35px;
+    margin-right: 2%;
+    color: #006060;
 }
