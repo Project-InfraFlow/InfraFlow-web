@@ -1352,47 +1352,72 @@ atualizarTitulo();
         sidebar.style.top = h + 'px';
         sidebar.style.height = `calc(100vh - ${h}px)`;
 
-        // atualiza padding-top do body para o conteúdo não ficar coberto
         document.body.style.paddingTop = h + 'px';
     }
 
-    // re-ajusta em resize ou se a topbar mudar de altura
     window.addEventListener('resize', fixPositions);
     document.addEventListener('DOMContentLoaded', () => {
         mountSidebar();
-        setTimeout(fixPositions, 0); // garante cálculo após fontes/carregamento
+        setTimeout(fixPositions, 0);
     });
 
     // ======= estado e helpers =======
     const state = { feed: [] };
 
+    const styleSemaforo = document.createElement('style');
+    styleSemaforo.textContent = `
+.a-card.ATENCAO { border-left: 4px solid #facc15; }
+.a-card.CRITICO { border-left: 4px solid #ef4444; }
+`;
+    document.head.appendChild(styleSemaforo);
+
     function prependAlertCard(item) {
         const list = document.getElementById('alertsSidebarList');
         if (!list) return;
 
-        state.feed.unshift(item);
+        const normalize = (lvl) => {
+            const x = String(lvl || '').toUpperCase();
+            if (x === 'CRITICO' || x === 'CRITICAL') return 'CRITICO';
+            return 'ATENCAO';
+        };
+
+        const levelKey = normalize(item.level);
+        const levelText = levelKey === 'CRITICO' ? 'CRÍTICO' : 'ATENÇÃO';
+        if (!['ATENCAO', 'CRITICO'].includes(levelKey)) return;
+
+        const payload = {
+            id: item.id || Date.now() + Math.random().toString(16).slice(2),
+            level: levelKey,
+            source: item.source,
+            msg: item.msg,
+            time: item.time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
+            action: item.action,
+            actionTime: item.actionTime
+        };
+
+        state.feed.unshift(payload);
         if (state.feed.length > FEED_MAX) state.feed.pop();
 
         const card = document.createElement('div');
-        card.className = 'a-card ' + (item.level || 'INFO');
-        card.dataset.alertId = item.id || (Date.now() + '');
+        card.className = 'a-card ' + levelKey;
+        card.dataset.alertId = payload.id;
         card.innerHTML = `
-      <div class="a-head">
-        <span class="a-time">${item.time}</span>
-        <span class="a-level" style="font-size:12px; font-weight:800; color:#0f172a">${item.level}</span>
-      </div>
-      <div class="a-source">${item.source}</div>
-      <div class="a-msg">${item.msg}</div>
-      <div class="a-action">
-        <button class="btn-action" data-id="${card.dataset.alertId}">Ação</button>
-      </div>
-      ${item.action ? `<div class="a-done">Ação: ${item.action} • ${item.actionTime}</div>` : ``}
-    `;
+    <div class="a-head">
+      <span class="a-time">${payload.time}</span>
+      <span class="a-level" style="font-size:12px; font-weight:800; color:#0f172a">${levelText}</span>
+    </div>
+    <div class="a-source">${payload.source}</div>
+    <div class="a-msg">${payload.msg}</div>
+    <div class="a-action">
+      <button class="btn-action" data-id="${card.dataset.alertId}">Ação</button>
+    </div>
+    ${payload.action ? `<div class="a-done">Ação: ${payload.action} • ${payload.actionTime}</div>` : ``}
+  `;
         list.prepend(card);
         list.scrollTop = 0;
     }
 
-    // botão Limpar
+
     document.addEventListener('click', (e) => {
         if (e.target && e.target.id === 'alertsSidebarClear') {
             state.feed = [];
@@ -1452,56 +1477,60 @@ atualizarTitulo();
         });
     };
 
-    // ======= Seed “bem populado” (30+ itens) =======
-    function seedMany(qtd = 36) {
+    // ======= feed “bem populado”  =======
+    function seedMany(qtd = 16) {
         const fontes = [
             'INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)',
             'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'
         ];
-        const levels = ['INFO', 'MEDIUM', 'HIGH', 'CRITICAL'];
-        const msgs = [
-            'Processo de leitura travou. Necessário restart.',
-            'Latência alta no link principal (210ms).',
-            'CPU em 82°C por 3 minutos.',
-            'Backup automático concluído com sucesso.',
-            'Uso de disco 91% em /var/log.',
-            'Perda de pacotes intermitente (2.5%).',
-            'Failover de link (4G) ativado.',
-            'Checksum inválido em 12 leituras.',
-            'Reconexão de serviço concluída.',
+        const msgsAten = [
             'Fila de processamento acima do normal.',
             'Tráfego de rede próximo da saturação.',
-            'Temperatura normalizada (68°C).'
+            'Uso de disco elevado.',
+            'Perda de pacotes intermitente.',
+            'Temperatura elevada, monitorar.'
+        ];
+        const msgsCrit = [
+            'CPU acima do limite crítico.',
+            'Memória acima do limite crítico.',
+            'Latência crítica no link principal.',
+            'Uso de disco crítico.',
+            'Falha crítica no serviço.'
         ];
         const now = new Date();
-        // gera itens com tempos decrescentes (pra parecer histórico)
         for (let i = qtd - 1; i >= 0; i--) {
-            const t = new Date(now.getTime() - i * 90 * 1000); // de 1min30s em 1min30s
+            const t = new Date(now.getTime() - i * 90 * 1000);
+            const level = Math.random() < 0.5 ? 'ATENCAO' : 'CRITICO';
+            const msgPool = level === 'CRITICO' ? msgsCrit : msgsAten;
+            const msg = msgPool[Math.floor(Math.random() * msgPool.length)];
             prependAlertCard({
                 id: 'seed-' + i,
-                level: levels[Math.floor(Math.random() * levels.length)],
+                level,
                 source: fontes[Math.floor(Math.random() * fontes.length)],
-                msg: msgs[Math.floor(Math.random() * msgs.length)],
+                msg,
                 time: t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
             });
         }
     }
+
     document.addEventListener('DOMContentLoaded', () => seedMany(40));
 
     // ======= Integra com seu loop sem limpar DOM central =======
     const lastCross = { cpu: false, memoria: false, disco: false, rede: false };
     function evaluatePoint(ponto, fonte) {
         const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+
         function cross(key, cond, level, msg) {
             if (cond && !lastCross[key]) {
                 prependAlertCard({ id: Date.now() + '-' + key, time: hora, level, source: fonte, msg });
             }
             lastCross[key] = cond;
         }
-        cross('cpu', ponto.cpu > 85, 'CRITICAL', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
-        cross('memoria', ponto.memoria > 85, 'CRITICAL', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
-        cross('disco', ponto.disco > 85, 'HIGH', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
-        cross('rede', ponto.rede > 180, 'HIGH', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
+
+        cross('cpu', ponto.cpu > 85, 'CRITICO', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
+        cross('memoria', ponto.memoria > 85, 'CRITICO', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
+        cross('disco', ponto.disco > 85, 'ATENCAO', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
+        cross('rede', ponto.rede > 180, 'ATENCAO', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
     }
 
     // patch: usa seu ciclo de KPIs para detectar cruzamentos e mandar ao feed
