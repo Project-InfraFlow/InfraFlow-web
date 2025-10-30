@@ -14,7 +14,7 @@ function autenticar(email, senha, token) {
         JOIN empresa AS e 
             ON u.fk_empresa = e.id_empresa
         JOIN token_acesso AS t 
-            ON t.fk_id_empresa = u.id_usuario
+            ON t.fk_id_empresa = u.fk_empresa
         WHERE u.email = '${email}'
           AND u.senha = '${senha}'
           AND t.token = '${token}'

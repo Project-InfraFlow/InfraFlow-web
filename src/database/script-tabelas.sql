@@ -275,3 +275,33 @@ select * from empresa;
 -- Senha: 123456
 -- Token: ECV123
 
+-- INSERT DE EMPRESA
+
+-- 1️⃣ Inserir tipo de contato (telefone e e-mail da empresa)
+INSERT INTO tipo_contato (telefone, email)
+VALUES ('(11) 4002-8922', 'contato@ecorodovias.com.br');
+
+
+select * from tipo_contato;
+-- suponha que o ID gerado foi 10
+-- -------------------------------------------------------------
+
+-- 2️⃣ Inserir empresa
+INSERT INTO empresa (razao_social, cnpj, status, fk_tipo_contato)
+VALUES ('Ecorodovias Concessionária de Rodovias S.A.', '12345678000199', 1, 1);
+
+-- suponha que o ID gerado foi 5
+-- -------------------------------------------------------------
+
+select * from empresa; 
+
+-- 3️⃣ Inserir usuário técnico responsável
+INSERT INTO usuario (nome, email, senha, fk_id_tipo_usuario, fk_empresa)
+VALUES ('Carlos Silva', 'carlos.silva@ecorodovias.com.br', 'senha123', 2, 4);
+
+-- suponha que o ID gerado foi 7
+-- -------------------------------------------------------------
+
+-- 4️⃣ Inserir token de acesso vinculado à empresa
+INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_empresa)
+VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, 'ABC123', 4);
