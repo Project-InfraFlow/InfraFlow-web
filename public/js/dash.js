@@ -522,6 +522,7 @@ let dadosHistoricos = [];
 let graficos = {};
 const gerenciadorInterface = new GerenciadorInterface();
 const sistemaLogin = new SistemaLogin();
+const historicoAcoes = {};
 
 function inicializarDados() {
     console.log('Inicializando dados...');
@@ -826,11 +827,14 @@ function atualizarTabelaHistorico() {
     for (let i = 10; i >= 0; i--) {
         const inicio = new Date(agora.getTime() - (i + 1) * 60 * 60 * 1000);
         const fim = new Date(agora.getTime() - i * 60 * 60 * 1000);
-
         const ponto = mockGen.proximoPonto(document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01');
 
+        const periodoTexto = `${inicio.toLocaleDateString('pt-BR')} ${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`;
+        const key = `${inicio.toISOString()}_${fim.toISOString()}`;
+
         dadosAgregados.push({
-            periodo: `${inicio.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })} - ${fim.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}`,
+            key,
+            periodo: periodoTexto,
             cpu: ponto.cpu,
             memoria: ponto.memoria,
             disco: ponto.disco,
@@ -840,6 +844,7 @@ function atualizarTabelaHistorico() {
 
     tbody.innerHTML = '';
     dadosAgregados.forEach(dado => {
+        const acaoSalva = historicoAcoes[dado.key] || '';
         const tr = document.createElement('tr');
         tr.innerHTML = `
             <td>${dado.periodo}</td>
@@ -847,6 +852,11 @@ function atualizarTabelaHistorico() {
             <td>${dado.memoria.toFixed(1)}%</td>
             <td>${dado.disco.toFixed(1)}%</td>
             <td>${dado.rede.toFixed(1)} Mbps</td>
+            <td data-key="${dado.key}">
+              ${acaoSalva
+                ? `<span class="acao-text">${acaoSalva}</span>`
+                : `<button class="btn btn-primary historico-acao-btn" data-key="${dado.key}"><i class="fas fa-pen"></i> Registrar</button>`}
+            </td>
         `;
         tbody.appendChild(tr);
     });
@@ -976,6 +986,18 @@ function configurarHistorico() {
         });
     }
 }
+
+document.addEventListener('click', (e) => {
+    const btn = e.target.closest('.historico-acao-btn');
+    if (!btn) return;
+    const key = btn.getAttribute('data-key');
+    const texto = window.prompt('Descreva a ação/laudo para este período:', historicoAcoes[key] || '');
+    if (texto === null) return;
+    const stamp = new Date().toLocaleString('pt-BR');
+    historicoAcoes[key] = `${texto} • ${stamp}`;
+    const cell = btn.closest('td');
+    cell.innerHTML = `<span class="acao-text">${historicoAcoes[key]}</span>`;
+});
 
 // === EVENT LISTENERS ===
 function configurarEventListeners() {
