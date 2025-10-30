@@ -25,7 +25,6 @@ function autenticar(email, senha, token) {
     return database.executar(instrucaoSql);
 }
 
-
 //=========================== Models dashboard de Usuário adm (InfraFlow) ==========================================
 
 async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser, senha, token) {
