@@ -486,9 +486,9 @@ class GerenciadorInterface {
     }
 
     contarAlertas() {
-    const visiveis = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
-    return visiveis;
-}
+        const visiveis = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
+        return visiveis;
+    }
 
     mostrarNotificacao(mensagem, tipo = 'info') {
         const notification = document.createElement('div');
@@ -1222,91 +1222,40 @@ selectMonitor.addEventListener("change", atualizarTitulo);
 selectMonitor.selectedIndex = 0;
 atualizarTitulo();
 
-// aqui pra alerta
+// aqui deixei os alertas
 
-
-/* ============================================================
-   TOPBAR FULL-WIDTH + FEED LATERAL FIXO (append-only)
-   ============================================================ */
 (function () {
-    // ======= CONFIG =======
-    const SIDEBAR_WIDTH = 360;                 // px
-    const FEED_MAX = 400;                      // limite de itens
+    const SIDEBAR_WIDTH = 360;
+    const FEED_MAX = 400;
     const ENDPOINT_ACAO = '/api/incidentes/acao';
 
-    // ======= CSS base (topbar + feed) =======
     const style = document.createElement('style');
     style.textContent = `
-    /* Topbar ocupa a largura inteira do viewport */
-    .topbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 64px;                     /* será recalculado se a sua topbar for maior */
-      background: #fff;
-      border-bottom: 1px solid #e5e7eb;
-      z-index: 10000;                   /* acima de tudo */
-      display: flex; align-items: center;
-    }
-    /* empurra o conteúdo para baixo da topbar */
-    body.has-fixed-topbar { padding-top: 64px; }
-
-    /* painel lateral fixo */
-    #alertsSidebar {
-      position: fixed;
-      right: 0;
-      width: ${SIDEBAR_WIDTH}px;
-      height: calc(100vh - 64px);       /* top será recalculado via JS */
-      z-index: 9990;
-      background: #ffffff;
-      border-left: 1px solid #e5e7eb;
-      box-shadow: -8px 0 24px rgba(2,6,23,.06);
-      display: flex; flex-direction: column;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-    #alertsSidebarHeader{
-      padding: 12px 14px;
-      border-bottom: 1px solid #e5e7eb;
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      background:#fff;
-    }
-    #alertsSidebarHeader .title { font-size: 14px; font-weight: 700; color: #0f172a; }
-    #alertsSidebarHeader .subtitle { font-size: 12px; color:#64748b; font-weight: 500; }
-    #alertsSidebarList{
-      overflow-y: auto; padding: 12px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .a-card{
-      border-radius: 10px; border: 1px solid #eef2f7;
-      padding: 10px 12px; background: #fff;
-      box-shadow: 0 1px 2px rgba(2,6,23,.04);
-    }
-    .a-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
-    .a-time{font-size:12px; color:#64748b}
-    .a-source{font-weight: 700; color:#0f172a; margin-top:4px;}
-    .a-msg{color:#334155; margin-top:2px;}
-    .a-action{margin-top:8px;}
-    .a-action > button{
-      padding: .38rem .6rem; border: 0; border-radius: 8px;
-      background: #2563eb; color:#fff; font-weight: 700; font-size: 12px; cursor: pointer;
-    }
-    .a-done{ font-size:12px; color:#0369a1; margin-top:6px; }
-    .a-card.CRITICAL{ border-left: 4px solid #e11d48; }
-    .a-card.HIGH    { border-left: 4px solid #f59e0b; }
-    .a-card.MEDIUM  { border-left: 4px solid #facc15; }
-    .a-card.INFO    { border-left: 4px solid #3b82f6; }
-
-    /* empurra o conteúdo central para não ficar por baixo do painel (somente desktop) */
-    @media (min-width: 1100px){
-      body.with-alerts-sidebar { margin-right: ${SIDEBAR_WIDTH}px; }
-    }
-    @media (max-width: 1099px){
-      #alertsSidebar{ display:none; }
-      body.with-alerts-sidebar { margin-right: 0; }
-    }
-  `;
+    .topbar{position:fixed;top:0;left:0;right:0;height:64px;background:#fff;border-bottom:1px solid #e5e7eb;z-index:10000;display:flex;align-items:center}
+    body.has-fixed-topbar{padding-top:64px}
+    #alertsSidebar{position:fixed;right:0;width:${SIDEBAR_WIDTH}px;height:calc(100vh - 64px);z-index:9990;background:#ffffff;border-left:1px solid #e5e7eb;box-shadow:-8px 0 24px rgba(2,6,23,.06);display:flex;flex-direction:column;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    #alertsSidebarHeader{padding:12px 14px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}
+    #alertsSidebarHeader .title{font-size:14px;font-weight:700;color:#0f172a}
+    #alertsSidebarHeader .subtitle{font-size:12px;color:#64748b;font-weight:500}
+    #alertsSidebarFilterWrap{padding:8px 12px;border-bottom:1px solid #eef2f7}
+    #alertsSidebarFilter{width:100%;height:36px;border:1px solid #e5e7eb;border-radius:8px;padding:0 10px;font-size:14px}
+    #alertsSidebarList{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .a-card{border-radius:10px;border:1px solid #eef2f7;padding:10px 12px;background:#fff;box-shadow:0 1px 2px rgba(2,6,23,.04)}
+    .a-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .a-time{font-size:12px;color:#64748b}
+    .a-source{font-weight:700;color:#0f172a;margin-top:4px}
+    .a-msg{color:#334155;margin-top:2px}
+    .a-action{margin-top:8px}
+    .a-action>button{padding:.38rem .6rem;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;font-size:12px;cursor:pointer}
+    .a-done{font-size:12px;color:#0369a1;margin-top:6px}
+    .a-card.CRITICAL{border-left:4px solid #ef4444}
+    .a-card.HIGH{border-left:4px solid #f59e0b}
+    .a-card.MEDIUM{border-left:4px solid #f59e0b}
+    @media(min-width:1100px){body.with-alerts-sidebar{margin-right:${SIDEBAR_WIDTH}px}}
+    @media(max-width:1099px){#alertsSidebar{display:none}body.with-alerts-sidebar{margin-right:0}}
+    `;
     document.head.appendChild(style);
 
-    // ======= cria sidebar =======
     const sidebar = document.createElement('aside');
     sidebar.id = 'alertsSidebar';
     sidebar.innerHTML = `
@@ -1315,34 +1264,25 @@ atualizarTitulo();
         <div class="title">Alertas Ativos (Todos os Pórticos)</div>
         <div class="subtitle">Feed de Ocorrências</div>
       </div>
-      <button id="alertsSidebarToggle" title="Ocultar/mostrar feed"
-  style="border:0;background:#f1f5f9;color:#0f172a;font-weight:700;
-         border-radius:8px;padding:.38rem .6rem;cursor:pointer">
-  <i class="fab fa-slack"></i>
-</button>
+      <button id="alertsSidebarToggle" title="Ocultar/mostrar feed" style="border:0;background:#f1f5f9;color:#0f172a;font-weight:700;border-radius:8px;padding:.38rem .6rem;cursor:pointer"><i class="fab fa-slack"></i></button>
+    </div>
+    <div id="alertsSidebarFilterWrap">
+      <input id="alertsSidebarFilter" type="text" placeholder="Filtrar por texto">
     </div>
     <div id="alertsSidebarList" aria-live="polite"></div>
-  `;
+    `;
 
     function mountSidebar() {
-        if (!document.body.contains(sidebar)) {
-            document.body.appendChild(sidebar);
-        }
-        // marca body pra aplicar paddings
+        if (!document.body.contains(sidebar)) document.body.appendChild(sidebar);
         document.body.classList.add('with-alerts-sidebar', 'has-fixed-topbar');
-        // mede a topbar e ajusta
         fixPositions();
     }
 
-    // mede a altura real da topbar e ajusta top/height do sidebar + padding do body
     function fixPositions() {
         const tb = document.querySelector('.topbar') || document.getElementById('topbar');
         const h = tb ? tb.offsetHeight : 64;
-
-        // atualiza top/height do sidebar
         sidebar.style.top = h + 'px';
         sidebar.style.height = `calc(100vh - ${h}px)`;
-
         document.body.style.paddingTop = h + 'px';
     }
 
@@ -1352,104 +1292,81 @@ atualizarTitulo();
         setTimeout(fixPositions, 0);
     });
 
-    // ======= estado e helpers =======
-    const state = { feed: [] };
+    const state = { feed: [], filterText: '' };
 
-    const styleSemaforo = document.createElement('style');
-    styleSemaforo.textContent = `
-.a-card.ATENCAO { border-left: 4px solid #facc15; }
-.a-card.CRITICO { border-left: 4px solid #ef4444; }
-`;
-    document.head.appendChild(styleSemaforo);
+    function setAlertCountFromDOM() {
+        const c = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
+        const lbl = document.getElementById('alertCount');
+        if (lbl) lbl.textContent = String(c);
+    }
+
+    function applyFilter() {
+        const q = state.filterText.trim().toLowerCase();
+        const list = document.getElementById('alertsSidebarList');
+        if (!list) return;
+        const cards = list.querySelectorAll('.a-card');
+        cards.forEach(card => {
+            const txt = card.textContent.toLowerCase();
+            const match = q === '' ? true : txt.includes(q);
+            card.style.display = match ? '' : 'none';
+            card.dataset.hidden = match ? '' : '1';
+        });
+        setAlertCountFromDOM();
+    }
 
     function prependAlertCard(item) {
         const list = document.getElementById('alertsSidebarList');
         if (!list) return;
-
-        const normalize = (lvl) => {
-            const x = String(lvl || '').toUpperCase();
-            if (x === 'CRITICO' || x === 'CRITICAL') return 'CRITICO';
-            return 'ATENCAO';
-        };
-
-        const levelKey = normalize(item.level);
-        const levelText = levelKey === 'CRITICO' ? 'CRÍTICO' : 'ATENÇÃO';
-        if (!['ATENCAO', 'CRITICO'].includes(levelKey)) return;
-
-        const payload = {
-            id: item.id || Date.now() + Math.random().toString(16).slice(2),
-            level: levelKey,
-            source: item.source,
-            msg: item.msg,
-            time: item.time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }),
-            action: item.action,
-            actionTime: item.actionTime
-        };
-
-        state.feed.unshift(payload);
+        state.feed.unshift(item);
         if (state.feed.length > FEED_MAX) state.feed.pop();
-
         const card = document.createElement('div');
-        card.className = 'a-card ' + levelKey;
-        card.dataset.alertId = payload.id;
+        card.className = 'a-card ' + (item.level || 'INFO');
+        card.dataset.alertId = item.id || (Date.now() + '');
         card.innerHTML = `
-    <div class="a-head">
-      <span class="a-time">${payload.time}</span>
-      <span class="a-level" style="font-size:12px; font-weight:800; color:#0f172a">${levelText}</span>
-    </div>
-    <div class="a-source">${payload.source}</div>
-    <div class="a-msg">${payload.msg}</div>
-    <div class="a-action">
-      <button class="btn-action" data-id="${card.dataset.alertId}">Ação</button>
-    </div>
-    ${payload.action ? `<div class="a-done">Ação: ${payload.action} • ${payload.actionTime}</div>` : ``}
-  `;
+      <div class="a-head">
+        <span class="a-time">${item.time}</span>
+        <span class="a-level" style="font-size:12px;font-weight:800;color:#0f172a">${item.level}</span>
+      </div>
+      <div class="a-source">${item.source}</div>
+      <div class="a-msg">${item.msg}</div>
+      <div class="a-action">
+        <button class="btn-action" data-id="${card.dataset.alertId}">Ação</button>
+      </div>
+      ${item.action ? `<div class="a-done">Ação: ${item.action} • ${item.actionTime}</div>` : ``}
+    `;
         list.prepend(card);
         list.scrollTop = 0;
+        applyFilter();
     }
-
 
     document.addEventListener('click', (e) => {
         if (e.target && e.target.id === 'alertsSidebarClear') {
             state.feed = [];
             const list = document.getElementById('alertsSidebarList');
             if (list) list.innerHTML = '';
+            setAlertCountFromDOM();
         }
     });
 
-    // botão Ação
     document.addEventListener('click', async (e) => {
         const btn = e.target.closest('.btn-action');
         if (!btn) return;
-
         const id = btn.getAttribute('data-id');
         const card = btn.closest('.a-card');
         const item = state.feed.find(x => String(x.id) === String(id));
         if (!item) return;
-
         const acao = window.prompt('Descreva a ação tomada para este incidente:', '');
         if (acao === null) return;
-
-        const payload = {
-            alertId: id, source: item.source, level: item.level,
-            message: item.msg, time: item.time, action: acao
-        };
-
+        const payload = { alertId: id, source: item.source, level: item.level, message: item.msg, time: item.time, action: acao };
         try {
-            const resp = await fetch(ENDPOINT_ACAO, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const resp = await fetch(ENDPOINT_ACAO, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if (!resp.ok) throw new Error('Falha ao salvar ação');
-
             item.action = acao;
             item.actionTime = new Date().toLocaleString('pt-BR');
-
             btn.textContent = 'Registrado';
             btn.disabled = true;
             btn.style.background = '#0ea5e9';
             btn.style.cursor = 'default';
-
             const done = document.createElement('div');
             done.className = 'a-done';
             done.textContent = `Ação: ${item.action} • ${item.actionTime}`;
@@ -1459,72 +1376,35 @@ atualizarTitulo();
         }
     });
 
-    // API pública para empurrar alertas manualmente (se quiser)
     window.pushAlert = function ({ level = 'INFO', source = 'Pórtico', msg = '', time = null, id = null }) {
-        prependAlertCard({
-            id: id || Date.now() + Math.random().toString(16).slice(2),
-            level, source, msg,
-            time: time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-        });
+        prependAlertCard({ id: id || Date.now() + Math.random().toString(16).slice(2), level, source, msg, time: time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
     };
 
-    // ======= feed “bem populado”  =======
-    function seedMany(qtd = 16) {
-        const fontes = [
-            'INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)',
-            'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'
-        ];
-        const msgsAten = [
-            'Fila de processamento acima do normal.',
-            'Tráfego de rede próximo da saturação.',
-            'Uso de disco elevado.',
-            'Perda de pacotes intermitente.',
-            'Temperatura elevada, monitorar.'
-        ];
-        const msgsCrit = [
-            'CPU acima do limite crítico.',
-            'Memória acima do limite crítico.',
-            'Latência crítica no link principal.',
-            'Uso de disco crítico.',
-            'Falha crítica no serviço.'
-        ];
+    function seedMany(qtd = 36) {
+        const fontes = ['INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)', 'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'];
+        const levels = ['CRITICAL', 'HIGH', 'MEDIUM'];
+        const msgs = ['Processo de leitura travou. Necessário restart.', 'Latência alta no link principal (210ms).', 'CPU em 82°C por 3 minutos.', 'Backup automático concluído com sucesso.', 'Uso de disco 91% em /var/log.', 'Perda de pacotes intermitente (2.5%).', 'Failover de link (4G) ativado.', 'Checksum inválido em 12 leituras.', 'Reconexão de serviço concluída.', 'Fila de processamento acima do normal.', 'Tráfego de rede próximo da saturação.', 'Temperatura normalizada (68°C).'];
         const now = new Date();
         for (let i = qtd - 1; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 90 * 1000);
-            const level = Math.random() < 0.5 ? 'ATENCAO' : 'CRITICO';
-            const msgPool = level === 'CRITICO' ? msgsCrit : msgsAten;
-            const msg = msgPool[Math.floor(Math.random() * msgPool.length)];
-            prependAlertCard({
-                id: 'seed-' + i,
-                level,
-                source: fontes[Math.floor(Math.random() * fontes.length)],
-                msg,
-                time: t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            });
+            prependAlertCard({ id: 'seed-' + i, level: levels[Math.floor(Math.random() * levels.length)], source: fontes[Math.floor(Math.random() * fontes.length)], msg: msgs[Math.floor(Math.random() * msgs.length)], time: t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
         }
     }
+    document.addEventListener('DOMContentLoaded', () => seedMany(36));
 
-    document.addEventListener('DOMContentLoaded', () => seedMany(20));
-
-    // ======= Integra com seu loop sem limpar DOM central =======
     const lastCross = { cpu: false, memoria: false, disco: false, rede: false };
     function evaluatePoint(ponto, fonte) {
         const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
-
         function cross(key, cond, level, msg) {
-            if (cond && !lastCross[key]) {
-                prependAlertCard({ id: Date.now() + '-' + key, time: hora, level, source: fonte, msg });
-            }
+            if (cond && !lastCross[key]) prependAlertCard({ id: Date.now() + '-' + key, time: hora, level, source: fonte, msg });
             lastCross[key] = cond;
         }
-
-        cross('cpu', ponto.cpu > 85, 'CRITICO', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
-        cross('memoria', ponto.memoria > 85, 'CRITICO', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
-        cross('disco', ponto.disco > 85, 'ATENCAO', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
-        cross('rede', ponto.rede > 180, 'ATENCAO', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
+        cross('cpu', ponto.cpu > 85, 'CRITICAL', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
+        cross('memoria', ponto.memoria > 85, 'CRITICAL', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
+        cross('disco', ponto.disco > 85, 'HIGH', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
+        cross('rede', ponto.rede > 180, 'HIGH', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
     }
 
-    // patch: usa seu ciclo de KPIs para detectar cruzamentos e mandar ao feed
     const patchAlerts = () => {
         if (!window.gerenciadorInterface) return;
         const original = gerenciadorInterface.atualizarAlertas?.bind(gerenciadorInterface);
@@ -1533,8 +1413,8 @@ atualizarTitulo();
             const u = dadosTempoReal[dadosTempoReal.length - 1];
             const fonte = document.getElementById('edgeSelector')?.value || (window.maquina && maquina.nome) || 'Pórtico';
             evaluatePoint(u, fonte);
-            // se quiser manter algo do original, descomente:
-            // if (original) original();
+            if (original) original();
+            setAlertCountFromDOM();
         };
     };
     if (document.readyState === 'loading') {
@@ -1543,8 +1423,15 @@ atualizarTitulo();
         patchAlerts();
     }
 
-    window.SIDEBAR_WIDTH = SIDEBAR_WIDTH;
+    const filterInputHandler = (e) => {
+        state.filterText = e.target.value || '';
+        applyFilter();
+    };
+    document.addEventListener('input', (e) => {
+        if (e.target && e.target.id === 'alertsSidebarFilter') filterInputHandler(e);
+    });
 
+    window.SIDEBAR_WIDTH = SIDEBAR_WIDTH;
 })();
 
 let sidebarVisible = true;
