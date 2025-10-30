@@ -1,10 +1,10 @@
-// === CONFIGURAÇÃO GLOBAL ===
+// === DADOS MOKADOS QUE USEI ===
+
 const maquina = {
     nome: "INFRA-EDGE-01",
     so: "Ubuntu 22.04 LTS",
 };
 
-// O QUE É THRESHOLDS????
 const thresholds = {
     cpu: 80,
     memoria: 80,
@@ -19,6 +19,9 @@ const normalidade = {
     disco: 60,
     rede: 70
 };
+
+const uptimeMock = { dias: 3, horas: 4, minutos: 12 };
+
 const flatLine = (n, val) => Array.from({ length: n }, () => val);
 const toRedePct = (mbps) => Math.max(0, Math.min(100, (mbps / MAX_REDE_Mbps) * 100));
 
@@ -43,7 +46,7 @@ let estadoApp = {
     }
 };
 
-// === SISTEMA DE LOGIN ===
+// === SISTEMA DE LOGIN, deixei aqui mas esta dicionado para o da Julia, basta manter ===
 class SistemaLogin {
     constructor() {
         this.usuarios = {
@@ -102,20 +105,17 @@ class SistemaLogin {
 
 // === FONTE DE DADOS MKADOS ===
 function dadosMocados() {
-    // 20–30 valores por componente
     const mk = (n, base, amp, min = 0, max = 100) =>
         Array.from({ length: n }, () => {
             const v = base + (Math.random() - 0.5) * amp;
             return Math.max(min, Math.min(max, Math.round(v * 10) / 10));
         });
 
-    // Simula 200 Mbps para rede como teto, depois normalizamos se precisar
     const cpuArr = mk(30, 35, 20, 5, 95);
     const memArr = mk(30, 55, 18, 20, 90);
     const dskArr = mk(30, 60, 10, 40, 90);
     const netArr = mk(30, 90, 60, 5, 200);
 
-    // Para pórticos diferentes
     const porPortico = {
         'INFRA-EDGE-01': { cpu: cpuArr, memoria: memArr, disco: dskArr, rede: netArr },
         'INFRA-EDGE-02': { cpu: mk(30, 45, 22, 5, 95), memoria: mk(30, 50, 15, 20, 90), disco: mk(30, 55, 12, 40, 90), rede: mk(30, 70, 80, 5, 200) },
@@ -152,7 +152,6 @@ function dadosMocados() {
 
 const mockGen = dadosMocados();
 
-// Sempre apresentamos os dados em "tempo real" a cada ~2s
 let timerMock = null;
 function iniciarMockTempoReal() {
     pararMockTempoReal();
@@ -161,11 +160,9 @@ function iniciarMockTempoReal() {
         const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
         const ponto = mockGen.proximoPonto(edge);
 
-        // Adicionar aos dados
         dadosTempoReal.push(ponto);
         estadoApp.dadosCompletos.push(ponto);
 
-        // Limitar dados em tempo real
         if (dadosTempoReal.length > 50) {
             dadosTempoReal.shift();
         }
@@ -241,13 +238,13 @@ class GerenciadorInterface {
     }
 
     atualizarInformacoesSistema() {
-    const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
-    maquina.nome = edge;
-    const agora = new Date();
-    const dt = agora.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
-    const el = document.getElementById('lastUpdateTime');
-    if (el) el.textContent = dt;
-}
+        const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
+        maquina.nome = edge;
+        const agora = new Date();
+        const dt = agora.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const el = document.getElementById('lastUpdateTime');
+        if (el) el.textContent = dt;
+    }
 
     calcularTendencia(valores) {
         if (valores.length < 2) return { direcao: 'neutral', percentual: 0 };
@@ -407,15 +404,7 @@ class GerenciadorInterface {
     }
 
     calcularUptime() {
-        const agora = new Date();
-        const inicio = new Date(agora.getTime() - (15 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000 + 32 * 60 * 1000));
-        const diff = agora - inicio;
-
-        const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-        return `${dias}d ${horas}h ${minutos}m`;
+        return `${uptimeMock.dias}d ${uptimeMock.horas}h ${uptimeMock.minutos}m`;
     }
 
     atualizarAlertas() {
@@ -1261,18 +1250,20 @@ atualizarTitulo();
     const sidebar = document.createElement('aside');
     sidebar.id = 'alertsSidebar';
     sidebar.innerHTML = `
-    <div id="alertsSidebarHeader">
-      <div>
-        <div class="title">Alertas Ativos (Todos os Pórticos)</div>
-        <div class="subtitle">Feed de Ocorrências</div>
-      </div>
-      <button id="alertsSidebarToggle" title="Ocultar/mostrar feed" style="border:0;background:#f1f5f9;color:#0f172a;font-weight:700;border-radius:8px;padding:.38rem .6rem;cursor:pointer"><i class="fab fa-slack"></i></button>
+  <div id="alertsSidebarHeader">
+    <div>
+      <div class="title">Alertas Ativos (Todos os Pórticos)</div>
+      <div class="subtitle">Feed de Ocorrências</div>
     </div>
-    <div id="alertsSidebarFilterWrap">
-      <input id="alertsSidebarFilter" type="text" placeholder="Filtrar por texto">
-    </div>
-    <div id="alertsSidebarList" aria-live="polite"></div>
-    `;
+    <button id="alertsSidebarToggle" title="Ocultar/mostrar feed" style="border:0;background:#f1f5f9;color:#0f172a;font-weight:700;border-radius:8px;padding:.38rem .6rem;cursor:pointer">
+      <i class="fab fa-slack"></i>
+    </button>
+  </div>
+  <div style="padding:8px 12px;">
+    <input id="alertsSidebarFilter" type="text" placeholder="Filtrar por texto" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;outline:none;">
+  </div>
+  <div id="alertsSidebarList" aria-live="polite"></div>
+`;
 
     function mountSidebar() {
         if (!document.body.contains(sidebar)) document.body.appendChild(sidebar);
@@ -1295,6 +1286,12 @@ atualizarTitulo();
     });
 
     const state = { feed: [], filterText: '' };
+
+    function normalizeLevel(l) {
+        const v = String(l || '').toUpperCase();
+        if (v === 'CRITICAL' || v === 'CRITICO' || v === 'CRÍTICO') return 'CRITICO';
+        return 'ATENCAO';
+    }
 
     function setAlertCountFromDOM() {
         const c = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
@@ -1319,26 +1316,28 @@ atualizarTitulo();
     function prependAlertCard(item) {
         const list = document.getElementById('alertsSidebarList');
         if (!list) return;
-        state.feed.unshift(item);
+        const level = normalizeLevel(item.level);
+        const obj = { id: item.id || (Date.now() + ''), level, source: item.source, msg: item.msg, time: item.time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) };
+        state.feed.unshift(obj);
         if (state.feed.length > FEED_MAX) state.feed.pop();
         const card = document.createElement('div');
-        card.className = 'a-card ' + (item.level || 'INFO');
-        card.dataset.alertId = item.id || (Date.now() + '');
+        card.className = 'a-card ' + obj.level;
+        card.dataset.alertId = obj.id;
         card.innerHTML = `
       <div class="a-head">
-        <span class="a-time">${item.time}</span>
-        <span class="a-level" style="font-size:12px;font-weight:800;color:#0f172a">${item.level}</span>
+        <span class="a-time">${obj.time}</span>
+        <span class="a-level" style="font-size:12px; font-weight:800; color:#0f172a">${obj.level === 'CRITICO' ? 'CRÍTICO' : 'ATENÇÃO'}</span>
       </div>
-      <div class="a-source">${item.source}</div>
-      <div class="a-msg">${item.msg}</div>
+      <div class="a-source">${obj.source}</div>
+      <div class="a-msg">${obj.msg}</div>
       <div class="a-action">
         <button class="btn-action" data-id="${card.dataset.alertId}">Ação</button>
       </div>
-      ${item.action ? `<div class="a-done">Ação: ${item.action} • ${item.actionTime}</div>` : ``}
     `;
         list.prepend(card);
         list.scrollTop = 0;
-        applyFilter();
+        applyAlertsFilter();
+        syncAlertCount();
     }
 
     document.addEventListener('click', (e) => {
@@ -1384,7 +1383,7 @@ atualizarTitulo();
 
     function seedMany(qtd = 36) {
         const fontes = ['INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)', 'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'];
-        const levels = ['CRITICAL', 'HIGH', 'MEDIUM'];
+        const levels = ['ATENÇÃO', 'CRITICO'];
         const msgs = ['Processo de leitura travou. Necessário restart.', 'Latência alta no link principal (210ms).', 'CPU em 82°C por 3 minutos.', 'Backup automático concluído com sucesso.', 'Uso de disco 91% em /var/log.', 'Perda de pacotes intermitente (2.5%).', 'Failover de link (4G) ativado.', 'Checksum inválido em 12 leituras.', 'Reconexão de serviço concluída.', 'Fila de processamento acima do normal.', 'Tráfego de rede próximo da saturação.', 'Temperatura normalizada (68°C).'];
         const now = new Date();
         for (let i = qtd - 1; i >= 0; i--) {
@@ -1398,14 +1397,17 @@ atualizarTitulo();
     function evaluatePoint(ponto, fonte) {
         const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
         function cross(key, cond, level, msg) {
-            if (cond && !lastCross[key]) prependAlertCard({ id: Date.now() + '-' + key, time: hora, level, source: fonte, msg });
+            if (cond && !lastCross[key]) {
+                prependAlertCard({ id: Date.now() + '-' + key, time: hora, level, source: fonte, msg });
+            }
             lastCross[key] = cond;
         }
-        cross('cpu', ponto.cpu > 85, 'CRITICAL', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
-        cross('memoria', ponto.memoria > 85, 'CRITICAL', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
-        cross('disco', ponto.disco > 85, 'HIGH', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
-        cross('rede', ponto.rede > 180, 'HIGH', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
+        cross('cpu', ponto.cpu > 85, 'CRITICO', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
+        cross('memoria', ponto.memoria > 85, 'CRITICO', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
+        cross('disco', ponto.disco > 85, 'ATENCAO', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
+        cross('rede', ponto.rede > 180, 'ATENCAO', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
     }
+
 
     const patchAlerts = () => {
         if (!window.gerenciadorInterface) return;
@@ -1434,6 +1436,30 @@ atualizarTitulo();
     });
 
     window.SIDEBAR_WIDTH = SIDEBAR_WIDTH;
+
+    function applyAlertsFilter(){
+    const q = (document.getElementById('alertsSidebarFilter')?.value || '').trim().toLowerCase();
+    const list = document.getElementById('alertsSidebarList');
+    if (!list) return;
+    const nodes = Array.from(list.children);
+    nodes.forEach(card=>{
+        const txt = card.textContent.toLowerCase();
+        card.style.display = q && !txt.includes(q) ? 'none' : '';
+    });
+}
+function syncAlertCount(){
+    const list = document.getElementById('alertsSidebarList');
+    const visible = list ? Array.from(list.children).filter(c=>c.style.display!=='none').length : 0;
+    const el = document.getElementById('alertCount');
+    if (el) el.textContent = String(visible);
+}
+document.addEventListener('input', (e)=>{
+    if (e.target && e.target.id === 'alertsSidebarFilter'){
+        applyAlertsFilter();
+        syncAlertCount();
+    }
+});
+
 })();
 
 let sidebarVisible = true;

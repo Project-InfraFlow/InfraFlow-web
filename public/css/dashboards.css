@@ -1756,3 +1756,36 @@ input:checked+.slider:before {
 #alertsSidebarToggle i {
   font-size: 1.1rem;
 }
+
+.status-metrics {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.status-metrics .metric {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.status-metrics .metric-label {
+  font-size: 14px;
+  color: #475569;
+}
+
+.status-metrics .metric-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #0f172a;
+}
+
+#systemUptime,
+#alertCount {
+  font-size: 22px;
+  font-weight: 800;
+}
+
+.a-card.CRITICO{ border-left: 4px solid #e11d48; }
+.a-card.ATENCAO{ border-left: 4px solid #f59e0b; }
