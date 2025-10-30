@@ -14,7 +14,8 @@ function autenticar(email, senha, token) {
         JOIN empresa AS e 
             ON u.fk_empresa = e.id_empresa
         JOIN token_acesso AS t 
-            ON t.fk_id_usuario = u.id_usuario
+            ON t.fk_id_empresa = u.fk_empresa
+           AND t.fk_id_usuario = u.id_usuario
         WHERE u.email = '${email}'
           AND u.senha = '${senha}'
           AND t.token = '${token}'
@@ -24,7 +25,6 @@ function autenticar(email, senha, token) {
     `;
     return database.executar(instrucaoSql);
 }
-
 
 //=========================== Models dashboard de Usuário adm (InfraFlow) ==========================================
 
@@ -54,9 +54,9 @@ async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser
         let idUsuario = resultadoUsuario.insertId;
 
         let insertToken = `
-    INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_usuario)
-    VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idUsuario});
-`;
+            INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_usuario, fk_id_empresa)
+            VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idUsuario}, ${idEmpresa});
+        `;
         await database.executar(insertToken);
 
         console.log("Cadastro concluído com sucesso!");
