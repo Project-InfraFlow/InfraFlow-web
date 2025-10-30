@@ -241,11 +241,13 @@ class GerenciadorInterface {
     }
 
     atualizarInformacoesSistema() {
-        const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
-        maquina.nome = edge;
-        document.getElementById('lastUpdateTime').textContent =
-            new Date().toLocaleTimeString('pt-BR');
-    }
+    const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
+    maquina.nome = edge;
+    const agora = new Date();
+    const dt = agora.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+    const el = document.getElementById('lastUpdateTime');
+    if (el) el.textContent = dt;
+}
 
     calcularTendencia(valores) {
         if (valores.length < 2) return { direcao: 'neutral', percentual: 0 };
