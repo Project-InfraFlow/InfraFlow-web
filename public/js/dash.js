@@ -1,16 +1,29 @@
-// === CONFIGURAÇÃO GLOBAL ===
+// === DADOS MOKADOS QUE USEI ===
+
 const maquina = {
     nome: "INFRA-EDGE-01",
     so: "Ubuntu 22.04 LTS",
 };
 
-// O QUE É THRESHOLDS????
 const thresholds = {
     cpu: 80,
     memoria: 80,
     disco: 80,
     rede: 150
 };
+
+const MAX_REDE_Mbps = 200;
+const normalidade = {
+    cpu: 70,
+    memoria: 75,
+    disco: 60,
+    rede: 70
+};
+
+const uptimeMock = { dias: 3, horas: 4, minutos: 12 };
+
+const flatLine = (n, val) => Array.from({ length: n }, () => val);
+const toRedePct = (mbps) => Math.max(0, Math.min(100, (mbps / MAX_REDE_Mbps) * 100));
 
 let estadoApp = {
     tempoRealAtivo: true,
@@ -33,7 +46,7 @@ let estadoApp = {
     }
 };
 
-// === SISTEMA DE LOGIN ===
+// === SISTEMA DE LOGIN, deixei aqui mas esta dicionado para o da Julia, basta manter ===
 class SistemaLogin {
     constructor() {
         this.usuarios = {
@@ -92,20 +105,17 @@ class SistemaLogin {
 
 // === FONTE DE DADOS MKADOS ===
 function dadosMocados() {
-    // 20–30 valores por componente
     const mk = (n, base, amp, min = 0, max = 100) =>
         Array.from({ length: n }, () => {
             const v = base + (Math.random() - 0.5) * amp;
             return Math.max(min, Math.min(max, Math.round(v * 10) / 10));
         });
 
-    // Simula 200 Mbps para rede como teto, depois normalizamos se precisar
     const cpuArr = mk(30, 35, 20, 5, 95);
     const memArr = mk(30, 55, 18, 20, 90);
     const dskArr = mk(30, 60, 10, 40, 90);
     const netArr = mk(30, 90, 60, 5, 200);
 
-    // Para pórticos diferentes
     const porPortico = {
         'INFRA-EDGE-01': { cpu: cpuArr, memoria: memArr, disco: dskArr, rede: netArr },
         'INFRA-EDGE-02': { cpu: mk(30, 45, 22, 5, 95), memoria: mk(30, 50, 15, 20, 90), disco: mk(30, 55, 12, 40, 90), rede: mk(30, 70, 80, 5, 200) },
@@ -142,7 +152,6 @@ function dadosMocados() {
 
 const mockGen = dadosMocados();
 
-// Sempre apresentamos os dados em "tempo real" a cada ~2s
 let timerMock = null;
 function iniciarMockTempoReal() {
     pararMockTempoReal();
@@ -151,11 +160,9 @@ function iniciarMockTempoReal() {
         const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
         const ponto = mockGen.proximoPonto(edge);
 
-        // Adicionar aos dados
         dadosTempoReal.push(ponto);
         estadoApp.dadosCompletos.push(ponto);
 
-        // Limitar dados em tempo real
         if (dadosTempoReal.length > 50) {
             dadosTempoReal.shift();
         }
@@ -233,8 +240,10 @@ class GerenciadorInterface {
     atualizarInformacoesSistema() {
         const edge = document.getElementById('edgeSelector')?.value || 'INFRA-EDGE-01';
         maquina.nome = edge;
-        document.getElementById('lastUpdateTime').textContent =
-            new Date().toLocaleTimeString('pt-BR');
+        const agora = new Date();
+        const dt = agora.toLocaleString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+        const el = document.getElementById('lastUpdateTime');
+        if (el) el.textContent = dt;
     }
 
     calcularTendencia(valores) {
@@ -284,41 +293,65 @@ class GerenciadorInterface {
         });
     }
 
+
     atualizarKPIs() {
         if (dadosTempoReal.length === 0) return;
 
         const ultimoDado = dadosTempoReal[dadosTempoReal.length - 1];
+        const redePct = toRedePct(ultimoDado.rede);
 
-        // Atualizar valores
-        document.getElementById('kpiCpuValue').textContent = `${ultimoDado.cpu.toFixed(1)}%`;
-        document.getElementById('kpiMemoriaValue').textContent = `${ultimoDado.memoria.toFixed(1)}%`;
-        document.getElementById('kpiDiscoValue').textContent = `${ultimoDado.disco.toFixed(1)}%`;
-        document.getElementById('kpiRedeValue').textContent = `${ultimoDado.rede.toFixed(1)} Mbps`;
+        const comps = [
+            { key: 'cpu', valor: ultimoDado.cpu, maxSaudavel: 70, maxCritico: 85, cardId: 'kpiCpu', valueId: 'kpiCpuValue', progressId: 'cpuProgress' },
+            { key: 'memoria', valor: ultimoDado.memoria, maxSaudavel: 75, maxCritico: 85, cardId: 'kpiMemoria', valueId: 'kpiMemoriaValue', progressId: 'memoriaProgress' },
+            { key: 'disco', valor: ultimoDado.disco, maxSaudavel: 60, maxCritico: 90, cardId: 'kpiDisco', valueId: 'kpiDiscoValue', progressId: 'discoProgress' },
+            { key: 'rede', valor: redePct, maxSaudavel: 70, maxCritico: 85, cardId: 'kpiRede', valueId: 'kpiRedeValue', progressId: 'redeProgress' }
+        ];
 
-        // Atualizar progresso
-        document.getElementById('cpuProgress').style.width = `${ultimoDado.cpu}%`;
-        document.getElementById('memoriaProgress').style.width = `${ultimoDado.memoria}%`;
-        document.getElementById('discoProgress').style.width = `${ultimoDado.disco}%`;
-        document.getElementById('redeProgress').style.width = `${(ultimoDado.rede / 200) * 100}%`;
+        comps.forEach(c => {
+            const v = Math.max(0, Math.min(100, c.valor));
+            const valEl = document.getElementById(c.valueId);
+            const progEl = document.getElementById(c.progressId);
+            const card = document.getElementById(c.cardId);
 
-        // Atualizar tendências
+            if (valEl) valEl.textContent = `${v.toFixed(1)}%`;
+            if (progEl) progEl.style.width = `${v}%`;
+
+            let estado = 'Saudável';
+            let cor = '#22c55e';
+            if (v > c.maxSaudavel && v <= c.maxCritico) { estado = 'Alta Utilização'; cor = '#facc15'; }
+            else if (v > c.maxCritico) { estado = 'Saturação'; cor = '#ef4444'; }
+
+            if (card) {
+                let stateEl = card.querySelector('.kpi-state');
+                if (!stateEl) {
+                    stateEl = document.createElement('span');
+                    stateEl.className = 'kpi-state';
+                    stateEl.style.display = 'inline-flex';
+                    stateEl.style.alignItems = 'center';
+                    stateEl.style.gap = '6px';
+                    stateEl.style.fontWeight = '700';
+                    stateEl.style.fontSize = '12px';
+                    stateEl.style.marginLeft = '8px';
+                    const labelHost = card.querySelector('.kpi-label') || card.querySelector('.kpi-header') || card;
+                    labelHost.appendChild(stateEl);
+                }
+                stateEl.innerHTML = `<i class="fas fa-circle" style="font-size:8px;color:${cor}"></i><span>${estado}</span>`;
+
+                const label = card.querySelector('.kpi-label');
+                if (label) label.style.color = cor;
+
+                const progressBar = card.querySelector('.progress-bar');
+                if (progressBar) progressBar.style.backgroundColor = cor;
+            }
+        });
+
         estadoApp.ultimosValoresTrend.cpu.push(ultimoDado.cpu);
         estadoApp.ultimosValoresTrend.memoria.push(ultimoDado.memoria);
         estadoApp.ultimosValoresTrend.disco.push(ultimoDado.disco);
         estadoApp.ultimosValoresTrend.rede.push(ultimoDado.rede);
 
-        // Manter apenas últimos 10 valores para cálculo de tendência
-        Object.keys(estadoApp.ultimosValoresTrend).forEach(key => {
-            if (estadoApp.ultimosValoresTrend[key].length > 10) {
-                estadoApp.ultimosValoresTrend[key].shift();
-            }
-        });
-
-        // Atualizar status dos cards
-        const status = this.calcularStatusSistema();
-        ['kpiCpu', 'kpiMemoria', 'kpiDisco', 'kpiRede'].forEach(id => {
-            const card = document.getElementById(id);
-            card.className = `kpi-card ${status}`;
+        Object.keys(estadoApp.ultimosValoresTrend).forEach(k => {
+            if (estadoApp.ultimosValoresTrend[k].length > 10) estadoApp.ultimosValoresTrend[k].shift();
         });
 
         this.atualizarTendencias();
@@ -371,15 +404,7 @@ class GerenciadorInterface {
     }
 
     calcularUptime() {
-        const agora = new Date();
-        const inicio = new Date(agora.getTime() - (15 * 24 * 60 * 60 * 1000 + 8 * 60 * 60 * 1000 + 32 * 60 * 1000));
-        const diff = agora - inicio;
-
-        const dias = Math.floor(diff / (1000 * 60 * 60 * 24));
-        const horas = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-        const minutos = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-
-        return `${dias}d ${horas}h ${minutos}m`;
+        return `${uptimeMock.dias}d ${uptimeMock.horas}h ${uptimeMock.minutos}m`;
     }
 
     atualizarAlertas() {
@@ -452,17 +477,8 @@ class GerenciadorInterface {
     }
 
     contarAlertas() {
-        if (dadosTempoReal.length === 0) return 0;
-
-        const ultimoDado = dadosTempoReal[dadosTempoReal.length - 1];
-        let count = 0;
-
-        if (ultimoDado.cpu > 75) count++;
-        if (ultimoDado.memoria > 75) count++;
-        if (ultimoDado.disco > 75) count++;
-        if (ultimoDado.rede > 150) count++;
-
-        return count;
+        const visiveis = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
+        return visiveis;
     }
 
     mostrarNotificacao(mensagem, tipo = 'info') {
@@ -526,6 +542,7 @@ function inicializarDados() {
 
     console.log('Dados inicializados:', dadosTempoReal.length, 'pontos em tempo real');
 }
+
 function inicializarGraficos() {
     console.log('Inicializando gráficos...');
     const ctx1 = document.getElementById('realTimeChart')?.getContext('2d');
@@ -534,6 +551,7 @@ function inicializarGraficos() {
         console.log('Contextos de canvas não encontrados');
         return;
     }
+
     const commonOptions = {
         responsive: true,
         maintainAspectRatio: false,
@@ -544,11 +562,10 @@ function inicializarGraficos() {
                 labels: {
                     usePointStyle: true,
                     padding: 15,
-                    font: {
-                        family: 'Inter',
-                        size: 12
-                    },
-                    color: '#0f172a'
+                    font: { family: 'Inter', size: 12 },
+                    color: '#0f172a',
+                    // esconde itens "(limite)" na legenda para não poluir
+                    filter: (item) => !/\(limite\)/i.test(item.text)
                 },
                 onClick: (evt, legendItem, legend) => {
                     const index = legendItem.datasetIndex;
@@ -566,164 +583,123 @@ function inicializarGraficos() {
                 borderWidth: 1,
                 cornerRadius: 8,
                 displayColors: true,
-                font: {
-                    family: 'Inter'
-                }
+                font: { family: 'Inter' }
             }
         },
         scales: {
             y: {
                 beginAtZero: true,
                 max: 100,
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
-                },
-                ticks: {
-                    font: {
-                        family: 'Inter',
-                        size: 11
-                    },
-                    color: '#64748b'
-                }
+                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' }
             },
             x: {
-                grid: {
-                    color: 'rgba(0, 0, 0, 0.05)'
-                },
-                ticks: {
-                    font: {
-                        family: 'Inter',
-                        size: 11
-                    },
-                    color: '#64748b'
-                }
+                grid: { color: 'rgba(0, 0, 0, 0.05)' },
+                ticks: { font: { family: 'Inter', size: 11 }, color: '#64748b' }
             }
         },
-        animation: {
-            duration: 750,
-            easing: 'easeInOutQuart'
-        },
-        interaction: {
-            intersect: false,
-            mode: 'index'
-        }
+        animation: { duration: 750, easing: 'easeInOutQuart' },
+        interaction: { intersect: false, mode: 'index' }
     };
+
+    // ===== Gráfico Tempo Real
     graficos.tempoReal = new Chart(ctx1, {
         type: 'line',
         data: {
             labels: [],
             datasets: [
-                {
+                { // 0 - CPU
                     label: 'CPU (%)',
                     data: [],
                     borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(59,130,246,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.cpu
                 },
-                {
+                { // 1 - Memória
                     label: 'Memória (%)',
                     data: [],
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(16,185,129,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.memoria
                 },
-                {
+                { // 2 - Disco
                     label: 'Disco (%)',
                     data: [],
                     borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(245,158,11,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.disco
                 },
-                {
+                { // 3 - Rede (agora em %)
                     label: 'Rede (%)',
                     data: [],
                     borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6,
-                    borderWidth: 2,
-                    fill: true,
+                    backgroundColor: 'rgba(139,92,246,.1)',
+                    tension: 0.4, pointRadius: 4, pointHoverRadius: 6, borderWidth: 2, fill: true,
                     hidden: !estadoApp.filtros.rede
-                }
+                },
+
+                // Linhas fixas (limites)
+                { label: 'CPU (limite)', data: [], borderColor: '#3b82f6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Memória (limite)', data: [], borderColor: '#10b981', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Disco (limite)', data: [], borderColor: '#f59e0b', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Rede (limite)', data: [], borderColor: '#8b5cf6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 }
             ]
         },
         options: commonOptions
     });
+
+    // ===== Gráfico Histórico
     graficos.historico = new Chart(ctx2, {
         type: 'line',
         data: {
             labels: [],
             datasets: [
-                {
+                { // 0
                     label: 'CPU Média (%)',
                     data: [],
                     borderColor: '#3b82f6',
-                    backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(59,130,246,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.cpu
                 },
-                {
+                { // 1
                     label: 'Memória Média (%)',
                     data: [],
                     borderColor: '#10b981',
-                    backgroundColor: 'rgba(16, 185, 129, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(16,185,129,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.memoria
                 },
-                {
+                { // 2
                     label: 'Disco Médio (%)',
                     data: [],
                     borderColor: '#f59e0b',
-                    backgroundColor: 'rgba(245, 158, 11, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(245,158,11,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.disco
                 },
-                {
+                { // 3 (rede em %)
                     label: 'Rede Média (%)',
                     data: [],
                     borderColor: '#8b5cf6',
-                    backgroundColor: 'rgba(139, 92, 246, 0.2)',
-                    tension: 0.3,
-                    borderWidth: 3,
-                    pointRadius: 0,
-                    pointHoverRadius: 5,
-                    fill: true,
+                    backgroundColor: 'rgba(139,92,246,.2)',
+                    tension: 0.3, borderWidth: 3, pointRadius: 0, pointHoverRadius: 5, fill: true,
                     hidden: !estadoApp.filtros.rede
-                }
+                },
+
+                // Linhas fixas (limites)
+                { label: 'CPU (limite)', data: [], borderColor: '#3b82f6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Memória (limite)', data: [], borderColor: '#10b981', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Disco (limite)', data: [], borderColor: '#f59e0b', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 },
+                { label: 'Rede (limite)', data: [], borderColor: '#8b5cf6', borderDash: [6, 6], pointRadius: 0, tension: 0, fill: false, borderWidth: 1.5, order: 10 }
             ]
         },
         options: commonOptions
     });
 }
-
 
 
 function atualizarGraficoTempoReal() {
@@ -732,20 +708,33 @@ function atualizarGraficoTempoReal() {
     const maxPontos = 50;
     const dadosLimitados = dadosTempoReal.slice(-maxPontos);
 
+    // labels
     graficos.tempoReal.data.labels = dadosLimitados.map(d =>
         new Date(d.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
     );
 
+    // séries principais
     graficos.tempoReal.data.datasets[0].data = dadosLimitados.map(d => d.cpu);
     graficos.tempoReal.data.datasets[1].data = dadosLimitados.map(d => d.memoria);
     graficos.tempoReal.data.datasets[2].data = dadosLimitados.map(d => d.disco);
-    graficos.tempoReal.data.datasets[3].data = dadosLimitados.map(d => (d.rede / 200) * 100); 
+    graficos.tempoReal.data.datasets[3].data = dadosLimitados.map(d => toRedePct(d.rede)); // REDE EM %
 
-    // Aplicar filtros
+    // linhas de normalidade
+    const len = graficos.tempoReal.data.labels.length;
+    graficos.tempoReal.data.datasets[4].data = flatLine(len, normalidade.cpu);
+    graficos.tempoReal.data.datasets[5].data = flatLine(len, normalidade.memoria);
+    graficos.tempoReal.data.datasets[6].data = flatLine(len, normalidade.disco);
+    graficos.tempoReal.data.datasets[7].data = flatLine(len, normalidade.rede);
+
+    // filtros (sincroniza visibilidade)
     graficos.tempoReal.data.datasets[0].hidden = !estadoApp.filtros.cpu;
     graficos.tempoReal.data.datasets[1].hidden = !estadoApp.filtros.memoria;
     graficos.tempoReal.data.datasets[2].hidden = !estadoApp.filtros.disco;
     graficos.tempoReal.data.datasets[3].hidden = !estadoApp.filtros.rede;
+    graficos.tempoReal.data.datasets[4].hidden = !estadoApp.filtros.cpu;
+    graficos.tempoReal.data.datasets[5].hidden = !estadoApp.filtros.memoria;
+    graficos.tempoReal.data.datasets[6].hidden = !estadoApp.filtros.disco;
+    graficos.tempoReal.data.datasets[7].hidden = !estadoApp.filtros.rede;
 
     graficos.tempoReal.update('none');
 }
@@ -761,77 +750,46 @@ function atualizarGraficoHistorico() {
 
     for (let i = 0; i < dados.length; i += intervalo) {
         const grupo = dados.slice(i, i + intervalo);
-        if (grupo.length === 0) continue;
+        if (!grupo.length) continue;
 
         const media = {
             timestamp: grupo[Math.floor(grupo.length / 2)].timestamp,
             cpu: grupo.reduce((acc, d) => acc + d.cpu, 0) / grupo.length,
             memoria: grupo.reduce((acc, d) => acc + d.memoria, 0) / grupo.length,
             disco: grupo.reduce((acc, d) => acc + d.disco, 0) / grupo.length,
-            rede: grupo.reduce((acc, d) => acc + d.rede, 0) / grupo.length
+            redePct: grupo.reduce((acc, d) => acc + toRedePct(d.rede), 0) / grupo.length // REDE EM %
         };
         dadosAgregados.push(media);
     }
 
     graficos.historico.data.labels = dadosAgregados.map(d =>
         new Date(d.timestamp).toLocaleString('pt-BR', {
-            month: '2-digit',
-            day: '2-digit',
-            hour: '2-digit',
-            minute: '2-digit'
+            month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit'
         })
     );
 
     graficos.historico.data.datasets[0].data = dadosAgregados.map(d => d.cpu);
     graficos.historico.data.datasets[1].data = dadosAgregados.map(d => d.memoria);
     graficos.historico.data.datasets[2].data = dadosAgregados.map(d => d.disco);
-    graficos.historico.data.datasets[3].data = dadosAgregados.map(d => (d.rede / 200) * 100);
+    graficos.historico.data.datasets[3].data = dadosAgregados.map(d => d.redePct); // % aqui
+
+    const lenH = graficos.historico.data.labels.length;
+    graficos.historico.data.datasets[4].data = flatLine(lenH, normalidade.cpu);
+    graficos.historico.data.datasets[5].data = flatLine(lenH, normalidade.memoria);
+    graficos.historico.data.datasets[6].data = flatLine(lenH, normalidade.disco);
+    graficos.historico.data.datasets[7].data = flatLine(lenH, normalidade.rede);
 
     graficos.historico.data.datasets[0].hidden = !estadoApp.filtros.cpu;
     graficos.historico.data.datasets[1].hidden = !estadoApp.filtros.memoria;
     graficos.historico.data.datasets[2].hidden = !estadoApp.filtros.disco;
     graficos.historico.data.datasets[3].hidden = !estadoApp.filtros.rede;
+    graficos.historico.data.datasets[4].hidden = !estadoApp.filtros.cpu;
+    graficos.historico.data.datasets[5].hidden = !estadoApp.filtros.memoria;
+    graficos.historico.data.datasets[6].hidden = !estadoApp.filtros.disco;
+    graficos.historico.data.datasets[7].hidden = !estadoApp.filtros.rede;
 
     graficos.historico.update();
 }
-
-// function atualizarGraficoCpuNucleos() {
-//     if (!graficos.cpuNucleos) return;
-
-//     const checkbox = document.getElementById('showCpuCores');
-//     if (!checkbox || !checkbox.checked) {
-//         graficos.cpuNucleos.data.datasets = [];
-//         graficos.cpuNucleos.update();
-//         return;
-//     }
-
-//     const maxPontos = 30;
-//     const dadosLimitados = dadosTempoReal.slice(-maxPontos);
-
-//     if (dadosLimitados.length === 0) return;
-
-//     graficos.cpuNucleos.data.labels = dadosLimitados.map(d =>
-//         new Date(d.timestamp).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-//     );
-
-//     const cores = ['#ef4444', '#f97316', '#f59e0b', '#eab308', '#84cc16', '#22c55e', '#10b981', '#14b8a6'];
-//     graficos.cpuNucleos.data.datasets = [];
-
-//     for (let i = 0; i < 8; i++) {
-//         graficos.cpuNucleos.data.datasets.push({
-//             label: `Núcleo ${i + 1}`,
-//             data: dadosLimitados.map(d => d.nucleos[i] || 0),
-//             borderColor: cores[i],
-//             backgroundColor: cores[i] + '20',
-//             tension: 0.4,
-//             pointRadius: 2,
-//             borderWidth: 2
-//         });
-//     }
-
-//     graficos.cpuNucleos.options.plugins.legend.display = true;
-//     graficos.cpuNucleos.update();
-// }
 
 // === TABELAS ===
 function atualizarTabelaMonitoramento() {
@@ -1255,209 +1213,161 @@ selectMonitor.addEventListener("change", atualizarTitulo);
 selectMonitor.selectedIndex = 0;
 atualizarTitulo();
 
-// aqui pra alerta
+// aqui deixei os alertas
 
-
-/* ============================================================
-   TOPBAR FULL-WIDTH + FEED LATERAL FIXO (append-only)
-   ============================================================ */
 (function () {
-    // ======= CONFIG =======
-    const SIDEBAR_WIDTH = 360;                 // px
-    const FEED_MAX = 400;                      // limite de itens
+    const SIDEBAR_WIDTH = 360;
+    const FEED_MAX = 400;
     const ENDPOINT_ACAO = '/api/incidentes/acao';
 
-    // ======= CSS base (topbar + feed) =======
     const style = document.createElement('style');
     style.textContent = `
-    /* Topbar ocupa a largura inteira do viewport */
-    .topbar {
-      position: fixed;
-      top: 0; left: 0; right: 0;
-      height: 64px;                     /* será recalculado se a sua topbar for maior */
-      background: #fff;
-      border-bottom: 1px solid #e5e7eb;
-      z-index: 10000;                   /* acima de tudo */
-      display: flex; align-items: center;
-    }
-    /* empurra o conteúdo para baixo da topbar */
-    body.has-fixed-topbar { padding-top: 64px; }
-
-    /* painel lateral fixo */
-    #alertsSidebar {
-      position: fixed;
-      right: 0;
-      width: ${SIDEBAR_WIDTH}px;
-      height: calc(100vh - 64px);       /* top será recalculado via JS */
-      z-index: 9990;
-      background: #ffffff;
-      border-left: 1px solid #e5e7eb;
-      box-shadow: -8px 0 24px rgba(2,6,23,.06);
-      display: flex; flex-direction: column;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-    }
-    #alertsSidebarHeader{
-      padding: 12px 14px;
-      border-bottom: 1px solid #e5e7eb;
-      display:flex; align-items:center; justify-content:space-between; gap:8px;
-      background:#fff;
-    }
-    #alertsSidebarHeader .title { font-size: 14px; font-weight: 700; color: #0f172a; }
-    #alertsSidebarHeader .subtitle { font-size: 12px; color:#64748b; font-weight: 500; }
-    #alertsSidebarList{
-      overflow-y: auto; padding: 12px;
-      display: flex; flex-direction: column; gap: 10px;
-    }
-    .a-card{
-      border-radius: 10px; border: 1px solid #eef2f7;
-      padding: 10px 12px; background: #fff;
-      box-shadow: 0 1px 2px rgba(2,6,23,.04);
-    }
-    .a-head{display:flex; align-items:center; justify-content:space-between; gap:8px;}
-    .a-time{font-size:12px; color:#64748b}
-    .a-source{font-weight: 700; color:#0f172a; margin-top:4px;}
-    .a-msg{color:#334155; margin-top:2px;}
-    .a-action{margin-top:8px;}
-    .a-action > button{
-      padding: .38rem .6rem; border: 0; border-radius: 8px;
-      background: #2563eb; color:#fff; font-weight: 700; font-size: 12px; cursor: pointer;
-    }
-    .a-done{ font-size:12px; color:#0369a1; margin-top:6px; }
-    .a-card.CRITICAL{ border-left: 4px solid #e11d48; }
-    .a-card.HIGH    { border-left: 4px solid #f59e0b; }
-    .a-card.MEDIUM  { border-left: 4px solid #facc15; }
-    .a-card.INFO    { border-left: 4px solid #3b82f6; }
-
-    /* empurra o conteúdo central para não ficar por baixo do painel (somente desktop) */
-    @media (min-width: 1100px){
-      body.with-alerts-sidebar { margin-right: ${SIDEBAR_WIDTH}px; }
-    }
-    @media (max-width: 1099px){
-      #alertsSidebar{ display:none; }
-      body.with-alerts-sidebar { margin-right: 0; }
-    }
-  `;
+    .topbar{position:fixed;top:0;left:0;right:0;height:64px;background:#fff;border-bottom:1px solid #e5e7eb;z-index:10000;display:flex;align-items:center}
+    body.has-fixed-topbar{padding-top:64px}
+    #alertsSidebar{position:fixed;right:0;width:${SIDEBAR_WIDTH}px;height:calc(100vh - 64px);z-index:9990;background:#ffffff;border-left:1px solid #e5e7eb;box-shadow:-8px 0 24px rgba(2,6,23,.06);display:flex;flex-direction:column;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+    #alertsSidebarHeader{padding:12px 14px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}
+    #alertsSidebarHeader .title{font-size:14px;font-weight:700;color:#0f172a}
+    #alertsSidebarHeader .subtitle{font-size:12px;color:#64748b;font-weight:500}
+    #alertsSidebarFilterWrap{padding:8px 12px;border-bottom:1px solid #eef2f7}
+    #alertsSidebarFilter{width:100%;height:36px;border:1px solid #e5e7eb;border-radius:8px;padding:0 10px;font-size:14px}
+    #alertsSidebarList{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+    .a-card{border-radius:10px;border:1px solid #eef2f7;padding:10px 12px;background:#fff;box-shadow:0 1px 2px rgba(2,6,23,.04)}
+    .a-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .a-time{font-size:12px;color:#64748b}
+    .a-source{font-weight:700;color:#0f172a;margin-top:4px}
+    .a-msg{color:#334155;margin-top:2px}
+    .a-action{margin-top:8px}
+    .a-action>button{padding:.38rem .6rem;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;font-size:12px;cursor:pointer}
+    .a-done{font-size:12px;color:#0369a1;margin-top:6px}
+    .a-card.CRITICAL{border-left:4px solid #ef4444}
+    .a-card.HIGH{border-left:4px solid #f59e0b}
+    .a-card.MEDIUM{border-left:4px solid #f59e0b}
+    @media(min-width:1100px){body.with-alerts-sidebar{margin-right:${SIDEBAR_WIDTH}px}}
+    @media(max-width:1099px){#alertsSidebar{display:none}body.with-alerts-sidebar{margin-right:0}}
+    `;
     document.head.appendChild(style);
 
-    // ======= cria sidebar =======
     const sidebar = document.createElement('aside');
     sidebar.id = 'alertsSidebar';
     sidebar.innerHTML = `
-    <div id="alertsSidebarHeader">
-      <div>
-        <div class="title">Alertas Ativos (Todos os Pórticos)</div>
-        <div class="subtitle">Feed de Ocorrências</div>
-      </div>
-      <button id="alertsSidebarToggle" title="Ocultar/mostrar feed"
-  style="border:0;background:#f1f5f9;color:#0f172a;font-weight:700;
-         border-radius:8px;padding:.38rem .6rem;cursor:pointer">
-  <i class="fab fa-slack"></i>
-</button>
+  <div id="alertsSidebarHeader">
+    <div>
+      <div class="title">Alertas Ativos (Todos os Pórticos)</div>
+      <div class="subtitle">Feed de Ocorrências</div>
     </div>
-    <div id="alertsSidebarList" aria-live="polite"></div>
-  `;
+    <button id="alertsSidebarToggle" title="Ocultar/mostrar feed" style="border:0;background:#f1f5f9;color:#0f172a;font-weight:700;border-radius:8px;padding:.38rem .6rem;cursor:pointer">
+      <i class="fab fa-slack"></i>
+    </button>
+  </div>
+  <div style="padding:8px 12px;">
+    <input id="alertsSidebarFilter" type="text" placeholder="Filtrar por texto" style="width:100%;padding:8px 10px;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;outline:none;">
+  </div>
+  <div id="alertsSidebarList" aria-live="polite"></div>
+`;
 
     function mountSidebar() {
-        if (!document.body.contains(sidebar)) {
-            document.body.appendChild(sidebar);
-        }
-        // marca body pra aplicar paddings
+        if (!document.body.contains(sidebar)) document.body.appendChild(sidebar);
         document.body.classList.add('with-alerts-sidebar', 'has-fixed-topbar');
-        // mede a topbar e ajusta
         fixPositions();
     }
 
-    // mede a altura real da topbar e ajusta top/height do sidebar + padding do body
     function fixPositions() {
         const tb = document.querySelector('.topbar') || document.getElementById('topbar');
         const h = tb ? tb.offsetHeight : 64;
-
-        // atualiza top/height do sidebar
         sidebar.style.top = h + 'px';
         sidebar.style.height = `calc(100vh - ${h}px)`;
-
-        // atualiza padding-top do body para o conteúdo não ficar coberto
         document.body.style.paddingTop = h + 'px';
     }
 
-    // re-ajusta em resize ou se a topbar mudar de altura
     window.addEventListener('resize', fixPositions);
     document.addEventListener('DOMContentLoaded', () => {
         mountSidebar();
-        setTimeout(fixPositions, 0); // garante cálculo após fontes/carregamento
+        setTimeout(fixPositions, 0);
     });
 
-    // ======= estado e helpers =======
-    const state = { feed: [] };
+    const state = { feed: [], filterText: '' };
+
+    function normalizeLevel(l) {
+        const v = String(l || '').toUpperCase();
+        if (v === 'CRITICAL' || v === 'CRITICO' || v === 'CRÍTICO') return 'CRITICO';
+        return 'ATENCAO';
+    }
+
+    function setAlertCountFromDOM() {
+        const c = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
+        const lbl = document.getElementById('alertCount');
+        if (lbl) lbl.textContent = String(c);
+    }
+
+    function applyFilter() {
+        const q = state.filterText.trim().toLowerCase();
+        const list = document.getElementById('alertsSidebarList');
+        if (!list) return;
+        const cards = list.querySelectorAll('.a-card');
+        cards.forEach(card => {
+            const txt = card.textContent.toLowerCase();
+            const match = q === '' ? true : txt.includes(q);
+            card.style.display = match ? '' : 'none';
+            card.dataset.hidden = match ? '' : '1';
+        });
+        setAlertCountFromDOM();
+    }
 
     function prependAlertCard(item) {
         const list = document.getElementById('alertsSidebarList');
         if (!list) return;
-
-        state.feed.unshift(item);
+        const level = normalizeLevel(item.level);
+        const obj = { id: item.id || (Date.now() + ''), level, source: item.source, msg: item.msg, time: item.time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) };
+        state.feed.unshift(obj);
         if (state.feed.length > FEED_MAX) state.feed.pop();
-
         const card = document.createElement('div');
-        card.className = 'a-card ' + (item.level || 'INFO');
-        card.dataset.alertId = item.id || (Date.now() + '');
+        card.className = 'a-card ' + obj.level;
+        card.dataset.alertId = obj.id;
         card.innerHTML = `
       <div class="a-head">
-        <span class="a-time">${item.time}</span>
-        <span class="a-level" style="font-size:12px; font-weight:800; color:#0f172a">${item.level}</span>
+        <span class="a-time">${obj.time}</span>
+        <span class="a-level" style="font-size:12px; font-weight:800; color:#0f172a">${obj.level === 'CRITICO' ? 'CRÍTICO' : 'ATENÇÃO'}</span>
       </div>
-      <div class="a-source">${item.source}</div>
-      <div class="a-msg">${item.msg}</div>
+      <div class="a-source">${obj.source}</div>
+      <div class="a-msg">${obj.msg}</div>
       <div class="a-action">
         <button class="btn-action" data-id="${card.dataset.alertId}">Ação</button>
       </div>
-      ${item.action ? `<div class="a-done">Ação: ${item.action} • ${item.actionTime}</div>` : ``}
     `;
         list.prepend(card);
         list.scrollTop = 0;
+        applyAlertsFilter();
+        syncAlertCount();
     }
 
-    // botão Limpar
     document.addEventListener('click', (e) => {
         if (e.target && e.target.id === 'alertsSidebarClear') {
             state.feed = [];
             const list = document.getElementById('alertsSidebarList');
             if (list) list.innerHTML = '';
+            setAlertCountFromDOM();
         }
     });
 
-    // botão Ação
     document.addEventListener('click', async (e) => {
         const btn = e.target.closest('.btn-action');
         if (!btn) return;
-
         const id = btn.getAttribute('data-id');
         const card = btn.closest('.a-card');
         const item = state.feed.find(x => String(x.id) === String(id));
         if (!item) return;
-
         const acao = window.prompt('Descreva a ação tomada para este incidente:', '');
         if (acao === null) return;
-
-        const payload = {
-            alertId: id, source: item.source, level: item.level,
-            message: item.msg, time: item.time, action: acao
-        };
-
+        const payload = { alertId: id, source: item.source, level: item.level, message: item.msg, time: item.time, action: acao };
         try {
-            const resp = await fetch(ENDPOINT_ACAO, {
-                method: 'POST', headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            });
+            const resp = await fetch(ENDPOINT_ACAO, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
             if (!resp.ok) throw new Error('Falha ao salvar ação');
-
             item.action = acao;
             item.actionTime = new Date().toLocaleString('pt-BR');
-
             btn.textContent = 'Registrado';
             btn.disabled = true;
             btn.style.background = '#0ea5e9';
             btn.style.cursor = 'default';
-
             const done = document.createElement('div');
             done.className = 'a-done';
             done.textContent = `Ação: ${item.action} • ${item.actionTime}`;
@@ -1467,52 +1377,32 @@ atualizarTitulo();
         }
     });
 
-    // API pública para empurrar alertas manualmente (se quiser)
     window.pushAlert = function ({ level = 'INFO', source = 'Pórtico', msg = '', time = null, id = null }) {
-        prependAlertCard({
-            id: id || Date.now() + Math.random().toString(16).slice(2),
-            level, source, msg,
-            time: time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-        });
+        prependAlertCard({ id: id || Date.now() + Math.random().toString(16).slice(2), level, source, msg, time: time || new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
     };
 
-    // ======= Seed “bem populado” (30+ itens) =======
     function seedMany(qtd = 36) {
-        const fontes = [
-            'INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)',
-            'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'
-        ];
-        const levels = ['INFO', 'MEDIUM', 'HIGH', 'CRITICAL'];
+        const fontes = ['INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)', 'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'];
+        const levels = ['ATENÇÃO', 'CRITICO'];
         const msgs = [
-            'Processo de leitura travou. Necessário restart.',
-            'Latência alta no link principal (210ms).',
-            'CPU em 82°C por 3 minutos.',
-            'Backup automático concluído com sucesso.',
-            'Uso de disco 91% em /var/log.',
-            'Perda de pacotes intermitente (2.5%).',
-            'Failover de link (4G) ativado.',
-            'Checksum inválido em 12 leituras.',
-            'Reconexão de serviço concluída.',
-            'Fila de processamento acima do normal.',
-            'Tráfego de rede próximo da saturação.',
-            'Temperatura normalizada (68°C).'
+            'CPU ultrapassou 70% de uso, iniciar monitoramento intensivo.',
+            'CPU acima de 85%, risco de saturação iminente.',
+            'Memória RAM acima de 75%, desempenho pode ser afetado.',
+            'Memória RAM em 85%, limite crítico atingido.',
+            'Disco acima de 80%, espaço disponível em nível de atenção.',
+            'Disco acima de 90%, risco de saturação do armazenamento.',
+            'Rede com uso acima de 70%, tráfego em nível de atenção.',
+            'Rede acima de 85%, possível saturação no enlace.',
+            'CPU e Memória simultaneamente em alta utilização.'
         ];
         const now = new Date();
-        // gera itens com tempos decrescentes (pra parecer histórico)
         for (let i = qtd - 1; i >= 0; i--) {
-            const t = new Date(now.getTime() - i * 90 * 1000); // de 1min30s em 1min30s
-            prependAlertCard({
-                id: 'seed-' + i,
-                level: levels[Math.floor(Math.random() * levels.length)],
-                source: fontes[Math.floor(Math.random() * fontes.length)],
-                msg: msgs[Math.floor(Math.random() * msgs.length)],
-                time: t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })
-            });
+            const t = new Date(now.getTime() - i * 90 * 1000);
+            prependAlertCard({ id: 'seed-' + i, level: levels[Math.floor(Math.random() * levels.length)], source: fontes[Math.floor(Math.random() * fontes.length)], msg: msgs[Math.floor(Math.random() * msgs.length)], time: t.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' }) });
         }
     }
-    document.addEventListener('DOMContentLoaded', () => seedMany(40));
+    document.addEventListener('DOMContentLoaded', () => seedMany(36));
 
-    // ======= Integra com seu loop sem limpar DOM central =======
     const lastCross = { cpu: false, memoria: false, disco: false, rede: false };
     function evaluatePoint(ponto, fonte) {
         const hora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
@@ -1522,13 +1412,13 @@ atualizarTitulo();
             }
             lastCross[key] = cond;
         }
-        cross('cpu', ponto.cpu > 85, 'CRITICAL', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
-        cross('memoria', ponto.memoria > 85, 'CRITICAL', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
-        cross('disco', ponto.disco > 85, 'HIGH', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
-        cross('rede', ponto.rede > 180, 'HIGH', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
+        cross('cpu', ponto.cpu > 85, 'CRITICO', `CPU em ${ponto.cpu.toFixed(1)}% - Acima do limite crítico`);
+        cross('memoria', ponto.memoria > 85, 'CRITICO', `Memória em ${ponto.memoria.toFixed(1)}% - Acima do limite crítico`);
+        cross('disco', ponto.disco > 85, 'ATENCAO', `Disco em ${ponto.disco.toFixed(1)}% - Alto uso de disco`);
+        cross('rede', ponto.rede > 180, 'ATENCAO', `Rede em ${ponto.rede.toFixed(1)} Mbps - Próximo da saturação`);
     }
 
-    // patch: usa seu ciclo de KPIs para detectar cruzamentos e mandar ao feed
+
     const patchAlerts = () => {
         if (!window.gerenciadorInterface) return;
         const original = gerenciadorInterface.atualizarAlertas?.bind(gerenciadorInterface);
@@ -1537,8 +1427,8 @@ atualizarTitulo();
             const u = dadosTempoReal[dadosTempoReal.length - 1];
             const fonte = document.getElementById('edgeSelector')?.value || (window.maquina && maquina.nome) || 'Pórtico';
             evaluatePoint(u, fonte);
-            // se quiser manter algo do original, descomente:
-            // if (original) original();
+            if (original) original();
+            setAlertCountFromDOM();
         };
     };
     if (document.readyState === 'loading') {
@@ -1547,7 +1437,38 @@ atualizarTitulo();
         patchAlerts();
     }
 
+    const filterInputHandler = (e) => {
+        state.filterText = e.target.value || '';
+        applyFilter();
+    };
+    document.addEventListener('input', (e) => {
+        if (e.target && e.target.id === 'alertsSidebarFilter') filterInputHandler(e);
+    });
+
     window.SIDEBAR_WIDTH = SIDEBAR_WIDTH;
+
+    function applyAlertsFilter() {
+        const q = (document.getElementById('alertsSidebarFilter')?.value || '').trim().toLowerCase();
+        const list = document.getElementById('alertsSidebarList');
+        if (!list) return;
+        const nodes = Array.from(list.children);
+        nodes.forEach(card => {
+            const txt = card.textContent.toLowerCase();
+            card.style.display = q && !txt.includes(q) ? 'none' : '';
+        });
+    }
+    function syncAlertCount() {
+        const list = document.getElementById('alertsSidebarList');
+        const visible = list ? Array.from(list.children).filter(c => c.style.display !== 'none').length : 0;
+        const el = document.getElementById('alertCount');
+        if (el) el.textContent = String(visible);
+    }
+    document.addEventListener('input', (e) => {
+        if (e.target && e.target.id === 'alertsSidebarFilter') {
+            applyAlertsFilter();
+            syncAlertCount();
+        }
+    });
 
 })();
 

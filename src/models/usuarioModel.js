@@ -14,7 +14,7 @@ function autenticar(email, senha, token) {
         JOIN empresa AS e 
             ON u.fk_empresa = e.id_empresa
         JOIN token_acesso AS t 
-            ON t.fk_id_empresa = u.fk_empresa
+            ON t.fk_id_usuario = u.id_usuario
         WHERE u.email = '${email}'
           AND u.senha = '${senha}'
           AND t.token = '${token}'
@@ -53,62 +53,62 @@ async function cadastrar(razao, cnpj, emailEmpresa, telefone, tecnico, emailUser
         let idUsuario = resultadoUsuario.insertId;
 
         let insertToken = `
-            INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_empresa)
-            VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idEmpresa});
+            INSERT INTO token_acesso (data_criacao, data_expiracao, ativo, token, fk_id_usuario)
+            VALUES (NOW(), DATE_ADD(NOW(), INTERVAL 1 DAY), 1, '${token}', ${idUsuario});
         `;
         await database.executar(insertToken);
 
         console.log("Cadastro concluído com sucesso!");
-        return { mensagem: "Cadastro completo realizado com sucesso!", idUsuario: idUsuario }; } 
-        
-        catch (erro) {
-            console.log("Erro ao cadastrar:", erro.sqlMessage || erro);
-            throw erro;
-        }
+        return { mensagem: "Cadastro completo realizado com sucesso!", idUsuario: idUsuario }; 
+    } catch (erro) {
+        console.log("Erro ao cadastrar:", erro.sqlMessage || erro);
+        throw erro;
     }
+}
 
 function listarEmpresas() {
-        var instrucaoSql = `
-      SELECT e.id_empresa, 
-             e.razao_social, 
-             e.cnpj,  
-             u.nome, 
-             CASE WHEN e.status = 1 THEN 'Ativo' ELSE 'Inativo' END AS status
-        FROM empresa AS e
-        JOIN usuario AS u 
-          ON e.id_empresa = u.fk_empresa;
+    var instrucaoSql = `
+        SELECT e.id_empresa, 
+               e.razao_social, 
+               e.cnpj,  
+               u.nome, 
+               CASE WHEN e.status = 1 THEN 'Ativo' ELSE 'Inativo' END AS status
+          FROM empresa AS e
+          JOIN usuario AS u 
+            ON e.id_empresa = u.fk_empresa;
     `;
-        return database.executar(instrucaoSql);
-    }
+    return database.executar(instrucaoSql);
+}
 
-    function pesquisarUser(pesquisa) {
-        var instrucaoSql = `
-    SELECT e.id_empresa, 
-             e.razao_social, 
-             e.cnpj,  
-             u.nome, 
-             CASE WHEN e.status = 1 THEN 'Ativo' ELSE 'Inativo' END AS status
-        FROM empresa AS e
-        JOIN usuario AS u 
-          ON e.id_empresa = u.fk_empresa WHERE nome LIKE '${pesquisa}%';
+function pesquisarUser(pesquisa) {
+    var instrucaoSql = `
+        SELECT e.id_empresa, 
+               e.razao_social, 
+               e.cnpj,  
+               u.nome, 
+               CASE WHEN e.status = 1 THEN 'Ativo' ELSE 'Inativo' END AS status
+          FROM empresa AS e
+          JOIN usuario AS u 
+            ON e.id_empresa = u.fk_empresa
+         WHERE u.nome LIKE '${pesquisa}%';
     `;
-        return database.executar(instrucaoSql);
-    }
+    return database.executar(instrucaoSql);
+}
 
-    //=========================== Models dashboard de Usuário comum ==========================================
+//=========================== Models dashboard de Usuário comum ==========================================
 
-    function cadastrarUser(nome, email, senha, tipo_user) {
-        var instrucaoSql = `
-      INSERT INTO usuario (nome, email, senha, fk_id_tipo_usuario, fk_empresa) VALUES 
-      ('${nome}', '${email}', '${senha}', ${tipo_user}, 1);
+function cadastrarUser(nome, email, senha, tipo_user) {
+    var instrucaoSql = `
+        INSERT INTO usuario (nome, email, senha, fk_id_tipo_usuario, fk_empresa)
+        VALUES ('${nome}', '${email}', '${senha}', ${tipo_user}, 1);
     `;
-        return database.executar(instrucaoSql);
-    }
+    return database.executar(instrucaoSql);
+}
 
-    module.exports = {
-        autenticar,
-        cadastrar,
-        listarEmpresas,
-        cadastrarUser,
-        pesquisarUser
-    };
+module.exports = {
+    autenticar,
+    cadastrar,
+    listarEmpresas,
+    cadastrarUser,
+    pesquisarUser
+};
