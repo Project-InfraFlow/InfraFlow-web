@@ -486,18 +486,9 @@ class GerenciadorInterface {
     }
 
     contarAlertas() {
-        if (dadosTempoReal.length === 0) return 0;
-
-        const ultimoDado = dadosTempoReal[dadosTempoReal.length - 1];
-        let count = 0;
-
-        if (ultimoDado.cpu > 75) count++;
-        if (ultimoDado.memoria > 75) count++;
-        if (ultimoDado.disco > 75) count++;
-        if (ultimoDado.rede > 150) count++;
-
-        return count;
-    }
+    const visiveis = document.querySelectorAll('#alertsSidebarList .a-card:not([data-hidden="1"])').length;
+    return visiveis;
+}
 
     mostrarNotificacao(mensagem, tipo = 'info') {
         const notification = document.createElement('div');
@@ -1513,7 +1504,7 @@ atualizarTitulo();
         }
     }
 
-    document.addEventListener('DOMContentLoaded', () => seedMany(40));
+    document.addEventListener('DOMContentLoaded', () => seedMany(20));
 
     // ======= Integra com seu loop sem limpar DOM central =======
     const lastCross = { cpu: false, memoria: false, disco: false, rede: false };
