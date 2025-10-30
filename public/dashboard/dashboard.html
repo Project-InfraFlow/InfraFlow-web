@@ -276,8 +276,8 @@
                   <tr>
                     <td>CPU (%)</td>
                     <td>20% – 70%</td>
-                    <td><span class="pill warn">70% – 85%</span></td>
-                    <td><span class="pill crit">&gt; 85%</span></td>
+                    <td><span class="pill warn">70% – 80%</span></td>
+                    <td><span class="pill crit">&gt; 80%</span></td>
                   </tr>
                   <tr>
                     <td>Memória RAM (%)</td>
@@ -382,10 +382,6 @@
             <i class="fas fa-server"></i>
             Máquina
           </button>
-          <button class="tab-btn" data-tab="componente">
-            <i class="fas fa-cog"></i>
-            Componente
-          </button>
         </div>
 
         <div class="cadastro-content">
@@ -429,6 +425,11 @@
               </div>
             </form>
 
+            <div class="titulo">
+                <i class="bi bi-person-fill-add controlador"></i>
+                <h1>Usuários Cadastrados</h1>
+              </div>
+
             <div class="listar-users">
               <div class="barra-infos">
                 <p>ID</p>
@@ -437,16 +438,64 @@
                 <p>Acesso</p>
                 <p>Ações</p>
               </div>
+
+               <!-- -------------Informações mocadas por enquanto-------------- -->
+
+
+
               <div class="infos-user">
                 <p>1</p>
                 <p>Vinicius Melo</p>
-                <p>ViniciusMelo@gmail.com</p>
+                <p>viniciusmelo@ecorodovias.com</p>
                 <p>Comum</p>
                 <div class="acoes">
                   <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
                   <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
                 </div>
-               
+              </div>
+
+              <div class="infos-user">
+                <p>2</p>
+                <p>Rafael Brandão</p>
+                <p>rafaelbrandão@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-user">
+                <p>3</p>
+                <p>Mariana Silva</p>
+                <p>marianasilva@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+               <div class="infos-user">
+                <p>4</p>
+                <p>Marcelo Noronha</p>
+                <p>marcelonoronha@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-user">
+                <p>5</p>
+                <p>Vivian Silva</p>
+                <p>viviansilva@ecorodovias.com</p>
+                <p>Comum</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
               </div>
             </div>
 
@@ -486,8 +535,14 @@
               </div>
             </form>
 
-            <div class="listar-users">
-              <div class="barra-infos">
+            <div class="listar-maquinas">
+
+              <div class="titulo">
+                <i class="bi bi-hdd-stack controlador"></i>
+                <h1>Pórticos Cadastrados</h1>
+              </div>
+
+              <div class="barra-infos-maq">
                 <p>ID</p>
                 <p>Nome</p>
                 <p>Sistema Op.</p>
@@ -495,7 +550,11 @@
                 <p>KM</p>
                 <p>Ações</p>
               </div>
-              <div class="infos-user">
+
+              <!-- -------------Informações mocadas por enquanto-------------- -->
+
+
+              <div class="infos-maquina">
                 <p>1</p>
                 <p>INFRA-EDGE-01-Itápolis</p>
                 <p>Ubuntu 22.04</p>
@@ -505,7 +564,42 @@
                   <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
                   <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
                 </div>
-               
+              </div>
+
+              <div class="infos-maquina">
+                <p>2</p>
+                <p>INFRA-EDGE-02-Jaboticabal</p>
+                <p>Ubuntu 22.04</p>
+                <p>SP-333</p>
+                <p>101</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-maquina">
+                <p>3</p>
+                <p>INFRA-EDGE-03-São José dos Santos</p>
+                <p>Ubuntu 22.04</p>
+                <p>SP-099</p>
+                <p>15</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
+              </div>
+
+              <div class="infos-maquina">
+                <p>2</p>
+                <p>INFRA-EDGE-04-Itaguaí</p>
+                <p>Ubuntu 22.04</p>
+                <p>KM-414</p>
+                <p>414</p>
+                <div class="acoes">
+                  <button onclick="edit_user()" class="btn_actions"><i class="bi bi-pencil-square"></i></button>
+                  <button onclick="delete_user()" class="btn_actions"><i class="bi bi-trash3-fill"></i></button>
+                </div>
               </div>
           </div>
         </div>
