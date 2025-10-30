@@ -1264,31 +1264,30 @@ atualizarTitulo();
     const ENDPOINT_ACAO = '/api/incidentes/acao';
 
     const style = document.createElement('style');
-    style.textContent = `
-    .topbar{position:fixed;top:0;left:0;right:0;height:64px;background:#fff;border-bottom:1px solid #e5e7eb;z-index:10000;display:flex;align-items:center}
-    body.has-fixed-topbar{padding-top:64px}
-    #alertsSidebar{position:fixed;right:0;width:${SIDEBAR_WIDTH}px;height:calc(100vh - 64px);z-index:9990;background:#ffffff;border-left:1px solid #e5e7eb;box-shadow:-8px 0 24px rgba(2,6,23,.06);display:flex;flex-direction:column;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
-    #alertsSidebarHeader{padding:12px 14px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}
-    #alertsSidebarHeader .title{font-size:14px;font-weight:700;color:#0f172a}
-    #alertsSidebarHeader .subtitle{font-size:12px;color:#64748b;font-weight:500}
-    #alertsSidebarFilterWrap{padding:8px 12px;border-bottom:1px solid #eef2f7}
-    #alertsSidebarFilter{width:100%;height:36px;border:1px solid #e5e7eb;border-radius:8px;padding:0 10px;font-size:14px}
-    #alertsSidebarList{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
-    .a-card{border-radius:10px;border:1px solid #eef2f7;padding:10px 12px;background:#fff;box-shadow:0 1px 2px rgba(2,6,23,.04)}
-    .a-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
-    .a-time{font-size:12px;color:#64748b}
-    .a-source{font-weight:700;color:#0f172a;margin-top:4px}
-    .a-msg{color:#334155;margin-top:2px}
-    .a-action{margin-top:8px}
-    .a-action>button{padding:.38rem .6rem;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;font-size:12px;cursor:pointer}
-    .a-done{font-size:12px;color:#0369a1;margin-top:6px}
-    .a-card.CRITICAL{border-left:4px solid #ef4444}
-    .a-card.HIGH{border-left:4px solid #f59e0b}
-    .a-card.MEDIUM{border-left:4px solid #f59e0b}
-    @media(min-width:1100px){body.with-alerts-sidebar{margin-right:${SIDEBAR_WIDTH}px}}
-    @media(max-width:1099px){#alertsSidebar{display:none}body.with-alerts-sidebar{margin-right:0}}
-    `;
-    document.head.appendChild(style);
+style.textContent = `
+.topbar{position:fixed;top:0;left:0;right:0;height:64px;background:#fff;border-bottom:1px solid #e5e7eb;z-index:10000;display:flex;align-items:center}
+body.has-fixed-topbar{padding-top:64px}
+#alertsSidebar{position:fixed;right:0;width:${SIDEBAR_WIDTH}px;height:calc(100vh - 64px);z-index:9990;background:#ffffff;border-left:1px solid #e5e7eb;box-shadow:-8px 0 24px rgba(2,6,23,.06);display:flex;flex-direction:column;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}
+#alertsSidebarHeader{padding:12px 14px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;justify-content:space-between;gap:8px;background:#fff}
+#alertsSidebarHeader .title{font-size:14px;font-weight:700;color:#0f172a}
+#alertsSidebarHeader .subtitle{font-size:12px;color:#64748b;font-weight:500}
+#alertsSidebarFilterWrap{padding:8px 12px;border-bottom:1px solid #eef2f7}
+#alertsSidebarFilter{width:100%;height:36px;border:1px solid #e5e7eb;border-radius:8px;padding:0 10px;font-size:14px}
+#alertsSidebarList{overflow-y:auto;padding:12px;display:flex;flex-direction:column;gap:10px}
+.a-card{border-radius:10px;padding:10px 12px;border:1px solid #eef2f7;box-shadow:0 1px 2px rgba(2,6,23,.04)}
+.a-card.CRITICO{background:#ef4444;color:#fff}
+.a-card.ATENCAO{background:#facc15;color:#0f172a}
+.a-head{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.a-time{font-size:12px;color:inherit}
+.a-source{font-weight:700;margin-top:4px}
+.a-msg{margin-top:2px}
+.a-action{margin-top:8px}
+.a-action>button{padding:.38rem .6rem;border:0;border-radius:8px;background:#2563eb;color:#fff;font-weight:700;font-size:12px;cursor:pointer}
+.a-done{font-size:12px;color:#fff;margin-top:6px}
+@media(min-width:1100px){body.with-alerts-sidebar{margin-right:${SIDEBAR_WIDTH}px}}
+@media(max-width:1099px){#alertsSidebar{display:none}body.with-alerts-sidebar{margin-right:0}}
+`;
+document.head.appendChild(style);
 
     const sidebar = document.createElement('aside');
     sidebar.id = 'alertsSidebar';
