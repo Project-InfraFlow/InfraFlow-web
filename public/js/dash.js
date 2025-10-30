@@ -1384,7 +1384,17 @@ atualizarTitulo();
     function seedMany(qtd = 36) {
         const fontes = ['INFRA-EDGE-01 (SP-333)', 'INFRA-EDGE-02 (SP-333)', 'INFRA-EDGE-03 (SP-099)', 'INFRA-EDGE-04 (Km 414)'];
         const levels = ['ATENÇÃO', 'CRITICO'];
-        const msgs = ['Processo de leitura travou. Necessário restart.', 'Latência alta no link principal (210ms).', 'CPU em 82°C por 3 minutos.', 'Backup automático concluído com sucesso.', 'Uso de disco 91% em /var/log.', 'Perda de pacotes intermitente (2.5%).', 'Failover de link (4G) ativado.', 'Checksum inválido em 12 leituras.', 'Reconexão de serviço concluída.', 'Fila de processamento acima do normal.', 'Tráfego de rede próximo da saturação.', 'Temperatura normalizada (68°C).'];
+        const msgs = [
+            'CPU ultrapassou 70% de uso, iniciar monitoramento intensivo.',
+            'CPU acima de 85%, risco de saturação iminente.',
+            'Memória RAM acima de 75%, desempenho pode ser afetado.',
+            'Memória RAM em 85%, limite crítico atingido.',
+            'Disco acima de 80%, espaço disponível em nível de atenção.',
+            'Disco acima de 90%, risco de saturação do armazenamento.',
+            'Rede com uso acima de 70%, tráfego em nível de atenção.',
+            'Rede acima de 85%, possível saturação no enlace.',
+            'CPU e Memória simultaneamente em alta utilização.'
+        ];
         const now = new Date();
         for (let i = qtd - 1; i >= 0; i--) {
             const t = new Date(now.getTime() - i * 90 * 1000);
@@ -1437,28 +1447,28 @@ atualizarTitulo();
 
     window.SIDEBAR_WIDTH = SIDEBAR_WIDTH;
 
-    function applyAlertsFilter(){
-    const q = (document.getElementById('alertsSidebarFilter')?.value || '').trim().toLowerCase();
-    const list = document.getElementById('alertsSidebarList');
-    if (!list) return;
-    const nodes = Array.from(list.children);
-    nodes.forEach(card=>{
-        const txt = card.textContent.toLowerCase();
-        card.style.display = q && !txt.includes(q) ? 'none' : '';
-    });
-}
-function syncAlertCount(){
-    const list = document.getElementById('alertsSidebarList');
-    const visible = list ? Array.from(list.children).filter(c=>c.style.display!=='none').length : 0;
-    const el = document.getElementById('alertCount');
-    if (el) el.textContent = String(visible);
-}
-document.addEventListener('input', (e)=>{
-    if (e.target && e.target.id === 'alertsSidebarFilter'){
-        applyAlertsFilter();
-        syncAlertCount();
+    function applyAlertsFilter() {
+        const q = (document.getElementById('alertsSidebarFilter')?.value || '').trim().toLowerCase();
+        const list = document.getElementById('alertsSidebarList');
+        if (!list) return;
+        const nodes = Array.from(list.children);
+        nodes.forEach(card => {
+            const txt = card.textContent.toLowerCase();
+            card.style.display = q && !txt.includes(q) ? 'none' : '';
+        });
     }
-});
+    function syncAlertCount() {
+        const list = document.getElementById('alertsSidebarList');
+        const visible = list ? Array.from(list.children).filter(c => c.style.display !== 'none').length : 0;
+        const el = document.getElementById('alertCount');
+        if (el) el.textContent = String(visible);
+    }
+    document.addEventListener('input', (e) => {
+        if (e.target && e.target.id === 'alertsSidebarFilter') {
+            applyAlertsFilter();
+            syncAlertCount();
+        }
+    });
 
 })();
 
