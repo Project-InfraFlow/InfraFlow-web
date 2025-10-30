@@ -208,11 +208,11 @@ body {
 }
 
 .banner .container {
-  width: 85%;
+  width: 90%;
   margin: auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 50px;
   margin-top: 90px;
 }
@@ -263,7 +263,7 @@ body {
 }
 
 .banner-img img {
-  width: 680px;
+  width: 780px;
   border-radius: 6px;
   margin-top: 10px;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
@@ -488,7 +488,7 @@ body {
 /* QUEM SOMOS */
 
 .somos {
-  padding: 40px 0;
+  padding: 70px 0;
   background-color: #008080;
   color: #fff;
 }
@@ -498,7 +498,7 @@ body {
   margin: auto;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-around;
   gap: 50px;
   margin-bottom: -8px;
 }
@@ -528,7 +528,7 @@ body {
 }
 
 .section-img img {
-  width: 280px;
+  width: 380px;
   max-width: 100%;
   border-radius: 6px;
   margin-top: 10px;
@@ -952,4 +952,16 @@ body {
   .ag-courses-item_date-box {
     font-size: 16px;
   }
+}
+
+.bg-animado {
+  background: linear-gradient(270deg, #007c7c, #00b0a0, #007c7c);
+  background-size: 600% 600%;
+  animation: moveGradient 10s ease infinite;
+}
+
+@keyframes moveGradient {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
 }
